@@ -59,18 +59,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-```
-
-4. Click **"Commit changes"**
-
-## File 2: .gitignore
-
-1. **"Add file" → "Create new file"**
-2. Filename: **`.gitignore`**
-3. Paste:
-```
-node_modules/
-dist/
-src/data/river-data.json
-.DS_Store
-*.log
