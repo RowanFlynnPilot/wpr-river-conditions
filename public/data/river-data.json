@@ -1,0 +1,277 @@
+{
+  "generated_at": "2026-03-30T23:09:13.370395+00:00",
+  "region": "Central Wisconsin \u2014 Marathon County",
+  "gauges": [
+    {
+      "id": "05398000",
+      "name": "Wisconsin River at Rothschild",
+      "short_name": "WI River \u2014 Rothschild",
+      "description": "Primary gauge for the Wausau metro area",
+      "lat": 44.8861,
+      "lon": -89.6218,
+      "flood_stage_ft": 12.0,
+      "flood_status": "flooding",
+      "current": {
+        "timestamp": "2026-03-30T17:05:00.000-05:00",
+        "streamflow_cfs": 6620.0,
+        "gage_height_ft": 16.2
+      },
+      "history": [
+        {
+          "date": "2026-03-23",
+          "streamflow_cfs": 11400.0
+        },
+        {
+          "date": "2026-03-24",
+          "streamflow_cfs": 9770.0
+        },
+        {
+          "date": "2026-03-25",
+          "streamflow_cfs": 8650.0
+        },
+        {
+          "date": "2026-03-26",
+          "streamflow_cfs": 10600.0
+        },
+        {
+          "date": "2026-03-27",
+          "streamflow_cfs": 11300.0
+        },
+        {
+          "date": "2026-03-28",
+          "streamflow_cfs": 7640.0
+        },
+        {
+          "date": "2026-03-29",
+          "streamflow_cfs": 6330.0
+        }
+      ],
+      "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05398000/"
+    },
+    {
+      "id": "05398100",
+      "name": "Wisconsin River at Mosinee",
+      "short_name": "WI River \u2014 Mosinee",
+      "description": "Downstream of Wausau, near Mosinee",
+      "lat": 44.7933,
+      "lon": -89.6884,
+      "flood_stage_ft": null,
+      "flood_status": "normal",
+      "current": {
+        "timestamp": "2026-03-30T17:00:00.000-05:00",
+        "gage_height_ft": 12.28
+      },
+      "history": [],
+      "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05398100/"
+    },
+    {
+      "id": "05396000",
+      "name": "Big Rib River at Rib Falls",
+      "short_name": "Big Rib River",
+      "description": "Major tributary west of Wausau",
+      "lat": 44.9653,
+      "lon": -89.8134,
+      "flood_stage_ft": null,
+      "flood_status": "normal",
+      "current": {
+        "timestamp": "2026-03-30T17:00:00.000-05:00",
+        "streamflow_cfs": 473.0,
+        "gage_height_ft": 3.55
+      },
+      "history": [
+        {
+          "date": "2026-03-23",
+          "streamflow_cfs": 1930.0
+        },
+        {
+          "date": "2026-03-24",
+          "streamflow_cfs": 1210.0
+        },
+        {
+          "date": "2026-03-25",
+          "streamflow_cfs": 1020.0
+        },
+        {
+          "date": "2026-03-26",
+          "streamflow_cfs": 1500.0
+        },
+        {
+          "date": "2026-03-27",
+          "streamflow_cfs": 1160.0
+        },
+        {
+          "date": "2026-03-28",
+          "streamflow_cfs": 624.0
+        },
+        {
+          "date": "2026-03-29",
+          "streamflow_cfs": 504.0
+        }
+      ],
+      "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05396000/"
+    },
+    {
+      "id": "05396500",
+      "name": "Little Rib River near Wausau",
+      "short_name": "Little Rib River",
+      "description": "Tributary flowing through western Marathon County",
+      "lat": 44.9472,
+      "lon": -89.6793,
+      "flood_stage_ft": null,
+      "flood_status": "normal",
+      "current": {
+        "timestamp": null
+      },
+      "history": [],
+      "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05396500/"
+    },
+    {
+      "id": "05397500",
+      "name": "Eau Claire River near Kelly",
+      "short_name": "Eau Claire River",
+      "description": "Major eastern tributary of the Wisconsin River",
+      "lat": 44.8583,
+      "lon": -89.4417,
+      "flood_stage_ft": null,
+      "flood_status": "normal",
+      "current": {
+        "timestamp": "2026-03-30T17:00:00.000-05:00",
+        "streamflow_cfs": 882.0,
+        "gage_height_ft": 2.62
+      },
+      "history": [
+        {
+          "date": "2026-03-23",
+          "streamflow_cfs": 915.0
+        },
+        {
+          "date": "2026-03-24",
+          "streamflow_cfs": 918.0
+        },
+        {
+          "date": "2026-03-25",
+          "streamflow_cfs": 998.0
+        },
+        {
+          "date": "2026-03-26",
+          "streamflow_cfs": 1450.0
+        },
+        {
+          "date": "2026-03-27",
+          "streamflow_cfs": 1470.0
+        },
+        {
+          "date": "2026-03-28",
+          "streamflow_cfs": 1060.0
+        },
+        {
+          "date": "2026-03-29",
+          "streamflow_cfs": 899.0
+        }
+      ],
+      "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05397500/"
+    },
+    {
+      "id": "05399500",
+      "name": "Big Eau Pleine River at Stratford",
+      "short_name": "Big Eau Pleine",
+      "description": "Feeds the Eau Pleine Reservoir southwest of Wausau",
+      "lat": 44.8014,
+      "lon": -90.0781,
+      "flood_stage_ft": null,
+      "flood_status": "normal",
+      "current": {
+        "timestamp": "2026-03-30T17:05:00.000-05:00",
+        "streamflow_cfs": 311.0,
+        "gage_height_ft": 4.23
+      },
+      "history": [
+        {
+          "date": "2026-03-23",
+          "streamflow_cfs": 1990.0
+        },
+        {
+          "date": "2026-03-24",
+          "streamflow_cfs": 1220.0
+        },
+        {
+          "date": "2026-03-25",
+          "streamflow_cfs": 1230.0
+        },
+        {
+          "date": "2026-03-26",
+          "streamflow_cfs": 1840.0
+        },
+        {
+          "date": "2026-03-27",
+          "streamflow_cfs": 1080.0
+        },
+        {
+          "date": "2026-03-28",
+          "streamflow_cfs": 450.0
+        },
+        {
+          "date": "2026-03-29",
+          "streamflow_cfs": 330.0
+        }
+      ],
+      "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05399500/"
+    }
+  ],
+  "alerts": [],
+  "reservoirs": [
+    {
+      "name": "Rainbow Reservoir",
+      "slug": "rainbow",
+      "current_level_ft": null,
+      "normal_level_ft": null,
+      "percent_capacity": null,
+      "last_updated": null
+    },
+    {
+      "name": "Willow Reservoir",
+      "slug": "willow",
+      "current_level_ft": null,
+      "normal_level_ft": null,
+      "percent_capacity": null,
+      "last_updated": null
+    },
+    {
+      "name": "Spirit Reservoir",
+      "slug": "spirit",
+      "current_level_ft": null,
+      "normal_level_ft": null,
+      "percent_capacity": null,
+      "last_updated": null
+    },
+    {
+      "name": "Eau Pleine Reservoir",
+      "slug": "eau-pleine",
+      "current_level_ft": null,
+      "normal_level_ft": null,
+      "percent_capacity": null,
+      "last_updated": null
+    },
+    {
+      "name": "Rice Reservoir",
+      "slug": "rice",
+      "current_level_ft": null,
+      "normal_level_ft": null,
+      "percent_capacity": null,
+      "last_updated": null
+    },
+    {
+      "name": "Lake Wausau",
+      "slug": "lake-wausau",
+      "current_level_ft": null,
+      "normal_level_ft": null,
+      "percent_capacity": null,
+      "last_updated": null
+    }
+  ],
+  "sources": {
+    "usgs": "https://waterservices.usgs.gov/",
+    "nws": "https://api.weather.gov/",
+    "wvic": "https://wvic.com/"
+  }
+}

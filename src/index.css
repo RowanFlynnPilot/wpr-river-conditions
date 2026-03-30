@@ -1,0 +1,710 @@
+/* ==========================================================================
+   WPR River & Lake Conditions — Styles
+   Brand: Wausau Pilot & Review
+   Palette: Teal, Cream, Ink — newspaper editorial aesthetic
+   ========================================================================== */
+
+:root {
+  /* WPR Brand Colors */
+  --wpr-teal: #0d7377;
+  --wpr-teal-dark: #095456;
+  --wpr-teal-light: #e6f3f3;
+  --wpr-cream: #f5f0e8;
+  --wpr-cream-dark: #ebe4d8;
+  --wpr-ink: #1c1917;
+  --wpr-ink-light: #44403c;
+  --wpr-ink-muted: #78716c;
+  --wpr-rule: #d6d0c4;
+
+  /* Status Colors — NWS four-tier flood categories */
+  --status-normal: #16a34a;
+  --status-normal-bg: #f0fdf4;
+  --status-action: #ca8a04;
+  --status-action-bg: #fefce8;
+  --status-minor: #ea580c;
+  --status-minor-bg: #fff7ed;
+  --status-moderate: #dc2626;
+  --status-moderate-bg: #fef2f2;
+  --status-major: #991b1b;
+  --status-major-bg: #fef2f2;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Layout */
+  --max-width: 960px;
+  --radius: 4px;
+  --radius-lg: 8px;
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--wpr-ink);
+  background: var(--wpr-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Chrome Bar (WPR brand header)
+   ========================================================================== */
+
+.chrome-bar {
+  background: var(--wpr-teal);
+  color: white;
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.chrome-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  text-decoration: none;
+  color: white;
+}
+
+.chrome-bar__logo-img {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.chrome-bar__logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chrome-bar__divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.chrome-bar__section-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.chrome-bar__updated {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Sponsor Strip (below chrome bar)
+   ========================================================================== */
+
+.sponsor-strip {
+  background: var(--wpr-cream-dark);
+  border-bottom: 1px solid var(--wpr-rule);
+  padding: var(--space-xs) var(--space-md);
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--wpr-ink-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sponsor-strip strong {
+  color: var(--wpr-ink-light);
+}
+
+/* ==========================================================================
+   Alert Banner
+   ========================================================================== */
+
+.alert-banner {
+  background: var(--status-moderate-bg);
+  border-left: 4px solid var(--status-moderate);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-md);
+  border-radius: var(--radius);
+}
+
+@keyframes alertPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.92; }
+}
+
+.alert-banner__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--status-moderate);
+  margin-bottom: var(--space-xs);
+}
+
+.alert-banner__label::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-moderate);
+  animation: alertDot 1.5s ease-in-out infinite;
+}
+
+@keyframes alertDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.alert-banner__headline {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--wpr-ink);
+  line-height: 1.4;
+}
+
+.alert-banner__meta {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--wpr-ink-muted);
+  margin-top: var(--space-xs);
+}
+
+/* ==========================================================================
+   Main Layout
+   ========================================================================== */
+
+.widget-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.section-header {
+  padding: var(--space-lg) var(--space-md) var(--space-sm);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  border-bottom: 2px solid var(--wpr-ink);
+  margin: 0 var(--space-md);
+}
+
+.section-header__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--wpr-ink);
+  letter-spacing: -0.01em;
+}
+
+.section-header__subtitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--wpr-ink-muted);
+  font-weight: 400;
+}
+
+/* ==========================================================================
+   Gauge Cards
+   ========================================================================== */
+
+.gauges-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--wpr-rule);
+  margin: 0 var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  border-top: none;
+}
+
+@media (min-width: 640px) {
+  .gauges-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.gauge-card {
+  background: white;
+  padding: var(--space-lg);
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.gauge-card:hover {
+  background: #fefdfb;
+}
+
+.gauge-card--action {
+  background: var(--status-action-bg);
+}
+
+.gauge-card--minor {
+  background: var(--status-minor-bg);
+}
+
+.gauge-card--minor:hover {
+  background: #fff1e6;
+}
+
+.gauge-card--moderate {
+  background: var(--status-moderate-bg);
+}
+
+.gauge-card--moderate:hover {
+  background: #fde8e8;
+}
+
+.gauge-card--major {
+  background: var(--status-major-bg);
+}
+
+.gauge-card--major:hover {
+  background: #fde8e8;
+}
+
+.gauge-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.gauge-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--wpr-ink);
+  line-height: 1.2;
+}
+
+.gauge-card__description {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--wpr-ink-muted);
+  margin-top: 2px;
+}
+
+.gauge-card__status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.gauge-card__status-badge--normal,
+.badge--normal {
+  background: var(--status-normal-bg);
+  color: var(--status-normal);
+  border: 1px solid #bbf7d0;
+}
+
+.gauge-card__status-badge--action,
+.badge--action {
+  background: var(--status-action-bg);
+  color: var(--status-action);
+  border: 1px solid #fef08a;
+}
+
+.gauge-card__status-badge--minor,
+.badge--minor {
+  background: var(--status-minor-bg);
+  color: var(--status-minor);
+  border: 1px solid #fed7aa;
+}
+
+.gauge-card__status-badge--moderate,
+.badge--moderate {
+  background: var(--status-moderate-bg);
+  color: var(--status-moderate);
+  border: 1px solid #fecaca;
+  animation: alertDot 2s ease-in-out infinite;
+}
+
+.gauge-card__status-badge--major,
+.badge--major {
+  background: var(--status-major-bg);
+  color: var(--status-major);
+  border: 1px solid #fca5a5;
+  animation: alertDot 1.5s ease-in-out infinite;
+}
+
+.reading-value--alert {
+  color: var(--status-moderate) !important;
+}
+
+/* Data readings */
+.gauge-card__readings {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.gauge-card__reading {
+  flex: 1;
+  min-width: 80px;
+}
+
+.gauge-card__reading-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wpr-ink-muted);
+  margin-bottom: 2px;
+}
+
+.gauge-card__reading-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--wpr-ink);
+  line-height: 1.1;
+}
+
+.gauge-card__reading-value--flooding {
+  color: var(--status-flooding);
+}
+
+.gauge-card__reading-unit {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--wpr-ink-muted);
+  margin-left: 2px;
+}
+
+.gauge-card__reading--na .gauge-card__reading-value {
+  color: var(--wpr-ink-muted);
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   Flood Stage Progress Bar
+   ========================================================================== */
+
+.stage-bar {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+}
+
+.stage-bar__track {
+  position: relative;
+  height: 8px;
+  background: #e7e5e0;
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.stage-bar__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+  transition: width 0.6s ease;
+}
+
+.stage-bar__fill--normal  { background: var(--wpr-teal); opacity: 0.5; }
+.stage-bar__fill--action  { background: var(--status-action); opacity: 0.7; }
+.stage-bar__fill--minor   { background: var(--status-minor); opacity: 0.8; }
+.stage-bar__fill--moderate { background: var(--status-moderate); }
+.stage-bar__fill--major   { background: var(--status-major); }
+
+.stage-bar__marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  transform: translateX(-1px);
+  z-index: 1;
+}
+
+.stage-bar__marker--action { background: var(--status-action); opacity: 0.6; }
+.stage-bar__marker--minor  { background: var(--status-minor); opacity: 0.6; }
+
+.stage-bar__current {
+  position: absolute;
+  top: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--wpr-ink);
+  border: 2px solid white;
+  transform: translateX(-6px);
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.stage-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+}
+
+.stage-bar__label-left {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--wpr-ink-light);
+}
+
+.stage-bar__label-right {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--wpr-ink-muted);
+}
+
+/* Sparkline */
+.gauge-card__sparkline-wrap {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--wpr-rule);
+}
+
+.gauge-card__sparkline-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wpr-ink-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.gauge-card__sparkline svg {
+  display: block;
+  width: 100%;
+  height: 40px;
+}
+
+.gauge-card__sparkline-line {
+  fill: none;
+  stroke: var(--wpr-teal);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gauge-card__sparkline-area {
+  fill: var(--wpr-teal);
+  opacity: 0.08;
+}
+
+.gauge-card__sparkline-dot {
+  fill: var(--wpr-teal);
+}
+
+/* Timestamp */
+.gauge-card__timestamp {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--wpr-ink-muted);
+  margin-top: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gauge-card__usgs-link {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--wpr-teal);
+  text-decoration: none;
+}
+
+.gauge-card__usgs-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Reservoirs Section (Phase 2 placeholder)
+   ========================================================================== */
+
+.reservoirs-placeholder {
+  margin: var(--space-md);
+  padding: var(--space-xl);
+  background: white;
+  border: 1px dashed var(--wpr-rule);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--wpr-ink-muted);
+}
+
+.reservoirs-placeholder__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--wpr-ink-light);
+  margin-bottom: var(--space-xs);
+}
+
+.reservoirs-placeholder__desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.widget-footer {
+  padding: var(--space-lg) var(--space-md);
+  text-align: center;
+  border-top: 1px solid var(--wpr-rule);
+  margin: var(--space-md) var(--space-md) 0;
+}
+
+.widget-footer__sources {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--wpr-ink-muted);
+  line-height: 1.6;
+}
+
+.widget-footer__sources a {
+  color: var(--wpr-teal);
+  text-decoration: none;
+}
+
+.widget-footer__sources a:hover {
+  text-decoration: underline;
+}
+
+.widget-footer__disclaimer {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  color: var(--wpr-ink-muted);
+  opacity: 0.7;
+  margin-top: var(--space-sm);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Loading & Error States
+   ========================================================================== */
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  gap: var(--space-md);
+}
+
+.loading-state__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--wpr-rule);
+  border-top-color: var(--wpr-teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state__text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--wpr-ink-muted);
+}
+
+.error-state {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--wpr-ink-muted);
+  font-family: var(--font-body);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .chrome-bar {
+    padding: var(--space-xs) var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .chrome-bar__updated {
+    width: 100%;
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .gauge-card {
+    padding: var(--space-md);
+  }
+
+  .gauge-card__reading-value {
+    font-size: 1.25rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 var(--space-sm);
+  }
+
+  .gauges-grid {
+    margin: 0 var(--space-sm);
+  }
+
+  .alert-banner {
+    margin: var(--space-sm);
+  }
+}

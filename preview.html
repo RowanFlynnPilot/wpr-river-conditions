@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>River Conditions — Wausau Pilot & Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@500;700;900&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{--wpr-teal:#0d7377;--wpr-teal-dark:#095456;--wpr-teal-light:#e6f3f3;--wpr-cream:#f5f0e8;--wpr-cream-dark:#ebe4d8;--wpr-ink:#1c1917;--wpr-ink-light:#44403c;--wpr-ink-muted:#78716c;--wpr-rule:#d6d0c4;--status-normal:#16a34a;--status-normal-bg:#f0fdf4;--status-action:#ca8a04;--status-action-bg:#fefce8;--status-minor:#ea580c;--status-minor-bg:#fff7ed;--status-moderate:#dc2626;--status-moderate-bg:#fef2f2;--status-major:#991b1b;--status-major-bg:#fef2f2;--font-display:'Playfair Display',Georgia,serif;--font-body:'Source Sans 3',system-ui,sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);font-size:16px;line-height:1.5;color:var(--wpr-ink);background:var(--wpr-cream);-webkit-font-smoothing:antialiased}
+.chrome-bar{background:var(--wpr-teal);color:#fff;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100}
+.chrome-bar__brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff}
+.chrome-bar__logo-img{height:30px;width:30px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,.5);flex-shrink:0}
+.chrome-bar__logo{font-family:var(--font-display);font-weight:900;font-size:.85rem;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.chrome-bar__divider{width:1px;height:18px;background:rgba(255,255,255,.35)}
+.chrome-bar__section-name{font-family:var(--font-body);font-weight:600;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;opacity:.9}
+.chrome-bar__updated{font-family:var(--font-mono);font-size:.7rem;opacity:.7;white-space:nowrap}
+.sponsor-strip{background:var(--wpr-cream-dark);border-bottom:1px solid var(--wpr-rule);padding:4px 16px;text-align:center;font-family:var(--font-body);font-size:.72rem;color:var(--wpr-ink-muted);letter-spacing:.04em;text-transform:uppercase}
+.sponsor-strip strong{color:var(--wpr-ink-light)}
+.alert-banner{background:var(--status-moderate-bg);border-left:4px solid var(--status-moderate);padding:16px 24px;margin:16px;border-radius:4px}
+.alert-banner__label{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--status-moderate);margin-bottom:4px}
+.alert-banner__label::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--status-moderate);animation:alertDot 1.5s ease-in-out infinite}
+@keyframes alertDot{0%,100%{opacity:1}50%{opacity:.3}}
+.alert-banner__headline{font-family:var(--font-body);font-weight:600;font-size:.95rem;color:var(--wpr-ink);line-height:1.4}
+.alert-banner__meta{font-family:var(--font-body);font-size:.8rem;color:var(--wpr-ink-muted);margin-top:4px}
+.widget-container{max-width:960px;margin:0 auto}
+.section-header{padding:24px 16px 8px;display:flex;align-items:baseline;gap:8px;border-bottom:2px solid var(--wpr-ink);margin:0 16px}
+.section-header__title{font-family:var(--font-display);font-weight:700;font-size:1.3rem;color:var(--wpr-ink)}
+.section-header__subtitle{font-family:var(--font-body);font-size:.85rem;color:var(--wpr-ink-muted)}
+.gauges-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--wpr-rule);margin:0 16px;border:1px solid var(--wpr-rule);border-top:none}
+@media(min-width:640px){.gauges-grid{grid-template-columns:1fr 1fr}}
+.gauge-card{background:#fff;padding:24px;position:relative;transition:background .2s ease}
+.gauge-card:hover{background:#fefdfb}
+.gauge-card--action{background:var(--status-action-bg)}
+.gauge-card--minor{background:var(--status-minor-bg)}
+.gauge-card--moderate{background:var(--status-moderate-bg)}
+.gauge-card--major{background:var(--status-major-bg)}
+.gauge-card__header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:16px}
+.gauge-card__name{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--wpr-ink);line-height:1.2}
+.gauge-card__description{font-family:var(--font-body);font-size:.78rem;color:var(--wpr-ink-muted);margin-top:2px}
+.gauge-card__status-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.badge--normal{background:var(--status-normal-bg);color:var(--status-normal);border:1px solid #bbf7d0}
+.badge--action{background:var(--status-action-bg);color:var(--status-action);border:1px solid #fef08a}
+.badge--minor{background:var(--status-minor-bg);color:var(--status-minor);border:1px solid #fed7aa}
+.badge--moderate{background:var(--status-moderate-bg);color:var(--status-moderate);border:1px solid #fecaca}
+.badge--major{background:var(--status-major-bg);color:var(--status-major);border:1px solid #fca5a5}
+.gauge-card__readings{display:flex;gap:24px;flex-wrap:wrap}
+.gauge-card__reading{flex:1;min-width:80px}
+.gauge-card__reading-label{font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--wpr-ink-muted);margin-bottom:2px}
+.gauge-card__reading-value{font-family:var(--font-mono);font-size:1.5rem;font-weight:600;color:var(--wpr-ink);line-height:1.1}
+.gauge-card__reading-unit{font-size:.7rem;font-weight:400;color:var(--wpr-ink-muted);margin-left:2px}
+.stage-bar{margin-top:16px;padding-top:8px}
+.stage-bar__track{position:relative;height:8px;background:#e7e5e0;border-radius:4px;overflow:visible}
+.stage-bar__fill{position:absolute;top:0;left:0;height:100%;border-radius:4px 0 0 4px;transition:width .6s ease}
+.stage-bar__fill--normal{background:var(--wpr-teal);opacity:.5}
+.stage-bar__fill--action{background:var(--status-action);opacity:.7}
+.stage-bar__fill--minor{background:var(--status-minor);opacity:.8}
+.stage-bar__fill--moderate{background:var(--status-moderate)}
+.stage-bar__fill--major{background:var(--status-major)}
+.stage-bar__marker{position:absolute;top:-3px;width:2px;height:14px;border-radius:1px;transform:translateX(-1px);z-index:1}
+.stage-bar__marker--action{background:var(--status-action);opacity:.6}
+.stage-bar__marker--minor{background:var(--status-minor);opacity:.6}
+.stage-bar__current{position:absolute;top:-2px;width:12px;height:12px;border-radius:50%;background:var(--wpr-ink);border:2px solid #fff;transform:translateX(-6px);z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.stage-bar__labels{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+.stage-bar__label-left{font-family:var(--font-mono);font-size:.62rem;font-weight:600;color:var(--wpr-ink-light)}
+.stage-bar__label-right{font-family:var(--font-mono);font-size:.58rem;color:var(--wpr-ink-muted)}
+.sparkline-wrap{margin-top:16px;padding-top:8px;border-top:1px solid var(--wpr-rule)}
+.sparkline-label{font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--wpr-ink-muted);margin-bottom:4px}
+.sparkline svg{display:block;width:100%;height:40px}
+.spark-area{fill:var(--wpr-teal);opacity:.08}
+.spark-line{fill:none;stroke:var(--wpr-teal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.spark-dot{fill:var(--wpr-teal)}
+.gauge-card__timestamp{font-family:var(--font-mono);font-size:.62rem;color:var(--wpr-ink-muted);margin-top:8px;display:flex;align-items:center;justify-content:space-between}
+.gauge-card__links a{font-family:var(--font-mono);font-size:.62rem;color:var(--wpr-teal);text-decoration:none}
+.gauge-card__links a:hover{text-decoration:underline}
+.reservoirs-section{margin:16px}
+.reservoirs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1px;background:var(--wpr-rule);border:1px solid var(--wpr-rule);border-top:none}
+.reservoir-card{background:#fff;padding:16px;text-align:center}
+.reservoir-card__name{font-family:var(--font-display);font-weight:700;font-size:.85rem;color:var(--wpr-ink);margin-bottom:8px;line-height:1.2}
+.reservoir-card__icon{width:48px;height:48px;margin:0 auto 8px;border-radius:50%;background:var(--wpr-teal-light);display:flex;align-items:center;justify-content:center}
+.reservoir-card__status{font-family:var(--font-mono);font-size:.65rem;color:var(--wpr-ink-muted);text-transform:uppercase;letter-spacing:.06em}
+.widget-footer{padding:24px 16px;text-align:center;border-top:1px solid var(--wpr-rule);margin:16px 16px 0}
+.widget-footer__sources{font-family:var(--font-body);font-size:.75rem;color:var(--wpr-ink-muted);line-height:1.6}
+.widget-footer__sources a{color:var(--wpr-teal);text-decoration:none}
+.widget-footer__sources a:hover{text-decoration:underline}
+.widget-footer__disclaimer{font-family:var(--font-body);font-size:.68rem;color:var(--wpr-ink-muted);opacity:.7;margin-top:8px;font-style:italic}
+@media(max-width:480px){.chrome-bar{padding:6px 10px;flex-wrap:wrap}.chrome-bar__updated{width:100%;text-align:center;padding-top:2px}.gauge-card{padding:16px}.gauge-card__reading-value{font-size:1.25rem}.section-header{flex-direction:column;gap:2px;margin:0 10px}.gauges-grid{margin:0 10px}}
+</style>
+</head>
+<body>
+<div class="widget-container" id="app"></div>
+<script>
+const DATA = {"generated_at":"2026-03-30T23:29:22.444078+00:00","region":"Central Wisconsin \u2014 Marathon County","gauges":[{"id":"05398000","nws_lid":"ROTW3","name":"Wisconsin River at Rothschild","short_name":"WI River \u2014 Rothschild","description":"Primary gauge for the Wausau metro area","lat":44.8861,"lon":-89.6218,"flood_stages":{"action":18.0,"minor":25.0,"moderate":27.0,"major":28.0},"flood_status":"normal","nws_flood_category":"no_flooding","current":{"timestamp":"2026-03-30T18:00:00.000-05:00","streamflow_cfs":6650.0,"gage_height_ft":16.22},"history":[{"date":"2026-03-23","streamflow_cfs":11400.0},{"date":"2026-03-24","streamflow_cfs":9770.0},{"date":"2026-03-25","streamflow_cfs":8650.0},{"date":"2026-03-26","streamflow_cfs":10600.0},{"date":"2026-03-27","streamflow_cfs":11300.0},{"date":"2026-03-28","streamflow_cfs":7640.0},{"date":"2026-03-29","streamflow_cfs":6330.0}],"usgs_url":"https://waterdata.usgs.gov/monitoring-location/USGS-05398000/","nws_url":"https://water.noaa.gov/gauges/rotw3"},{"id":"05398100","nws_lid":null,"name":"Wisconsin River at Mosinee","short_name":"WI River \u2014 Mosinee","description":"Downstream of Wausau, near Mosinee","lat":44.7933,"lon":-89.6884,"flood_stages":null,"flood_status":"normal","nws_flood_category":null,"current":{"timestamp":"2026-03-30T18:00:00.000-05:00","gage_height_ft":12.23},"history":[],"usgs_url":"https://waterdata.usgs.gov/monitoring-location/USGS-05398100/","nws_url":null},{"id":"05396000","nws_lid":"RIBW3","name":"Big Rib River at Rib Falls","short_name":"Big Rib River","description":"Major tributary west of Wausau","lat":44.9653,"lon":-89.8134,"flood_stages":{"action":7.0,"minor":10.0,"moderate":13.8,"major":15.0},"flood_status":"normal","nws_flood_category":"no_flooding","current":{"timestamp":"2026-03-30T18:00:00.000-05:00","streamflow_cfs":473.0,"gage_height_ft":3.55},"history":[{"date":"2026-03-23","streamflow_cfs":1930.0},{"date":"2026-03-24","streamflow_cfs":1210.0},{"date":"2026-03-25","streamflow_cfs":1020.0},{"date":"2026-03-26","streamflow_cfs":1500.0},{"date":"2026-03-27","streamflow_cfs":1160.0},{"date":"2026-03-28","streamflow_cfs":624.0},{"date":"2026-03-29","streamflow_cfs":504.0}],"usgs_url":"https://waterdata.usgs.gov/monitoring-location/USGS-05396000/","nws_url":"https://water.noaa.gov/gauges/ribw3"},{"id":"05396500","nws_lid":null,"name":"Little Rib River near Wausau","short_name":"Little Rib River","description":"Tributary flowing through western Marathon County","lat":44.9472,"lon":-89.6793,"flood_stages":null,"flood_status":"normal","nws_flood_category":null,"current":{"timestamp":null},"history":[],"usgs_url":"https://waterdata.usgs.gov/monitoring-location/USGS-05396500/","nws_url":null},{"id":"05397500","nws_lid":"KELW3","name":"Eau Claire River near Kelly","short_name":"Eau Claire River","description":"Major eastern tributary of the Wisconsin River","lat":44.8583,"lon":-89.4417,"flood_stages":{"action":7.0,"minor":9.0,"moderate":12.0,"major":15.0},"flood_status":"normal","nws_flood_category":"no_flooding","current":{"timestamp":"2026-03-30T18:00:00.000-05:00","streamflow_cfs":891.0,"gage_height_ft":2.64},"history":[{"date":"2026-03-23","streamflow_cfs":915.0},{"date":"2026-03-24","streamflow_cfs":918.0},{"date":"2026-03-25","streamflow_cfs":998.0},{"date":"2026-03-26","streamflow_cfs":1450.0},{"date":"2026-03-27","streamflow_cfs":1470.0},{"date":"2026-03-28","streamflow_cfs":1060.0},{"date":"2026-03-29","streamflow_cfs":899.0}],"usgs_url":"https://waterdata.usgs.gov/monitoring-location/USGS-05397500/","nws_url":"https://water.noaa.gov/gauges/kelw3"},{"id":"05399500","nws_lid":"STRW3","name":"Big Eau Pleine River at Stratford","short_name":"Big Eau Pleine","description":"Feeds the Eau Pleine Reservoir southwest of Wausau","lat":44.8014,"lon":-90.0781,"flood_stages":{"action":11.0,"minor":15.5,"moderate":19.0,"major":22.5},"flood_status":"normal","nws_flood_category":"no_flooding","current":{"timestamp":"2026-03-30T18:00:00.000-05:00","streamflow_cfs":309.0,"gage_height_ft":4.22},"history":[{"date":"2026-03-23","streamflow_cfs":1990.0},{"date":"2026-03-24","streamflow_cfs":1220.0},{"date":"2026-03-25","streamflow_cfs":1230.0},{"date":"2026-03-26","streamflow_cfs":1840.0},{"date":"2026-03-27","streamflow_cfs":1080.0},{"date":"2026-03-28","streamflow_cfs":450.0},{"date":"2026-03-29","streamflow_cfs":330.0}],"usgs_url":"https://waterdata.usgs.gov/monitoring-location/USGS-05399500/","nws_url":"https://water.noaa.gov/gauges/strw3"}],"alerts":[],"reservoirs":[{"name":"Rainbow Reservoir","slug":"rainbow","current_level_ft":null,"source_url":"https://wvic.com/Content/rainbow_Level_Flows.cfm","last_updated":null},{"name":"Willow Reservoir","slug":"willow","current_level_ft":null,"source_url":"https://wvic.com/Content/willow_Level_Flows.cfm","last_updated":null},{"name":"Spirit Reservoir","slug":"spirit","current_level_ft":null,"source_url":"https://wvic.com/Content/spirit_Level_Flows.cfm","last_updated":null},{"name":"Eau Pleine Reservoir","slug":"eau-pleine","current_level_ft":null,"source_url":"https://wvic.com/Content/eau_pleine_Level_Flows.cfm","last_updated":null},{"name":"Rice Reservoir","slug":"rice","current_level_ft":null,"source_url":"https://wvic.com/Content/rice_Level_Flows.cfm","last_updated":null},{"name":"Lake Wausau","slug":"lake-wausau","current_level_ft":null,"source_url":"https://wvic.com/Content/lake_wausau_Level_Flows.cfm","last_updated":null}],"sources":{"usgs":"https://waterservices.usgs.gov/","nws":"https://api.weather.gov/","wvic":"https://wvic.com/"}};
+const LOGO_B64 = 'data:image/png;base64,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';
+const STATUS_CONFIG = {
+  normal:   { label: 'Normal',      css: 'normal' },
+  action:   { label: 'Action',      css: 'action' },
+  minor:    { label: 'Minor Flood', css: 'minor' },
+  moderate: { label: 'Moderate',    css: 'moderate' },
+  major:    { label: 'Major Flood', css: 'major' },
+};
+const STATUS_ORDER = { major:0, moderate:1, minor:2, action:3, normal:4 };
+
+function fmtNum(v,d=1){if(v==null)return'\u2014';return Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fmtTime(iso){if(!iso)return'No data';try{return new Date(iso).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'})}catch{return iso}}
+function fmtUpdated(iso){if(!iso)return'';const d=new Date(iso),diff=Math.floor((Date.now()-d)/60000);if(diff<1)return'Just now';if(diff<60)return diff+'m ago';if(diff<1440)return Math.floor(diff/60)+'h ago';return d.toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
+
+function buildStageBar(ht, stages) {
+  if (!stages || ht == null) return '';
+  const mx = stages.major * 1.15;
+  const pct = v => Math.min(100, Math.max(0, (v/mx)*100));
+  let fillCls = 'stage-bar__fill--normal';
+  if (ht >= stages.major) fillCls = 'stage-bar__fill--major';
+  else if (ht >= stages.moderate) fillCls = 'stage-bar__fill--moderate';
+  else if (ht >= stages.minor) fillCls = 'stage-bar__fill--minor';
+  else if (ht >= stages.action) fillCls = 'stage-bar__fill--action';
+
+  return `<div class="stage-bar">
+    <div class="stage-bar__track">
+      <div class="stage-bar__marker stage-bar__marker--action" style="left:${pct(stages.action)}%" title="Action: ${stages.action} ft"></div>
+      <div class="stage-bar__marker stage-bar__marker--minor" style="left:${pct(stages.minor)}%" title="Minor: ${stages.minor} ft"></div>
+      <div class="stage-bar__fill ${fillCls}" style="width:${pct(ht)}%"></div>
+      <div class="stage-bar__current" style="left:${pct(ht)}%"></div>
+    </div>
+    <div class="stage-bar__labels">
+      <span class="stage-bar__label-left">${fmtNum(ht,1)} ft</span>
+      <span class="stage-bar__label-right">Action ${stages.action} &middot; Flood ${stages.minor} ft</span>
+    </div>
+  </div>`;
+}
+
+function buildSparkline(history, key) {
+  const vals = history.map(d => d[key]).filter(v => v != null && v >= 0);
+  if (vals.length < 2) return '';
+  const W=200,H=40,P=4,w=W-P*2,h=H-P*2;
+  const min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;
+  const pts=vals.map((v,i)=>({x:P+(i/(vals.length-1))*w,y:P+h-((v-min)/range)*h}));
+  const linePath=pts.map((p,i)=>`${i===0?'M':'L'}${p.x},${p.y}`).join(' ');
+  const areaPath=linePath+` L${pts[pts.length-1].x},${P+h} L${pts[0].x},${P+h} Z`;
+  const last=pts[pts.length-1];
+  return `<div class="sparkline-wrap"><div class="sparkline-label">7-day flow trend</div><div class="sparkline"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path class="spark-area" d="${areaPath}"/><path class="spark-line" d="${linePath}"/><circle class="spark-dot" cx="${last.x}" cy="${last.y}" r="3"/></svg></div></div>`;
+}
+
+function buildGaugeCard(g) {
+  const c=g.current||{};
+  const hasData=c.gage_height_ft!=null||c.streamflow_cfs!=null;
+  const sc=STATUS_CONFIG[g.flood_status]||STATUS_CONFIG.normal;
+  const cardMod=g.flood_status!=='normal'?` gauge-card--${sc.css}`:'';
+
+  let badge='';
+  if(hasData&&g.flood_stages){
+    badge=`<span class="gauge-card__status-badge badge--${sc.css}">${sc.label}</span>`;
+  }
+
+  let content='';
+  if(hasData){
+    let cells='';
+    if(c.gage_height_ft!=null) cells+=`<div class="gauge-card__reading"><div class="gauge-card__reading-label">Gage Height</div><div class="gauge-card__reading-value">${fmtNum(c.gage_height_ft,2)}<span class="gauge-card__reading-unit">ft</span></div></div>`;
+    if(c.streamflow_cfs!=null) cells+=`<div class="gauge-card__reading"><div class="gauge-card__reading-label">Streamflow</div><div class="gauge-card__reading-value">${fmtNum(c.streamflow_cfs,0)}<span class="gauge-card__reading-unit">cfs</span></div></div>`;
+    if(c.water_temp_f!=null) cells+=`<div class="gauge-card__reading"><div class="gauge-card__reading-label">Water Temp</div><div class="gauge-card__reading-value">${fmtNum(c.water_temp_f,1)}<span class="gauge-card__reading-unit">&deg;F</span></div></div>`;
+
+    const nwsLink=g.nws_url?` &middot; <a class="gauge-card__links" href="${g.nws_url}" target="_blank" rel="noopener" style="color:var(--wpr-teal);text-decoration:none;font-family:var(--font-mono);font-size:.62rem">NWS</a>`:'';
+
+    content=`<div class="gauge-card__readings">${cells}</div>
+      ${buildStageBar(c.gage_height_ft, g.flood_stages)}
+      ${buildSparkline(g.history||[],'streamflow_cfs')}
+      <div class="gauge-card__timestamp"><span>${fmtTime(c.timestamp)}</span><span class="gauge-card__links"><a href="${g.usgs_url}" target="_blank" rel="noopener" style="color:var(--wpr-teal);text-decoration:none;font-family:var(--font-mono);font-size:.62rem">USGS</a>${nwsLink}</span></div>`;
+  } else {
+    content=`<div style="color:var(--wpr-ink-muted);font-family:var(--font-mono);font-size:1rem">No current data</div>
+      <div class="gauge-card__timestamp" style="margin-top:8px"><span>Gauge may be offline or seasonal</span><span class="gauge-card__links"><a href="${g.usgs_url}" target="_blank" rel="noopener" style="color:var(--wpr-teal);text-decoration:none;font-family:var(--font-mono);font-size:.62rem">USGS &rarr;</a></span></div>`;
+  }
+
+  return `<div class="gauge-card${cardMod}"><div class="gauge-card__header"><div><div class="gauge-card__name">${g.short_name}</div><div class="gauge-card__description">${g.description}</div></div>${badge}</div>${content}</div>`;
+}
+
+function render() {
+  const sorted=[...DATA.gauges].sort((a,b)=>(STATUS_ORDER[a.flood_status]??5)-(STATUS_ORDER[b.flood_status]??5));
+  const activeCount=DATA.gauges.filter(g=>g.current?.gage_height_ft!=null||g.current?.streamflow_cfs!=null).length;
+  const reservoirIcon=`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d7377" stroke-width="1.5"><path d="M3 17h18M3 21h18M5 17V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10"/><path d="M8 17v-4c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v4" opacity="0.4"/></svg>`;
+
+  const alerts=DATA.alerts&&DATA.alerts.length>0?DATA.alerts.map(a=>`<div class="alert-banner"><div class="alert-banner__label">${a.severity==='Severe'?'Severe Alert':'Flood Alert'}</div><div class="alert-banner__headline">${a.headline||a.event}</div>${a.expires?`<div class="alert-banner__meta">Until ${fmtTime(a.expires)}</div>`:''}</div>`).join(''):'';
+
+  document.getElementById('app').innerHTML=`
+    <div class="chrome-bar">
+      <a class="chrome-bar__brand" href="https://wausaupilotandreview.com" target="_blank" rel="noopener">
+        <img class="chrome-bar__logo-img" src="${LOGO_B64}" alt="WPR"/>
+        <span class="chrome-bar__logo">Wausau Pilot & Review</span>
+        <span class="chrome-bar__divider"></span>
+        <span class="chrome-bar__section-name">River Conditions</span>
+      </a>
+      <span class="chrome-bar__updated">${fmtUpdated(DATA.generated_at)}</span>
+    </div>
+    <div class="sponsor-strip">Brought to you by <strong>Your Sponsor Here</strong> &mdash; Serving Central Wisconsin</div>
+    ${alerts}
+    <div class="section-header">
+      <h2 class="section-header__title">Stream Gauges</h2>
+      <span class="section-header__subtitle">${activeCount} of ${DATA.gauges.length} reporting &middot; Marathon County</span>
+    </div>
+    <div class="gauges-grid">${sorted.map(buildGaugeCard).join('')}</div>
+    <div class="section-header" style="margin-top:24px">
+      <h2 class="section-header__title">Reservoirs</h2>
+      <span class="section-header__subtitle">WVIC System</span>
+    </div>
+    <div class="reservoirs-section">
+      <div class="reservoirs-grid">
+        ${DATA.reservoirs.map(r=>`<div class="reservoir-card"><div class="reservoir-card__icon">${reservoirIcon}</div><div class="reservoir-card__name">${r.name}</div><div class="reservoir-card__status">Coming soon</div></div>`).join('')}
+      </div>
+    </div>
+    <footer class="widget-footer">
+      <div class="widget-footer__sources">
+        Data from <a href="https://waterservices.usgs.gov/" target="_blank" rel="noopener">USGS Water Services</a> &middot;
+        <a href="https://api.water.noaa.gov/nwps/v1/" target="_blank" rel="noopener">NWS NWPS</a> &middot;
+        <a href="https://api.weather.gov/" target="_blank" rel="noopener">NWS Alerts</a> &middot;
+        <a href="https://wvic.com/" target="_blank" rel="noopener">WVIC</a>
+      </div>
+      <div class="widget-footer__disclaimer">Data is provisional and subject to revision. Flood stages from NWS National Water Prediction Service. Always consult official sources for safety decisions.</div>
+    </footer>`;
+}
+render();
+</script>
+</body>
+</html>
