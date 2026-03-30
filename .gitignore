@@ -1,0 +1,5 @@
+node_modules/
+dist/
+src/data/river-data.json
+.DS_Store
+*.log
