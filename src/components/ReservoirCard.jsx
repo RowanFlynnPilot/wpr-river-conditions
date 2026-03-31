@@ -40,11 +40,14 @@ function LevelBar({ feetBelowMax }) {
 }
 
 export default function ReservoirCard({ reservoir }) {
-  const { name, feet_below_max, has_data, source_url, last_updated } = reservoir;
+  const { name, description, feet_below_max, has_data, source_url, last_updated } = reservoir;
 
   return (
     <div className="reservoir-card">
       <div className="reservoir-card__name">{name}</div>
+      {description && (
+        <div className="reservoir-card__description">{description}</div>
+      )}
 
       {has_data && feet_below_max != null ? (
         <>

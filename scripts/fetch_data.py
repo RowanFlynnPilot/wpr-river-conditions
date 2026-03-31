@@ -126,12 +126,12 @@ NWS_COUNTY_FIPS = "055073"
 
 # WVIC reservoirs to track (scraped from wvic.com)
 WVIC_RESERVOIRS = [
-    {"name": "Rainbow Reservoir", "slug": "rainbow"},
-    {"name": "Willow Reservoir", "slug": "willow"},
-    {"name": "Spirit Reservoir", "slug": "spirit"},
-    {"name": "Eau Pleine Reservoir", "slug": "eau-pleine"},
-    {"name": "Rice Reservoir", "slug": "rice"},
-    {"name": "Lake Wausau", "slug": "lake-wausau"},
+    {"name": "Rainbow Reservoir", "slug": "rainbow", "description": "Controls upper WI River flow north of Wausau"},
+    {"name": "Willow Reservoir", "slug": "willow", "description": "Regulates Willow Creek into the WI River"},
+    {"name": "Spirit Reservoir", "slug": "spirit", "description": "Feeds Spirit River \u2014 affects WI River levels"},
+    {"name": "Eau Pleine Reservoir", "slug": "eau-pleine", "description": "Directly feeds Big Eau Pleine gauge at Stratford"},
+    {"name": "Rice Reservoir", "slug": "rice", "description": "Controls Rice Creek flow into the WI River"},
+    {"name": "Lake Wausau", "slug": "lake-wausau", "description": "Run-of-river impoundment in downtown Wausau"},
 ]
 
 # Wausau area coordinates (used for weather/solunar APIs)
@@ -498,6 +498,7 @@ def fetch_wvic_reservoirs() -> list[dict]:
         results.append({
             "name": res["name"],
             "slug": slug,
+            "description": res.get("description", ""),
             "feet_below_max": feet_below_max,
             "has_data": feet_below_max is not None,
             "source_url": WVIC_DATA_URL,

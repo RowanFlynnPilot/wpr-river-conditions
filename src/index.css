@@ -614,6 +614,13 @@ body {
   margin-bottom: var(--space-sm);
 }
 
+.reservoir-card__description {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--wpr-ink-muted);
+  margin-bottom: var(--space-sm);
+}
+
 .reservoir-card__reading {
   margin-bottom: var(--space-sm);
 }
