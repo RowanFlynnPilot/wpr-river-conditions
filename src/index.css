@@ -1242,6 +1242,36 @@ body {
   border: 1px solid var(--wpr-rule);
 }
 
+.gauge-card__rec-badge--clear {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.gauge-card__rec-badge--good {
+  background: var(--status-normal-bg);
+  color: var(--status-normal);
+  border: 1px solid #bbf7d0;
+}
+
+.gauge-card__rec-badge--moderate {
+  background: var(--status-action-bg);
+  color: var(--status-action);
+  border: 1px solid #fef08a;
+}
+
+.gauge-card__rec-badge--murky {
+  background: var(--status-minor-bg);
+  color: var(--status-minor);
+  border: 1px solid #fed7aa;
+}
+
+.gauge-card__rec-badge--poor {
+  background: var(--status-moderate-bg);
+  color: var(--status-moderate);
+  border: 1px solid #fecaca;
+}
+
 /* ==========================================================================
    Community Bar
    ========================================================================== */

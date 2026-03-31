@@ -21,6 +21,14 @@ const ACTIVITY_LABELS = {
   tubing: 'Tubing',
 };
 
+const CLARITY_CONFIG = {
+  clear:    { label: 'Clear', css: 'clear' },
+  good:     { label: 'Good', css: 'good' },
+  moderate: { label: 'Moderate', css: 'moderate' },
+  murky:    { label: 'Murky', css: 'murky' },
+  poor:     { label: 'Poor', css: 'poor' },
+};
+
 const STATUS_CONFIG = {
   normal:   { label: 'Normal',      css: 'normal' },
   action:   { label: 'Action',      css: 'action' },
@@ -172,9 +180,18 @@ export default function GaugeCard({ gauge }) {
             );
           })()}
 
-          {gauge.recreation && (
+          {(gauge.recreation || gauge.water_clarity) && (
             <div className="gauge-card__recreation">
-              {Object.entries(gauge.recreation).map(([activity, status]) => {
+              {gauge.water_clarity && (() => {
+                const cl = CLARITY_CONFIG[gauge.water_clarity.rating] || CLARITY_CONFIG.moderate;
+                return (
+                  <span className={`gauge-card__rec-badge gauge-card__rec-badge--${cl.css}`}
+                    title={gauge.water_clarity.description}>
+                    Clarity: {cl.label}
+                  </span>
+                );
+              })()}
+              {gauge.recreation && Object.entries(gauge.recreation).map(([activity, status]) => {
                 const conf = REC_STATUS[status] || REC_STATUS.caution;
                 return (
                   <span key={activity} className={`gauge-card__rec-badge gauge-card__rec-badge--${conf.css}`}>

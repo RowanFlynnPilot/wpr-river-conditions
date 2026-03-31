@@ -525,7 +525,7 @@ def fetch_weather_conditions() -> dict:
     url = (
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={WAUSAU_LAT}&longitude={WAUSAU_LON}"
-        f"&hourly=pressure_msl,wind_speed_10m,wind_direction_10m"
+        f"&hourly=pressure_msl,wind_speed_10m,wind_direction_10m,uv_index"
         f"&temperature_unit=fahrenheit&wind_speed_unit=mph"
         f"&timezone=America/Chicago&forecast_days=1&past_days=1"
     )
@@ -553,6 +553,8 @@ def fetch_weather_conditions() -> dict:
         pressure = pressures[idx]
         wind_speed = winds[idx]
         wind_dir_deg = wind_dirs[idx]
+        uv_values = hourly.get("uv_index", [])
+        uv_index = uv_values[idx] if idx < len(uv_values) else None
 
         # Calculate trend (compare to 3 hours ago)
         trend = "steady"
@@ -569,6 +571,7 @@ def fetch_weather_conditions() -> dict:
             "wind_speed_mph": round(wind_speed, 1) if wind_speed else None,
             "wind_direction_deg": round(wind_dir_deg) if wind_dir_deg else None,
             "wind_direction": deg_to_cardinal(wind_dir_deg) if wind_dir_deg else None,
+            "uv_index": round(uv_index, 1) if uv_index is not None else None,
         }
     except (KeyError, IndexError, TypeError) as e:
         log.warning(f"Error parsing Open-Meteo data: {e}")
@@ -725,6 +728,38 @@ def compute_recreation_status(gauge_id: str, streamflow_cfs: float | None) -> di
     return result
 
 
+def estimate_water_clarity(current_cfs: float | None, history: list[dict]) -> dict | None:
+    """
+    Estimate water clarity based on flow trends.
+    Rising flows (especially rapid rises) churn sediment and reduce clarity.
+    Stable or falling flows allow sediment to settle = better clarity.
+    """
+    if current_cfs is None:
+        return None
+
+    # Calculate average flow over the past 24-48 hours from history
+    recent_flows = [
+        h["streamflow_cfs"] for h in history[-48:]
+        if h.get("streamflow_cfs") is not None
+    ]
+    if not recent_flows:
+        return None
+
+    avg_flow = sum(recent_flows) / len(recent_flows)
+    pct_change = ((current_cfs - avg_flow) / avg_flow * 100) if avg_flow > 0 else 0
+
+    if pct_change > 50:
+        return {"rating": "poor", "description": "Rapidly rising flow \u2014 high sediment"}
+    elif pct_change > 20:
+        return {"rating": "murky", "description": "Rising flow \u2014 reduced visibility"}
+    elif pct_change > -5:
+        return {"rating": "moderate", "description": "Stable flow \u2014 moderate visibility"}
+    elif pct_change > -20:
+        return {"rating": "good", "description": "Falling flow \u2014 sediment settling"}
+    else:
+        return {"rating": "clear", "description": "Low, stable flow \u2014 good visibility"}
+
+
 # ---------------------------------------------------------------------------
 # Main: Assemble and write JSON
 # ---------------------------------------------------------------------------
@@ -777,6 +812,7 @@ def main():
             "history": history,
             "fishing": FISHING_REFERENCE.get(gauge["id"]),
             "recreation": compute_recreation_status(gauge["id"], current.get("streamflow_cfs")),
+            "water_clarity": estimate_water_clarity(current.get("streamflow_cfs"), history),
             "usgs_url": f"https://waterdata.usgs.gov/monitoring-location/USGS-{gauge['id']}/",
             "nws_url": f"https://water.noaa.gov/gauges/{gauge['nws_lid'].lower()}" if gauge.get("nws_lid") else None,
         })
