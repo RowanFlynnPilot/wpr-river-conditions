@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31T01:45:21.382008+00:00",
+  "generated_at": "2026-03-31T02:47:20.126251+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -20,18 +20,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T20:00:00.000-05:00",
-        "streamflow_cfs": 6650.0,
-        "gage_height_ft": 16.22
+        "timestamp": "2026-03-30T21:00:00.000-05:00",
+        "streamflow_cfs": 6630.0,
+        "gage_height_ft": 16.21
       },
       "history": [
         {
-          "timestamp": "2026-03-23T20:50:00.000-05:00",
-          "streamflow_cfs": 10800.0,
-          "gage_height_ft": 18.23
-        },
-        {
-          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "timestamp": "2026-03-23T21:50:00.000-05:00",
           "streamflow_cfs": 10600.0,
           "gage_height_ft": 18.14
         },
@@ -867,8 +862,13 @@
         },
         {
           "timestamp": "2026-03-30T20:00:00.000-05:00",
-          "streamflow_cfs": 6650.0,
-          "gage_height_ft": 16.22
+          "streamflow_cfs": 6620.0,
+          "gage_height_ft": 16.2
+        },
+        {
+          "timestamp": "2026-03-30T21:00:00.000-05:00",
+          "streamflow_cfs": 6630.0,
+          "gage_height_ft": 16.21
         }
       ],
       "fishing": {
@@ -918,6 +918,10 @@
         "kayaking": "ideal",
         "tubing": "ideal"
       },
+      "water_clarity": {
+        "rating": "moderate",
+        "description": "Stable flow \u2014 moderate visibility"
+      },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05398000/",
       "nws_url": "https://water.noaa.gov/gauges/rotw3"
     },
@@ -934,16 +938,12 @@
       "has_temp_sensor": false,
       "nws_flood_category": null,
       "current": {
-        "timestamp": "2026-03-30T20:00:00.000-05:00",
-        "gage_height_ft": 12.13
+        "timestamp": "2026-03-30T21:00:00.000-05:00",
+        "gage_height_ft": 12.11
       },
       "history": [
         {
-          "timestamp": "2026-03-23T20:50:00.000-05:00",
-          "gage_height_ft": 12.89
-        },
-        {
-          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "timestamp": "2026-03-23T21:50:00.000-05:00",
           "gage_height_ft": 12.86
         },
         {
@@ -1612,7 +1612,11 @@
         },
         {
           "timestamp": "2026-03-30T20:00:00.000-05:00",
-          "gage_height_ft": 12.13
+          "gage_height_ft": 12.11
+        },
+        {
+          "timestamp": "2026-03-30T21:00:00.000-05:00",
+          "gage_height_ft": 12.11
         }
       ],
       "fishing": {
@@ -1652,6 +1656,7 @@
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
       },
       "recreation": null,
+      "water_clarity": null,
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05398100/",
       "nws_url": null
     },
@@ -1673,18 +1678,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T20:00:00.000-05:00",
-        "streamflow_cfs": 481.0,
-        "gage_height_ft": 3.57
+        "timestamp": "2026-03-30T21:00:00.000-05:00",
+        "streamflow_cfs": 490.0,
+        "gage_height_ft": 3.58
       },
       "history": [
         {
-          "timestamp": "2026-03-23T20:50:00.000-05:00",
-          "streamflow_cfs": 1600.0,
-          "gage_height_ft": 5.35
-        },
-        {
-          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "timestamp": "2026-03-23T21:50:00.000-05:00",
           "streamflow_cfs": 1600.0,
           "gage_height_ft": 5.35
         },
@@ -2520,8 +2520,13 @@
         },
         {
           "timestamp": "2026-03-30T20:00:00.000-05:00",
-          "streamflow_cfs": 481.0,
-          "gage_height_ft": 3.57
+          "streamflow_cfs": 488.0,
+          "gage_height_ft": 3.58
+        },
+        {
+          "timestamp": "2026-03-30T21:00:00.000-05:00",
+          "streamflow_cfs": 490.0,
+          "gage_height_ft": 3.58
         }
       ],
       "fishing": {
@@ -2556,6 +2561,10 @@
         "dnr_url": "https://dnr.wisconsin.gov/topic/Lands/FisheriesAreas/185bigribriver"
       },
       "recreation": null,
+      "water_clarity": {
+        "rating": "moderate",
+        "description": "Stable flow \u2014 moderate visibility"
+      },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05396000/",
       "nws_url": "https://water.noaa.gov/gauges/ribw3"
     },
@@ -2601,6 +2610,7 @@
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
       },
       "recreation": null,
+      "water_clarity": null,
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05396500/",
       "nws_url": null
     },
@@ -2622,16 +2632,11 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T20:00:00.000-05:00",
-        "streamflow_cfs": 909.0,
-        "gage_height_ft": 2.68
+        "timestamp": "2026-03-30T21:00:00.000-05:00",
+        "streamflow_cfs": 931.0,
+        "gage_height_ft": 2.74
       },
       "history": [
-        {
-          "timestamp": "2026-03-23T21:00:00.000-05:00",
-          "streamflow_cfs": 909.0,
-          "gage_height_ft": 2.68
-        },
         {
           "timestamp": "2026-03-23T22:00:00.000-05:00",
           "streamflow_cfs": 905.0,
@@ -3464,8 +3469,13 @@
         },
         {
           "timestamp": "2026-03-30T20:00:00.000-05:00",
-          "streamflow_cfs": 909.0,
-          "gage_height_ft": 2.68
+          "streamflow_cfs": 927.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-30T21:00:00.000-05:00",
+          "streamflow_cfs": 931.0,
+          "gage_height_ft": 2.74
         }
       ],
       "fishing": {
@@ -3506,6 +3516,10 @@
       "recreation": {
         "kayaking": "caution"
       },
+      "water_clarity": {
+        "rating": "moderate",
+        "description": "Stable flow \u2014 moderate visibility"
+      },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05397500/",
       "nws_url": "https://water.noaa.gov/gauges/kelw3"
     },
@@ -3527,18 +3541,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T20:00:00.000-05:00",
-        "streamflow_cfs": 319.0,
-        "gage_height_ft": 4.26
+        "timestamp": "2026-03-30T21:00:00.000-05:00",
+        "streamflow_cfs": 324.0,
+        "gage_height_ft": 4.28
       },
       "history": [
         {
-          "timestamp": "2026-03-23T20:50:00.000-05:00",
-          "streamflow_cfs": 1620.0,
-          "gage_height_ft": 7.45
-        },
-        {
-          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "timestamp": "2026-03-23T21:50:00.000-05:00",
           "streamflow_cfs": 1630.0,
           "gage_height_ft": 7.46
         },
@@ -4376,6 +4385,11 @@
           "timestamp": "2026-03-30T20:00:00.000-05:00",
           "streamflow_cfs": 319.0,
           "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-30T21:00:00.000-05:00",
+          "streamflow_cfs": 324.0,
+          "gage_height_ft": 4.28
         }
       ],
       "fishing": {
@@ -4415,6 +4429,10 @@
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
       },
       "recreation": null,
+      "water_clarity": {
+        "rating": "moderate",
+        "description": "Stable flow \u2014 moderate visibility"
+      },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05399500/",
       "nws_url": "https://water.noaa.gov/gauges/strw3"
     }
@@ -4427,7 +4445,7 @@
       "feet_below_max": -6.28,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T01:45:30.615137+00:00"
+      "last_updated": "2026-03-31T02:47:26.085477+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -4435,7 +4453,7 @@
       "feet_below_max": -6.82,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T01:45:30.615137+00:00"
+      "last_updated": "2026-03-31T02:47:26.085477+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -4443,7 +4461,7 @@
       "feet_below_max": -1.03,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T01:45:30.615137+00:00"
+      "last_updated": "2026-03-31T02:47:26.085477+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -4451,7 +4469,7 @@
       "feet_below_max": -1.5,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T01:45:30.615137+00:00"
+      "last_updated": "2026-03-31T02:47:26.085477+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -4459,7 +4477,7 @@
       "feet_below_max": -4.71,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T01:45:30.615137+00:00"
+      "last_updated": "2026-03-31T02:47:26.085477+00:00"
     },
     {
       "name": "Lake Wausau",
@@ -4471,11 +4489,12 @@
     }
   ],
   "fishing_conditions": {
-    "pressure_hpa": 1006.8,
-    "pressure_trend": "rising",
-    "wind_speed_mph": 8.4,
-    "wind_direction_deg": 74,
+    "pressure_hpa": 1006.0,
+    "pressure_trend": "steady",
+    "wind_speed_mph": 10.4,
+    "wind_direction_deg": 75,
     "wind_direction": "E",
+    "uv_index": 0.0,
     "sunrise": "6:38 AM",
     "sunset": "7:26 PM",
     "civil_dawn": "6:10 AM",
@@ -4535,18 +4554,18 @@
       "high_f": 66,
       "low_f": 35,
       "precip_pct": 6,
-      "weather_code": 61
+      "weather_code": 55
     },
     {
       "date": "2026-03-31",
-      "high_f": 58,
+      "high_f": 56,
       "low_f": 35,
-      "precip_pct": 44,
+      "precip_pct": 37,
       "weather_code": 51
     },
     {
       "date": "2026-04-01",
-      "high_f": 40,
+      "high_f": 36,
       "low_f": 28,
       "precip_pct": 46,
       "weather_code": 75
@@ -4570,7 +4589,7 @@
     "fishing_report_form": "https://forms.gle/YOUR_FORM_ID",
     "photo_hashtag": "#WausauFishing",
     "social_url": "https://facebook.com/wausaupilotandreview",
-    "email": "news@wausaupilotandreview.com"
+    "email": "editor@wausaupilotandreview.com"
   },
   "sources": {
     "usgs": "https://waterservices.usgs.gov/",

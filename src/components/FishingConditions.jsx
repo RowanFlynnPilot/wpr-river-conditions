@@ -31,6 +31,14 @@ function getMoonEmoji(phase) {
   return '\uD83C\uDF15';
 }
 
+function getUvLabel(uv) {
+  if (uv <= 2) return { label: 'Low', color: 'var(--status-normal)' };
+  if (uv <= 5) return { label: 'Moderate', color: 'var(--status-action)' };
+  if (uv <= 7) return { label: 'High', color: 'var(--status-minor)' };
+  if (uv <= 10) return { label: 'Very High', color: 'var(--status-moderate)' };
+  return { label: 'Extreme', color: 'var(--status-major)' };
+}
+
 function formatPeriod(period) {
   if (!period?.start || !period?.end) return null;
   const fmt = (t) => {
@@ -116,6 +124,20 @@ export default function FishingConditions({ conditions }) {
               ) : <div className="fishing-panel__value">{'\u2014'}</div>}
             </div>
           </div>
+          {conditions.uv_index != null && (() => {
+            const uv = getUvLabel(conditions.uv_index);
+            return (
+              <div className="fishing-panel__item">
+                <div className="fishing-panel__label">UV Index</div>
+                <div className="fishing-panel__value">
+                  {conditions.uv_index}
+                  <span className="fishing-panel__trend" style={{ color: uv.color }}>
+                    {uv.label}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Sun / Moon */}
