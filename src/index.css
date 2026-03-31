@@ -1148,6 +1148,142 @@ body {
 }
 
 /* ==========================================================================
+   Events Calendar
+   ========================================================================== */
+
+.events-list {
+  margin: 0 var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  border-top: none;
+  background: white;
+}
+
+.events-list__item {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--wpr-rule);
+}
+
+.events-list__item:last-child {
+  border-bottom: none;
+}
+
+.events-list__date-col {
+  flex-shrink: 0;
+  min-width: 80px;
+  text-align: center;
+}
+
+.events-list__date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--wpr-ink);
+}
+
+.events-list__countdown {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wpr-teal);
+  background: var(--wpr-teal-light);
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-top: 2px;
+}
+
+.events-list__detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.events-list__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.events-list__category {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 6px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.events-list__category--season {
+  background: var(--status-normal-bg);
+  color: var(--status-normal);
+}
+
+.events-list__category--event {
+  background: var(--status-action-bg);
+  color: var(--status-action);
+}
+
+.events-list__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--wpr-ink);
+  line-height: 1.2;
+}
+
+.events-list__name a {
+  color: var(--wpr-ink);
+  text-decoration: none;
+}
+
+.events-list__name a:hover {
+  color: var(--wpr-teal);
+  text-decoration: underline;
+}
+
+.events-list__description {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--wpr-ink-light);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.events-list__location {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--wpr-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .events-list {
+    margin: 0 var(--space-sm);
+  }
+
+  .events-list__item {
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+  }
+
+  .events-list__date-col {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+}
+
+/* ==========================================================================
    Conditions Summary & Seasonal Calendar
    ========================================================================== */
 

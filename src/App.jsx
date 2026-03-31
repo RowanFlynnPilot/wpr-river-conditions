@@ -7,6 +7,7 @@ import FishingReference from './components/FishingReference';
 import WeatherForecast from './components/WeatherForecast';
 import CommunityBar from './components/CommunityBar';
 import ConditionsSummary from './components/ConditionsSummary';
+import EventsCalendar from './components/EventsCalendar';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -160,6 +161,9 @@ export default function App() {
           <FishingConditions conditions={data.fishing_conditions} />
         </>
       )}
+
+      {/* Upcoming Events */}
+      <EventsCalendar events={data.upcoming_events} />
 
       {/* Reservoirs */}
       {data.reservoirs && data.reservoirs.length > 0 && (

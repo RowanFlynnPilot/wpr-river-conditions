@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31T14:57:49.186868+00:00",
+  "generated_at": "2026-03-31T15:25:54.543292+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -20,13 +20,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T09:00:00.000-05:00",
-        "streamflow_cfs": 6950.0,
-        "gage_height_ft": 16.39
+        "timestamp": "2026-03-31T10:00:00.000-05:00",
+        "streamflow_cfs": 7170.0,
+        "gage_height_ft": 16.51
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "timestamp": "2026-03-24T10:30:00.000-05:00",
           "streamflow_cfs": 9800.0,
           "gage_height_ft": 17.78
         },
@@ -862,8 +862,13 @@
         },
         {
           "timestamp": "2026-03-31T09:00:00.000-05:00",
-          "streamflow_cfs": 6950.0,
-          "gage_height_ft": 16.39
+          "streamflow_cfs": 7170.0,
+          "gage_height_ft": 16.51
+        },
+        {
+          "timestamp": "2026-03-31T10:00:00.000-05:00",
+          "streamflow_cfs": 7170.0,
+          "gage_height_ft": 16.51
         }
       ],
       "fishing": {
@@ -940,12 +945,12 @@
       "has_temp_sensor": false,
       "nws_flood_category": null,
       "current": {
-        "timestamp": "2026-03-31T08:00:00.000-05:00",
-        "gage_height_ft": 12.05
+        "timestamp": "2026-03-31T10:00:00.000-05:00",
+        "gage_height_ft": 12.06
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "timestamp": "2026-03-24T10:30:00.000-05:00",
           "gage_height_ft": 12.77
         },
         {
@@ -1611,6 +1616,14 @@
         {
           "timestamp": "2026-03-31T08:00:00.000-05:00",
           "gage_height_ft": 12.05
+        },
+        {
+          "timestamp": "2026-03-31T09:00:00.000-05:00",
+          "gage_height_ft": 12.06
+        },
+        {
+          "timestamp": "2026-03-31T10:00:00.000-05:00",
+          "gage_height_ft": 12.06
         }
       ],
       "fishing": {
@@ -1678,13 +1691,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T09:00:00.000-05:00",
+        "timestamp": "2026-03-31T10:00:00.000-05:00",
         "streamflow_cfs": 489.0,
         "gage_height_ft": 3.58
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "timestamp": "2026-03-24T10:30:00.000-05:00",
           "streamflow_cfs": 1220.0,
           "gage_height_ft": 4.85
         },
@@ -2520,6 +2533,11 @@
         },
         {
           "timestamp": "2026-03-31T09:00:00.000-05:00",
+          "streamflow_cfs": 485.0,
+          "gage_height_ft": 3.58
+        },
+        {
+          "timestamp": "2026-03-31T10:00:00.000-05:00",
           "streamflow_cfs": 489.0,
           "gage_height_ft": 3.58
         }
@@ -2633,15 +2651,15 @@
       },
       "flood_status": "normal",
       "has_temp_sensor": false,
-      "nws_flood_category": "no_flooding",
+      "nws_flood_category": "obs_not_current",
       "current": {
-        "timestamp": "2026-03-31T08:00:00.000-05:00",
-        "streamflow_cfs": 1030.0,
-        "gage_height_ft": 2.96
+        "timestamp": "2026-03-31T10:00:00.000-05:00",
+        "streamflow_cfs": 1040.0,
+        "gage_height_ft": 2.98
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "timestamp": "2026-03-24T10:30:00.000-05:00",
           "streamflow_cfs": 905.0,
           "gage_height_ft": 2.68
         },
@@ -3472,8 +3490,18 @@
         },
         {
           "timestamp": "2026-03-31T08:00:00.000-05:00",
-          "streamflow_cfs": 1030.0,
+          "streamflow_cfs": 1040.0,
           "gage_height_ft": 2.96
+        },
+        {
+          "timestamp": "2026-03-31T09:00:00.000-05:00",
+          "streamflow_cfs": 1040.0,
+          "gage_height_ft": 2.98
+        },
+        {
+          "timestamp": "2026-03-31T10:00:00.000-05:00",
+          "streamflow_cfs": 1040.0,
+          "gage_height_ft": 2.98
         }
       ],
       "fishing": {
@@ -3544,13 +3572,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T09:00:00.000-05:00",
-        "streamflow_cfs": 408.0,
-        "gage_height_ft": 4.6
+        "timestamp": "2026-03-31T10:00:00.000-05:00",
+        "streamflow_cfs": 400.0,
+        "gage_height_ft": 4.57
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "timestamp": "2026-03-24T10:30:00.000-05:00",
           "streamflow_cfs": 1160.0,
           "gage_height_ft": 6.6
         },
@@ -4386,8 +4414,13 @@
         },
         {
           "timestamp": "2026-03-31T09:00:00.000-05:00",
-          "streamflow_cfs": 408.0,
-          "gage_height_ft": 4.6
+          "streamflow_cfs": 403.0,
+          "gage_height_ft": 4.58
+        },
+        {
+          "timestamp": "2026-03-31T10:00:00.000-05:00",
+          "streamflow_cfs": 400.0,
+          "gage_height_ft": 4.57
         }
       ],
       "fishing": {
@@ -4434,8 +4467,8 @@
       },
       "recreation": null,
       "water_clarity": {
-        "rating": "murky",
-        "description": "Rising flow \u2014 reduced visibility"
+        "rating": "moderate",
+        "description": "Stable flow \u2014 moderate visibility"
       },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05399500/",
       "nws_url": "https://water.noaa.gov/gauges/strw3"
@@ -4450,7 +4483,7 @@
       "feet_below_max": -6.16,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:57:56.964739+00:00"
+      "last_updated": "2026-03-31T15:26:00.666881+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -4459,7 +4492,7 @@
       "feet_below_max": -6.75,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:57:56.964739+00:00"
+      "last_updated": "2026-03-31T15:26:00.666881+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -4468,7 +4501,7 @@
       "feet_below_max": -0.92,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:57:56.964739+00:00"
+      "last_updated": "2026-03-31T15:26:00.666881+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -4477,7 +4510,7 @@
       "feet_below_max": -1.37,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:57:56.964739+00:00"
+      "last_updated": "2026-03-31T15:26:00.666881+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -4486,7 +4519,7 @@
       "feet_below_max": -4.59,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:57:56.964739+00:00"
+      "last_updated": "2026-03-31T15:26:00.666881+00:00"
     },
     {
       "name": "Lake Wausau",
@@ -4499,12 +4532,12 @@
     }
   ],
   "fishing_conditions": {
-    "pressure_hpa": 1009.9,
-    "pressure_trend": "rising",
-    "wind_speed_mph": 7.9,
-    "wind_direction_deg": 8,
-    "wind_direction": "N",
-    "uv_index": 0.6,
+    "pressure_hpa": 1008.3,
+    "pressure_trend": "steady",
+    "wind_speed_mph": 8.6,
+    "wind_direction_deg": 51,
+    "wind_direction": "NE",
+    "uv_index": 0.7,
     "sunrise": "6:38 AM",
     "sunset": "7:26 PM",
     "civil_dawn": "6:10 AM",
@@ -4576,28 +4609,28 @@
       "date": "2026-04-01",
       "high_f": 39,
       "low_f": 29,
-      "precip_pct": 59,
+      "precip_pct": 68,
       "weather_code": 3
     },
     {
       "date": "2026-04-02",
       "high_f": 36,
       "low_f": 29,
-      "precip_pct": 93,
+      "precip_pct": 96,
       "weather_code": 75
     },
     {
       "date": "2026-04-03",
       "high_f": 35,
       "low_f": 19,
-      "precip_pct": 65,
+      "precip_pct": 76,
       "weather_code": 57
     },
     {
       "date": "2026-04-04",
       "high_f": 33,
       "low_f": 26,
-      "precip_pct": 84,
+      "precip_pct": 82,
       "weather_code": 73
     }
   ],
@@ -4609,8 +4642,58 @@
       "Suckers running \u2014 good live bait source"
     ]
   },
+  "upcoming_events": [
+    {
+      "date": "2026-04-04",
+      "name": "Inland Trout Harvest Opener",
+      "description": "NEW for 2026 \u2014 harvest season opens a full month earlier than prior years. Streams, springs, and spring ponds. Requires inland trout stamp.",
+      "location": "Statewide",
+      "category": "season",
+      "url": "https://wausaupilotandreview.com/2026/03/18/dnr-reminds-anglers-of-new-opening-day-for-inland-trout-harvest-season/"
+    },
+    {
+      "date": "2026-05-01",
+      "name": "Governor's Fishing Opener",
+      "description": "Annual tradition since 1966. Family Fishing Day on May 2 at Lake Hayward Beach with casting lessons, DNR Fishmobile, and giveaways.",
+      "location": "Nelson Lake, Hayward",
+      "category": "event",
+      "url": null
+    },
+    {
+      "date": "2026-05-02",
+      "name": "General Inland Fishing Opener",
+      "description": "Walleye, bass (harvest), northern pike, and musky all open statewide. Musky opener now unified to May 2 (previously Memorial Day weekend for northern zone).",
+      "location": "Statewide",
+      "category": "season",
+      "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons"
+    },
+    {
+      "date": "2026-05-02",
+      "name": "Lake & Pond Trout Season Opens",
+      "description": "Trout season on inland lakes and ponds. The earlier April 4 opener applies only to streams and springs.",
+      "location": "Statewide",
+      "category": "season",
+      "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons"
+    },
+    {
+      "date": "2026-06-06",
+      "name": "Free Fishing Weekend",
+      "description": "No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
+      "location": "Statewide",
+      "category": "event",
+      "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend"
+    },
+    {
+      "date": "2026-06-07",
+      "name": "Free Fishing Weekend (Day 2)",
+      "description": "Second day of the free fishing weekend. Bring the kids \u2014 no license needed.",
+      "location": "Statewide",
+      "category": "event",
+      "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend"
+    }
+  ],
   "conditions_summary": [
-    "Flows dropping on WI River \u2014 Rothschild (-23%), Big Rib River (-54%), Big Eau Pleine (-64%) \u2014 clarity improving.",
+    "Flows dropping on WI River \u2014 Rothschild (-21%), Big Rib River (-54%), Big Eau Pleine (-65%) \u2014 clarity improving.",
     "Stable on Eau Claire River."
   ],
   "community_links": {
