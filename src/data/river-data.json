@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31T16:11:19.600075+00:00",
+  "generated_at": "2026-03-31T16:27:22.729402+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -20,13 +20,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T10:00:00.000-05:00",
-        "streamflow_cfs": 7170.0,
-        "gage_height_ft": 16.51
+        "timestamp": "2026-03-31T11:00:00.000-05:00",
+        "streamflow_cfs": 7250.0,
+        "gage_height_ft": 16.55
       },
       "history": [
         {
-          "timestamp": "2026-03-24T11:15:00.000-05:00",
+          "timestamp": "2026-03-24T11:30:00.000-05:00",
           "streamflow_cfs": 9500.0,
           "gage_height_ft": 17.64
         },
@@ -862,8 +862,13 @@
         },
         {
           "timestamp": "2026-03-31T10:00:00.000-05:00",
-          "streamflow_cfs": 7170.0,
-          "gage_height_ft": 16.51
+          "streamflow_cfs": 7270.0,
+          "gage_height_ft": 16.56
+        },
+        {
+          "timestamp": "2026-03-31T11:00:00.000-05:00",
+          "streamflow_cfs": 7250.0,
+          "gage_height_ft": 16.55
         }
       ],
       "fishing": {
@@ -940,12 +945,12 @@
       "has_temp_sensor": false,
       "nws_flood_category": null,
       "current": {
-        "timestamp": "2026-03-31T10:00:00.000-05:00",
-        "gage_height_ft": 12.06
+        "timestamp": "2026-03-31T11:05:00.000-05:00",
+        "gage_height_ft": 12.07
       },
       "history": [
         {
-          "timestamp": "2026-03-24T11:15:00.000-05:00",
+          "timestamp": "2026-03-24T11:30:00.000-05:00",
           "gage_height_ft": 12.76
         },
         {
@@ -1614,7 +1619,11 @@
         },
         {
           "timestamp": "2026-03-31T10:00:00.000-05:00",
-          "gage_height_ft": 12.06
+          "gage_height_ft": 12.07
+        },
+        {
+          "timestamp": "2026-03-31T11:00:00.000-05:00",
+          "gage_height_ft": 12.07
         }
       ],
       "fishing": {
@@ -1682,13 +1691,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T10:00:00.000-05:00",
-        "streamflow_cfs": 489.0,
-        "gage_height_ft": 3.58
+        "timestamp": "2026-03-31T11:00:00.000-05:00",
+        "streamflow_cfs": 483.0,
+        "gage_height_ft": 3.57
       },
       "history": [
         {
-          "timestamp": "2026-03-24T11:15:00.000-05:00",
+          "timestamp": "2026-03-24T11:30:00.000-05:00",
           "streamflow_cfs": 1190.0,
           "gage_height_ft": 4.79
         },
@@ -2524,8 +2533,13 @@
         },
         {
           "timestamp": "2026-03-31T10:00:00.000-05:00",
-          "streamflow_cfs": 489.0,
-          "gage_height_ft": 3.58
+          "streamflow_cfs": 484.0,
+          "gage_height_ft": 3.57
+        },
+        {
+          "timestamp": "2026-03-31T11:00:00.000-05:00",
+          "streamflow_cfs": 483.0,
+          "gage_height_ft": 3.57
         }
       ],
       "fishing": {
@@ -2639,13 +2653,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T10:00:00.000-05:00",
-        "streamflow_cfs": 1040.0,
-        "gage_height_ft": 2.98
+        "timestamp": "2026-03-31T11:00:00.000-05:00",
+        "streamflow_cfs": 1030.0,
+        "gage_height_ft": 2.94
       },
       "history": [
         {
-          "timestamp": "2026-03-24T11:15:00.000-05:00",
+          "timestamp": "2026-03-24T11:30:00.000-05:00",
           "streamflow_cfs": 913.0,
           "gage_height_ft": 2.7
         },
@@ -3482,7 +3496,12 @@
         {
           "timestamp": "2026-03-31T10:00:00.000-05:00",
           "streamflow_cfs": 1040.0,
-          "gage_height_ft": 2.98
+          "gage_height_ft": 2.96
+        },
+        {
+          "timestamp": "2026-03-31T11:00:00.000-05:00",
+          "streamflow_cfs": 1030.0,
+          "gage_height_ft": 2.94
         }
       ],
       "fishing": {
@@ -3553,13 +3572,13 @@
       "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-31T10:00:00.000-05:00",
+        "timestamp": "2026-03-31T11:00:00.000-05:00",
         "streamflow_cfs": 400.0,
         "gage_height_ft": 4.57
       },
       "history": [
         {
-          "timestamp": "2026-03-24T11:15:00.000-05:00",
+          "timestamp": "2026-03-24T11:30:00.000-05:00",
           "streamflow_cfs": 1110.0,
           "gage_height_ft": 6.5
         },
@@ -4395,6 +4414,11 @@
         },
         {
           "timestamp": "2026-03-31T10:00:00.000-05:00",
+          "streamflow_cfs": 394.0,
+          "gage_height_ft": 4.55
+        },
+        {
+          "timestamp": "2026-03-31T11:00:00.000-05:00",
           "streamflow_cfs": 400.0,
           "gage_height_ft": 4.57
         }
@@ -4459,7 +4483,7 @@
       "feet_below_max": -6.16,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T16:11:29.159285+00:00"
+      "last_updated": "2026-03-31T16:27:35.113610+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -4468,7 +4492,7 @@
       "feet_below_max": -6.75,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T16:11:29.159285+00:00"
+      "last_updated": "2026-03-31T16:27:35.113610+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -4477,7 +4501,7 @@
       "feet_below_max": -0.92,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T16:11:29.159285+00:00"
+      "last_updated": "2026-03-31T16:27:35.113610+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -4486,7 +4510,7 @@
       "feet_below_max": -1.37,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T16:11:29.159285+00:00"
+      "last_updated": "2026-03-31T16:27:35.113610+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -4495,7 +4519,7 @@
       "feet_below_max": -4.59,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T16:11:29.159285+00:00"
+      "last_updated": "2026-03-31T16:27:35.113610+00:00"
     },
     {
       "name": "Lake Wausau",
@@ -4661,7 +4685,7 @@
     }
   ],
   "conditions_summary": [
-    "Flows dropping on WI River \u2014 Rothschild (-20%), Big Rib River (-53%), Big Eau Pleine (-65%) \u2014 clarity improving.",
+    "Flows dropping on WI River \u2014 Rothschild (-19%), Big Rib River (-54%), Big Eau Pleine (-65%) \u2014 clarity improving.",
     "Stable on Eau Claire River."
   ],
   "community_links": {

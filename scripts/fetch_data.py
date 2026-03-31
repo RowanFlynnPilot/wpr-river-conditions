@@ -1068,16 +1068,35 @@ def generate_daily_summary(
     # Pressure description
     pressure_desc = {"falling": "falling", "rising": "rising", "steady": "steady"}.get(pressure_trend, "")
 
-    # --- Headline: sentence case, <=30 words, conditions-focused ---
-    headline_parts = []
-    if rating_word and best_window:
-        headline_parts.append(f"{rating_word.capitalize()} fishing conditions with {pressure_desc} pressure, best fishing window {best_window}")
-    elif rating_word:
-        headline_parts.append(f"{rating_word.capitalize()} fishing conditions with {pressure_desc} barometric pressure near Wausau")
-    else:
-        headline_parts.append(f"Central Wisconsin fishing conditions for {today.strftime('%A')}")
+    # --- Headline: no numbers, SEO keywords, editorial hook ---
+    day_name = today.strftime("%A")
 
-    headline = headline_parts[0]
+    # Pressure-based hooks — always encouraging, find the angle
+    pressure_hooks = {
+        "falling": {
+            "excellent": f"Falling pressure and strong solunar activity set the stage for hot fishing near Wausau",
+            "good":      f"Dropping barometer brings prime conditions for Wausau-area anglers this {day_name}",
+            "fair":      f"Falling pressure could fire up the bite on central Wisconsin rivers this {day_name}",
+            "poor":      f"Dropping barometer gives patient anglers an edge on central Wisconsin waters today",
+        },
+        "rising": {
+            "excellent": f"Strong feeding activity expected on central Wisconsin rivers despite rising pressure",
+            "good":      f"Wausau-area anglers can find action this {day_name} by targeting the right windows",
+            "fair":      f"Timing is key for central Wisconsin anglers as pressure climbs this {day_name}",
+            "poor":      f"Hit the midday feeding window for your best shot on central Wisconsin rivers today",
+        },
+        "steady": {
+            "excellent": f"Excellent fishing conditions hold steady across central Wisconsin waters",
+            "good":      f"Consistent conditions make for a solid day on Wausau-area rivers and streams",
+            "fair":      f"Steady conditions give anglers a reliable window on central Wisconsin waters",
+            "poor":      f"Central Wisconsin waters are worth a cast this {day_name} during peak feeding times",
+        },
+    }
+
+    # Select headline
+    trend_key = pressure_trend if pressure_trend in pressure_hooks else "steady"
+    rating_key = rating_word if rating_word in pressure_hooks[trend_key] else "fair"
+    headline = pressure_hooks[trend_key][rating_key]
 
     # --- Body: natural AP-style prose ---
     body_parts = []
@@ -1104,14 +1123,14 @@ def generate_daily_summary(
         else:
             wind_desc = f"gusty {wind_speed} mph {dir_name} winds"
 
-    # Pressure narrative
+    # Pressure narrative (body version — encouraging, different phrasing than headline)
     pressure_narrative = ""
     if pressure_trend == "falling":
         pressure_narrative = "a falling barometer that should get fish moving"
     elif pressure_trend == "rising":
-        pressure_narrative = "rising barometric pressure that could slow the bite"
+        pressure_narrative = "rising barometric pressure \u2014 focus on shaded structure and slow presentations"
     elif pressure_trend == "steady":
-        pressure_narrative = "steady barometric pressure"
+        pressure_narrative = "steady barometric pressure keeping conditions consistent"
 
     # Sentence 1: Lead with the scene
     if primary_flow and wind_desc:
