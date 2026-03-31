@@ -422,6 +422,15 @@ body {
   margin-left: 2px;
 }
 
+.gauge-card__temp-context {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
 .gauge-card__reading--na .gauge-card__reading-value {
   color: var(--wpr-ink-muted);
   font-size: 1rem;
@@ -567,32 +576,726 @@ body {
 }
 
 /* ==========================================================================
-   Reservoirs Section (Phase 2 placeholder)
+   Reservoirs Section
    ========================================================================== */
 
-.reservoirs-placeholder {
-  margin: var(--space-md);
-  padding: var(--space-xl);
+.reservoirs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--wpr-rule);
+  margin: 0 var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  border-top: none;
+}
+
+@media (min-width: 640px) {
+  .reservoirs-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.reservoir-card {
   background: white;
-  border: 1px dashed var(--wpr-rule);
-  border-radius: var(--radius);
-  text-align: center;
+  padding: var(--space-lg);
+  transition: background 0.2s ease;
+}
+
+.reservoir-card:hover {
+  background: #fefdfb;
+}
+
+.reservoir-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--wpr-ink);
+  line-height: 1.2;
+  margin-bottom: var(--space-sm);
+}
+
+.reservoir-card__reading {
+  margin-bottom: var(--space-sm);
+}
+
+.reservoir-card__reading-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--wpr-ink);
+  line-height: 1.1;
+}
+
+.reservoir-card__reading-unit {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--wpr-ink-muted);
+  margin-left: 4px;
+}
+
+/* Level bar */
+.reservoir-bar {
+  margin-top: var(--space-sm);
+}
+
+.reservoir-bar__track {
+  position: relative;
+  height: 8px;
+  background: #e7e5e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.reservoir-bar__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--wpr-teal);
+  opacity: 0.6;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.reservoir-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+}
+
+.reservoir-bar__label-left {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--wpr-ink-light);
+}
+
+.reservoir-bar__label-right {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
   color: var(--wpr-ink-muted);
 }
 
-.reservoirs-placeholder__title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--wpr-ink-light);
-  margin-bottom: var(--space-xs);
+/* Timestamp & source link */
+.reservoir-card__timestamp {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--wpr-ink-muted);
+  margin-top: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.reservoirs-placeholder__desc {
+.reservoir-card__source-link {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--wpr-teal);
+  text-decoration: none;
+}
+
+.reservoir-card__source-link:hover {
+  text-decoration: underline;
+}
+
+/* No data state */
+.reservoir-card__no-data {
+  color: var(--wpr-ink-muted);
+}
+
+.reservoir-card__no-data-text {
   font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--wpr-ink-muted);
+  margin-bottom: var(--space-sm);
+}
+
+/* ==========================================================================
+   Fishing Conditions Panel
+   ========================================================================== */
+
+.fishing-panel {
+  margin: 0 var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  border-top: none;
+  background: white;
+}
+
+.fishing-panel__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--wpr-rule);
+}
+
+@media (min-width: 640px) {
+  .fishing-panel__grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.fishing-panel__group {
+  background: white;
+  padding: var(--space-lg) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.fishing-panel__group--center {
+  align-items: center;
+  text-align: center;
+}
+
+.fishing-panel__item {
+  min-width: 0;
+}
+
+.fishing-panel__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wpr-ink-muted);
+  margin-bottom: 2px;
+}
+
+.fishing-panel__value {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--wpr-ink);
+  line-height: 1.2;
+}
+
+.fishing-panel__value--sm {
+  font-size: 0.95rem;
+}
+
+.fishing-panel__unit {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--wpr-ink-muted);
+  margin-left: 3px;
+}
+
+.fishing-panel__trend {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+/* Wind compass */
+.fishing-panel__wind-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fishing-panel__compass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--wpr-rule);
+  border-radius: 50%;
+  font-size: 1rem;
+  color: var(--wpr-teal);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+/* Sun times */
+.fishing-panel__sun-times {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--wpr-ink);
+  margin-top: 2px;
+}
+
+.fishing-panel__sun-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fishing-panel__sun-emoji {
+  font-size: 1.1rem;
+}
+
+.fishing-panel__sun-divider {
+  color: var(--wpr-ink-muted);
+  font-weight: 400;
+}
+
+/* Moon phase */
+.fishing-panel__moon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.fishing-panel__moon-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.fishing-panel__moon-name {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--wpr-ink);
+}
+
+/* Rating bar */
+.fishing-panel__rating-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.fishing-panel__rating-track {
+  flex: 1;
+  height: 6px;
+  background: #e7e5e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.fishing-panel__rating-fill {
+  height: 100%;
+  background: var(--wpr-teal);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.fishing-panel__rating-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--wpr-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* Feeding windows */
+.fishing-panel__windows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.fishing-panel__window-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.fishing-panel__window-badge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wpr-ink-muted);
+  background: #e7e5e0;
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.fishing-panel__window-badge--major {
+  color: var(--wpr-teal);
+  background: var(--wpr-teal-light);
+}
+
+.fishing-panel__window-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.fishing-panel__window-time {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--wpr-ink-light);
+}
+
+/* ==========================================================================
+   Fishing Reference Guide
+   ========================================================================== */
+
+.fishing-ref__header {
+  user-select: none;
+}
+
+.fishing-ref__chevron {
+  display: inline-block;
+  font-size: 0.7rem;
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+}
+
+.fishing-ref__chevron--open {
+  transform: rotate(180deg);
+}
+
+.fishing-ref-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--wpr-rule);
+  margin: 0 var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  border-top: none;
+}
+
+@media (min-width: 640px) {
+  .fishing-ref-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fishing-ref-card {
+  background: white;
+  padding: var(--space-lg);
+  transition: background 0.2s ease;
+}
+
+.fishing-ref-card:hover {
+  background: #fefdfb;
+}
+
+.fishing-ref-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--wpr-ink);
+  line-height: 1.2;
+  margin-bottom: var(--space-sm);
+}
+
+.fishing-ref-card__species {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: var(--space-md);
+}
+
+.fishing-ref-card__pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--wpr-teal);
+  background: var(--wpr-teal-light);
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.fishing-ref-card__detail {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--wpr-ink-light);
+  line-height: 1.4;
+  margin-bottom: var(--space-sm);
+}
+
+.fishing-ref-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+}
+
+.fishing-ref-card__list li {
+  position: relative;
+  padding-left: 12px;
+  margin-bottom: 3px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--wpr-ink-light);
+}
+
+.fishing-ref-card__list li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  color: var(--wpr-teal);
+  font-weight: 700;
+}
+
+.fishing-ref-card__list li strong {
+  color: var(--wpr-ink);
+  font-weight: 600;
+}
+
+.fishing-ref-card__detail-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wpr-ink-muted);
+  margin-bottom: 1px;
+}
+
+.fishing-ref-card__access {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--wpr-ink-light);
+  line-height: 1.4;
+  margin-bottom: var(--space-sm);
+}
+
+.fishing-ref-card__access-item {
+  margin-top: 2px;
+}
+
+.fishing-ref-card__access-item strong {
+  color: var(--wpr-ink);
+  font-weight: 600;
+}
+
+.fishing-ref-card__directions {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--wpr-teal);
+  text-decoration: none;
+  margin-left: 6px;
+  border: 1px solid var(--wpr-teal);
+  border-radius: 3px;
+  padding: 2px 8px;
+}
+
+.fishing-ref-card__directions:hover {
+  background: var(--wpr-teal);
+  color: white;
+  text-decoration: none;
+}
+
+.fishing-ref-card__footer {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--wpr-rule);
+}
+
+.fishing-ref-card__link {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--wpr-teal);
+  text-decoration: none;
+}
+
+.fishing-ref-card__link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Weather Forecast Strip
+   ========================================================================== */
+
+.weather-strip {
+  margin: 0 var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  background: white;
+}
+
+.weather-strip__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--wpr-rule);
+}
+
+.weather-strip__day {
+  background: white;
+  padding: var(--space-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.weather-strip__day-name {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--wpr-ink-muted);
+}
+
+.weather-strip__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin: 2px 0;
+}
+
+.weather-strip__label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--wpr-ink-muted);
+}
+
+.weather-strip__temps {
+  font-family: var(--font-mono);
   font-size: 0.85rem;
-  max-width: 400px;
-  margin: 0 auto;
+  font-weight: 600;
+  display: flex;
+  gap: 6px;
+}
+
+.weather-strip__high {
+  color: var(--wpr-ink);
+}
+
+.weather-strip__low {
+  color: var(--wpr-ink-muted);
+  font-weight: 400;
+}
+
+.weather-strip__precip {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--wpr-ink-muted);
+}
+
+@media (max-width: 480px) {
+  .weather-strip {
+    margin: 0 var(--space-sm);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .weather-strip__grid {
+    grid-template-columns: repeat(5, minmax(70px, 1fr));
+  }
+
+  .weather-strip__day {
+    padding: var(--space-sm);
+  }
+
+  .weather-strip__icon {
+    font-size: 1.2rem;
+  }
+}
+
+/* ==========================================================================
+   Recreation Badges (on GaugeCard)
+   ========================================================================== */
+
+.gauge-card__recreation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--wpr-rule);
+}
+
+.gauge-card__rec-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.gauge-card__rec-badge--ideal {
+  background: var(--status-normal-bg);
+  color: var(--status-normal);
+  border: 1px solid #bbf7d0;
+}
+
+.gauge-card__rec-badge--caution {
+  background: var(--status-action-bg);
+  color: var(--status-action);
+  border: 1px solid #fef08a;
+}
+
+.gauge-card__rec-badge--dangerous {
+  background: var(--status-major-bg);
+  color: var(--status-major);
+  border: 1px solid #fca5a5;
+}
+
+.gauge-card__rec-badge--low {
+  background: var(--wpr-teal-light);
+  color: var(--wpr-ink-muted);
+  border: 1px solid var(--wpr-rule);
+}
+
+/* ==========================================================================
+   Community Bar
+   ========================================================================== */
+
+.community-bar {
+  margin: var(--space-lg) var(--space-md) 0;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--wpr-teal-light);
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.community-bar__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--wpr-ink);
+  margin-bottom: var(--space-sm);
+}
+
+.community-bar__links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.community-bar__link {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--wpr-teal);
+  text-decoration: none;
+  padding: 4px 12px;
+  border: 1px solid var(--wpr-teal);
+  border-radius: 3px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.community-bar__link:hover {
+  background: var(--wpr-teal);
+  color: white;
+}
+
+@media (max-width: 480px) {
+  .community-bar {
+    margin: var(--space-md) var(--space-sm) 0;
+  }
+
+  .community-bar__links {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 /* ==========================================================================
@@ -700,8 +1403,19 @@ body {
     margin: 0 var(--space-sm);
   }
 
-  .gauges-grid {
+  .gauges-grid,
+  .reservoirs-grid,
+  .fishing-panel,
+  .fishing-ref-grid {
     margin: 0 var(--space-sm);
+  }
+
+  .reservoir-card {
+    padding: var(--space-md);
+  }
+
+  .reservoir-card__reading-value {
+    font-size: 1.25rem;
   }
 
   .alert-banner {

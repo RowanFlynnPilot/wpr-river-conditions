@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import GaugeCard from './components/GaugeCard';
 import AlertBanner from './components/AlertBanner';
+import ReservoirCard from './components/ReservoirCard';
+import FishingConditions from './components/FishingConditions';
+import FishingReference from './components/FishingReference';
+import WeatherForecast from './components/WeatherForecast';
+import CommunityBar from './components/CommunityBar';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -78,17 +83,18 @@ export default function App() {
     );
   }
 
-  // Sort gauges: flooding/elevated first, then by name
+  // Filter to gauges with current data, then sort: flooding/elevated first
+  const hasData = (g) =>
+    g.current?.gage_height_ft != null || g.current?.streamflow_cfs != null;
   const statusOrder = { major: 0, moderate: 1, minor: 2, action: 3, normal: 4 };
-  const sortedGauges = [...data.gauges].sort(
-    (a, b) =>
-      (statusOrder[a.flood_status] ?? 4) - (statusOrder[b.flood_status] ?? 4)
-  );
+  const sortedGauges = [...data.gauges]
+    .filter(hasData)
+    .sort(
+      (a, b) =>
+        (statusOrder[a.flood_status] ?? 4) - (statusOrder[b.flood_status] ?? 4)
+    );
 
-  // Count active gauges
-  const activeCount = data.gauges.filter(
-    (g) => g.current?.gage_height_ft != null || g.current?.streamflow_cfs != null
-  ).length;
+  const activeCount = sortedGauges.length;
 
   return (
     <div className="widget-container">
@@ -115,6 +121,9 @@ export default function App() {
         Brought to you by <strong>Your Sponsor Here</strong> — Serving Central Wisconsin
       </div>
 
+      {/* Weather Forecast */}
+      <WeatherForecast forecast={data.weather_forecast} />
+
       {/* Alerts */}
       <AlertBanner alerts={data.alerts} />
 
@@ -132,19 +141,43 @@ export default function App() {
         ))}
       </div>
 
-      {/* Reservoirs (Phase 2) */}
-      <div className="section-header" style={{ marginTop: 'var(--space-lg)' }}>
-        <h2 className="section-header__title">Reservoirs</h2>
-        <span className="section-header__subtitle">WVIC System</span>
-      </div>
+      {/* Fishing Conditions */}
+      {data.fishing_conditions && (
+        <>
+          <div className="section-header" style={{ marginTop: 'var(--space-lg)' }}>
+            <h2 className="section-header__title">Fishing Conditions</h2>
+            <span className="section-header__subtitle">
+              Wausau area · updated every 30 min
+            </span>
+          </div>
+          <FishingConditions conditions={data.fishing_conditions} />
+        </>
+      )}
 
-      <div className="reservoirs-placeholder">
-        <div className="reservoirs-placeholder__title">Coming Soon</div>
-        <div className="reservoirs-placeholder__desc">
-          Reservoir levels for Rainbow, Willow, Spirit, Eau Pleine, Rice, and
-          Lake Wausau from the Wisconsin Valley Improvement Company.
-        </div>
-      </div>
+      {/* Reservoirs */}
+      {data.reservoirs && data.reservoirs.length > 0 && (
+        <>
+          <div className="section-header" style={{ marginTop: 'var(--space-lg)' }}>
+            <h2 className="section-header__title">Reservoirs</h2>
+            <span className="section-header__subtitle">
+              {data.reservoirs.filter((r) => r.has_data).length} of{' '}
+              {data.reservoirs.length} reporting · WVIC System
+            </span>
+          </div>
+
+          <div className="reservoirs-grid">
+            {data.reservoirs.filter((r) => r.has_data).map((reservoir) => (
+              <ReservoirCard key={reservoir.slug} reservoir={reservoir} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Fishing Guide */}
+      <FishingReference gauges={data.gauges} />
+
+      {/* Community */}
+      <CommunityBar links={data.community_links} />
 
       {/* Footer */}
       <footer className="widget-footer">
@@ -160,6 +193,14 @@ export default function App() {
           {' · '}
           <a href="https://wvic.com/" target="_blank" rel="noopener noreferrer">
             WVIC
+          </a>
+          {' · '}
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+            Open-Meteo
+          </a>
+          {' · '}
+          <a href="https://solunar.org/" target="_blank" rel="noopener noreferrer">
+            Solunar
           </a>
         </div>
         <div className="widget-footer__disclaimer">

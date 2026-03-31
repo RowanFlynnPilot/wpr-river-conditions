@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-30T23:29:22.444078+00:00",
+  "generated_at": "2026-03-31T01:45:21.382008+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -17,42 +17,907 @@
         "major": 28.0
       },
       "flood_status": "normal",
+      "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T18:00:00.000-05:00",
+        "timestamp": "2026-03-30T20:00:00.000-05:00",
         "streamflow_cfs": 6650.0,
         "gage_height_ft": 16.22
       },
       "history": [
         {
-          "date": "2026-03-23",
-          "streamflow_cfs": 11400.0
+          "timestamp": "2026-03-23T20:50:00.000-05:00",
+          "streamflow_cfs": 10800.0,
+          "gage_height_ft": 18.23
         },
         {
-          "date": "2026-03-24",
-          "streamflow_cfs": 9770.0
+          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "streamflow_cfs": 10600.0,
+          "gage_height_ft": 18.14
         },
         {
-          "date": "2026-03-25",
-          "streamflow_cfs": 8650.0
+          "timestamp": "2026-03-23T22:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.09
         },
         {
-          "date": "2026-03-26",
-          "streamflow_cfs": 10600.0
+          "timestamp": "2026-03-23T23:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.09
         },
         {
-          "date": "2026-03-27",
-          "streamflow_cfs": 11300.0
+          "timestamp": "2026-03-24T00:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.1
         },
         {
-          "date": "2026-03-28",
-          "streamflow_cfs": 7640.0
+          "timestamp": "2026-03-24T01:00:00.000-05:00",
+          "streamflow_cfs": 10700.0,
+          "gage_height_ft": 18.18
         },
         {
-          "date": "2026-03-29",
-          "streamflow_cfs": 6330.0
+          "timestamp": "2026-03-24T02:00:00.000-05:00",
+          "streamflow_cfs": 10800.0,
+          "gage_height_ft": 18.23
+        },
+        {
+          "timestamp": "2026-03-24T03:00:00.000-05:00",
+          "streamflow_cfs": 10600.0,
+          "gage_height_ft": 18.16
+        },
+        {
+          "timestamp": "2026-03-24T04:00:00.000-05:00",
+          "streamflow_cfs": 10600.0,
+          "gage_height_ft": 18.15
+        },
+        {
+          "timestamp": "2026-03-24T05:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.09
+        },
+        {
+          "timestamp": "2026-03-24T06:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.09
+        },
+        {
+          "timestamp": "2026-03-24T07:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.08
+        },
+        {
+          "timestamp": "2026-03-24T08:00:00.000-05:00",
+          "streamflow_cfs": 10300.0,
+          "gage_height_ft": 17.99
+        },
+        {
+          "timestamp": "2026-03-24T09:00:00.000-05:00",
+          "streamflow_cfs": 10200.0,
+          "gage_height_ft": 17.95
+        },
+        {
+          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "streamflow_cfs": 9800.0,
+          "gage_height_ft": 17.78
+        },
+        {
+          "timestamp": "2026-03-24T11:00:00.000-05:00",
+          "streamflow_cfs": 9500.0,
+          "gage_height_ft": 17.64
+        },
+        {
+          "timestamp": "2026-03-24T12:00:00.000-05:00",
+          "streamflow_cfs": 9540.0,
+          "gage_height_ft": 17.66
+        },
+        {
+          "timestamp": "2026-03-24T13:00:00.000-05:00",
+          "streamflow_cfs": 9560.0,
+          "gage_height_ft": 17.67
+        },
+        {
+          "timestamp": "2026-03-24T14:00:00.000-05:00",
+          "streamflow_cfs": 9520.0,
+          "gage_height_ft": 17.65
+        },
+        {
+          "timestamp": "2026-03-24T15:00:00.000-05:00",
+          "streamflow_cfs": 9520.0,
+          "gage_height_ft": 17.65
+        },
+        {
+          "timestamp": "2026-03-24T16:00:00.000-05:00",
+          "streamflow_cfs": 9500.0,
+          "gage_height_ft": 17.64
+        },
+        {
+          "timestamp": "2026-03-24T17:00:00.000-05:00",
+          "streamflow_cfs": 9370.0,
+          "gage_height_ft": 17.58
+        },
+        {
+          "timestamp": "2026-03-24T18:00:00.000-05:00",
+          "streamflow_cfs": 9050.0,
+          "gage_height_ft": 17.43
+        },
+        {
+          "timestamp": "2026-03-24T19:00:00.000-05:00",
+          "streamflow_cfs": 9010.0,
+          "gage_height_ft": 17.41
+        },
+        {
+          "timestamp": "2026-03-24T20:00:00.000-05:00",
+          "streamflow_cfs": 8970.0,
+          "gage_height_ft": 17.39
+        },
+        {
+          "timestamp": "2026-03-24T21:00:00.000-05:00",
+          "streamflow_cfs": 8970.0,
+          "gage_height_ft": 17.39
+        },
+        {
+          "timestamp": "2026-03-24T22:00:00.000-05:00",
+          "streamflow_cfs": 8920.0,
+          "gage_height_ft": 17.37
+        },
+        {
+          "timestamp": "2026-03-24T23:00:00.000-05:00",
+          "streamflow_cfs": 8970.0,
+          "gage_height_ft": 17.39
+        },
+        {
+          "timestamp": "2026-03-25T00:00:00.000-05:00",
+          "streamflow_cfs": 8970.0,
+          "gage_height_ft": 17.39
+        },
+        {
+          "timestamp": "2026-03-25T01:00:00.000-05:00",
+          "streamflow_cfs": 8950.0,
+          "gage_height_ft": 17.38
+        },
+        {
+          "timestamp": "2026-03-25T02:00:00.000-05:00",
+          "streamflow_cfs": 8950.0,
+          "gage_height_ft": 17.38
+        },
+        {
+          "timestamp": "2026-03-25T03:00:00.000-05:00",
+          "streamflow_cfs": 8950.0,
+          "gage_height_ft": 17.38
+        },
+        {
+          "timestamp": "2026-03-25T04:00:00.000-05:00",
+          "streamflow_cfs": 8820.0,
+          "gage_height_ft": 17.32
+        },
+        {
+          "timestamp": "2026-03-25T05:00:00.000-05:00",
+          "streamflow_cfs": 8690.0,
+          "gage_height_ft": 17.26
+        },
+        {
+          "timestamp": "2026-03-25T06:00:00.000-05:00",
+          "streamflow_cfs": 8670.0,
+          "gage_height_ft": 17.25
+        },
+        {
+          "timestamp": "2026-03-25T07:00:00.000-05:00",
+          "streamflow_cfs": 8650.0,
+          "gage_height_ft": 17.24
+        },
+        {
+          "timestamp": "2026-03-25T08:00:00.000-05:00",
+          "streamflow_cfs": 8380.0,
+          "gage_height_ft": 17.11
+        },
+        {
+          "timestamp": "2026-03-25T09:00:00.000-05:00",
+          "streamflow_cfs": 8320.0,
+          "gage_height_ft": 17.08
+        },
+        {
+          "timestamp": "2026-03-25T10:00:00.000-05:00",
+          "streamflow_cfs": 8320.0,
+          "gage_height_ft": 17.08
+        },
+        {
+          "timestamp": "2026-03-25T11:00:00.000-05:00",
+          "streamflow_cfs": 8570.0,
+          "gage_height_ft": 17.2
+        },
+        {
+          "timestamp": "2026-03-25T12:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T13:00:00.000-05:00",
+          "streamflow_cfs": 8610.0,
+          "gage_height_ft": 17.22
+        },
+        {
+          "timestamp": "2026-03-25T14:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T15:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T16:00:00.000-05:00",
+          "streamflow_cfs": 8610.0,
+          "gage_height_ft": 17.22
+        },
+        {
+          "timestamp": "2026-03-25T17:00:00.000-05:00",
+          "streamflow_cfs": 8610.0,
+          "gage_height_ft": 17.22
+        },
+        {
+          "timestamp": "2026-03-25T18:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T19:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T20:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T21:00:00.000-05:00",
+          "streamflow_cfs": 8650.0,
+          "gage_height_ft": 17.24
+        },
+        {
+          "timestamp": "2026-03-25T22:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-25T23:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-26T00:00:00.000-05:00",
+          "streamflow_cfs": 8650.0,
+          "gage_height_ft": 17.24
+        },
+        {
+          "timestamp": "2026-03-26T01:00:00.000-05:00",
+          "streamflow_cfs": 8630.0,
+          "gage_height_ft": 17.23
+        },
+        {
+          "timestamp": "2026-03-26T02:00:00.000-05:00",
+          "streamflow_cfs": 8840.0,
+          "gage_height_ft": 17.33
+        },
+        {
+          "timestamp": "2026-03-26T03:00:00.000-05:00",
+          "streamflow_cfs": 9180.0,
+          "gage_height_ft": 17.49
+        },
+        {
+          "timestamp": "2026-03-26T04:00:00.000-05:00",
+          "streamflow_cfs": 9330.0,
+          "gage_height_ft": 17.56
+        },
+        {
+          "timestamp": "2026-03-26T05:00:00.000-05:00",
+          "streamflow_cfs": 9730.0,
+          "gage_height_ft": 17.75
+        },
+        {
+          "timestamp": "2026-03-26T06:00:00.000-05:00",
+          "streamflow_cfs": 9990.0,
+          "gage_height_ft": 17.87
+        },
+        {
+          "timestamp": "2026-03-26T07:00:00.000-05:00",
+          "streamflow_cfs": 10100.0,
+          "gage_height_ft": 17.91
+        },
+        {
+          "timestamp": "2026-03-26T08:00:00.000-05:00",
+          "streamflow_cfs": 10100.0,
+          "gage_height_ft": 17.91
+        },
+        {
+          "timestamp": "2026-03-26T09:00:00.000-05:00",
+          "streamflow_cfs": 10600.0,
+          "gage_height_ft": 18.17
+        },
+        {
+          "timestamp": "2026-03-26T10:00:00.000-05:00",
+          "streamflow_cfs": 10800.0,
+          "gage_height_ft": 18.23
+        },
+        {
+          "timestamp": "2026-03-26T11:00:00.000-05:00",
+          "streamflow_cfs": 10800.0,
+          "gage_height_ft": 18.22
+        },
+        {
+          "timestamp": "2026-03-26T12:00:00.000-05:00",
+          "streamflow_cfs": 10800.0,
+          "gage_height_ft": 18.24
+        },
+        {
+          "timestamp": "2026-03-26T13:00:00.000-05:00",
+          "streamflow_cfs": 10800.0,
+          "gage_height_ft": 18.24
+        },
+        {
+          "timestamp": "2026-03-26T14:00:00.000-05:00",
+          "streamflow_cfs": 10900.0,
+          "gage_height_ft": 18.3
+        },
+        {
+          "timestamp": "2026-03-26T15:00:00.000-05:00",
+          "streamflow_cfs": 11200.0,
+          "gage_height_ft": 18.4
+        },
+        {
+          "timestamp": "2026-03-26T16:00:00.000-05:00",
+          "streamflow_cfs": 11200.0,
+          "gage_height_ft": 18.43
+        },
+        {
+          "timestamp": "2026-03-26T17:00:00.000-05:00",
+          "streamflow_cfs": 11200.0,
+          "gage_height_ft": 18.44
+        },
+        {
+          "timestamp": "2026-03-26T18:00:00.000-05:00",
+          "streamflow_cfs": 11300.0,
+          "gage_height_ft": 18.45
+        },
+        {
+          "timestamp": "2026-03-26T19:00:00.000-05:00",
+          "streamflow_cfs": 11700.0,
+          "gage_height_ft": 18.62
+        },
+        {
+          "timestamp": "2026-03-26T20:00:00.000-05:00",
+          "streamflow_cfs": 11800.0,
+          "gage_height_ft": 18.69
+        },
+        {
+          "timestamp": "2026-03-26T21:00:00.000-05:00",
+          "streamflow_cfs": 11700.0,
+          "gage_height_ft": 18.66
+        },
+        {
+          "timestamp": "2026-03-26T22:00:00.000-05:00",
+          "streamflow_cfs": 11900.0,
+          "gage_height_ft": 18.72
+        },
+        {
+          "timestamp": "2026-03-26T23:00:00.000-05:00",
+          "streamflow_cfs": 11900.0,
+          "gage_height_ft": 18.74
+        },
+        {
+          "timestamp": "2026-03-27T00:00:00.000-05:00",
+          "streamflow_cfs": 12400.0,
+          "gage_height_ft": 18.93
+        },
+        {
+          "timestamp": "2026-03-27T01:00:00.000-05:00",
+          "streamflow_cfs": 12700.0,
+          "gage_height_ft": 19.05
+        },
+        {
+          "timestamp": "2026-03-27T02:00:00.000-05:00",
+          "streamflow_cfs": 12800.0,
+          "gage_height_ft": 19.1
+        },
+        {
+          "timestamp": "2026-03-27T03:00:00.000-05:00",
+          "streamflow_cfs": 12700.0,
+          "gage_height_ft": 19.07
+        },
+        {
+          "timestamp": "2026-03-27T04:00:00.000-05:00",
+          "streamflow_cfs": 12700.0,
+          "gage_height_ft": 19.08
+        },
+        {
+          "timestamp": "2026-03-27T05:00:00.000-05:00",
+          "streamflow_cfs": 12700.0,
+          "gage_height_ft": 19.08
+        },
+        {
+          "timestamp": "2026-03-27T06:00:00.000-05:00",
+          "streamflow_cfs": 12600.0,
+          "gage_height_ft": 19.03
+        },
+        {
+          "timestamp": "2026-03-27T07:00:00.000-05:00",
+          "streamflow_cfs": 12600.0,
+          "gage_height_ft": 19.02
+        },
+        {
+          "timestamp": "2026-03-27T08:00:00.000-05:00",
+          "streamflow_cfs": 12500.0,
+          "gage_height_ft": 18.99
+        },
+        {
+          "timestamp": "2026-03-27T09:00:00.000-05:00",
+          "streamflow_cfs": 12300.0,
+          "gage_height_ft": 18.9
+        },
+        {
+          "timestamp": "2026-03-27T10:00:00.000-05:00",
+          "streamflow_cfs": 12100.0,
+          "gage_height_ft": 18.82
+        },
+        {
+          "timestamp": "2026-03-27T11:00:00.000-05:00",
+          "streamflow_cfs": 11600.0,
+          "gage_height_ft": 18.6
+        },
+        {
+          "timestamp": "2026-03-27T12:00:00.000-05:00",
+          "streamflow_cfs": 11300.0,
+          "gage_height_ft": 18.47
+        },
+        {
+          "timestamp": "2026-03-27T13:00:00.000-05:00",
+          "streamflow_cfs": 11000.0,
+          "gage_height_ft": 18.35
+        },
+        {
+          "timestamp": "2026-03-27T14:00:00.000-05:00",
+          "streamflow_cfs": 10700.0,
+          "gage_height_ft": 18.21
+        },
+        {
+          "timestamp": "2026-03-27T15:00:00.000-05:00",
+          "streamflow_cfs": 10500.0,
+          "gage_height_ft": 18.12
+        },
+        {
+          "timestamp": "2026-03-27T16:00:00.000-05:00",
+          "streamflow_cfs": 10200.0,
+          "gage_height_ft": 17.96
+        },
+        {
+          "timestamp": "2026-03-27T17:00:00.000-05:00",
+          "streamflow_cfs": 10100.0,
+          "gage_height_ft": 17.93
+        },
+        {
+          "timestamp": "2026-03-27T18:00:00.000-05:00",
+          "streamflow_cfs": 10100.0,
+          "gage_height_ft": 17.91
+        },
+        {
+          "timestamp": "2026-03-27T19:00:00.000-05:00",
+          "streamflow_cfs": 10100.0,
+          "gage_height_ft": 17.9
+        },
+        {
+          "timestamp": "2026-03-27T20:00:00.000-05:00",
+          "streamflow_cfs": 10100.0,
+          "gage_height_ft": 17.91
+        },
+        {
+          "timestamp": "2026-03-27T21:00:00.000-05:00",
+          "streamflow_cfs": 10000.0,
+          "gage_height_ft": 17.88
+        },
+        {
+          "timestamp": "2026-03-27T22:00:00.000-05:00",
+          "streamflow_cfs": 9540.0,
+          "gage_height_ft": 17.66
+        },
+        {
+          "timestamp": "2026-03-27T23:00:00.000-05:00",
+          "streamflow_cfs": 9450.0,
+          "gage_height_ft": 17.62
+        },
+        {
+          "timestamp": "2026-03-28T00:00:00.000-05:00",
+          "streamflow_cfs": 9430.0,
+          "gage_height_ft": 17.61
+        },
+        {
+          "timestamp": "2026-03-28T01:00:00.000-05:00",
+          "streamflow_cfs": 9410.0,
+          "gage_height_ft": 17.6
+        },
+        {
+          "timestamp": "2026-03-28T02:00:00.000-05:00",
+          "streamflow_cfs": 9390.0,
+          "gage_height_ft": 17.59
+        },
+        {
+          "timestamp": "2026-03-28T03:00:00.000-05:00",
+          "streamflow_cfs": 9350.0,
+          "gage_height_ft": 17.57
+        },
+        {
+          "timestamp": "2026-03-28T04:00:00.000-05:00",
+          "streamflow_cfs": 9370.0,
+          "gage_height_ft": 17.58
+        },
+        {
+          "timestamp": "2026-03-28T05:00:00.000-05:00",
+          "streamflow_cfs": 9330.0,
+          "gage_height_ft": 17.56
+        },
+        {
+          "timestamp": "2026-03-28T06:00:00.000-05:00",
+          "streamflow_cfs": 9330.0,
+          "gage_height_ft": 17.56
+        },
+        {
+          "timestamp": "2026-03-28T07:00:00.000-05:00",
+          "streamflow_cfs": 8090.0,
+          "gage_height_ft": 16.97
+        },
+        {
+          "timestamp": "2026-03-28T08:00:00.000-05:00",
+          "streamflow_cfs": 7610.0,
+          "gage_height_ft": 16.73
+        },
+        {
+          "timestamp": "2026-03-28T09:00:00.000-05:00",
+          "streamflow_cfs": 7250.0,
+          "gage_height_ft": 16.55
+        },
+        {
+          "timestamp": "2026-03-28T10:00:00.000-05:00",
+          "streamflow_cfs": 6790.0,
+          "gage_height_ft": 16.3
+        },
+        {
+          "timestamp": "2026-03-28T11:00:00.000-05:00",
+          "streamflow_cfs": 6820.0,
+          "gage_height_ft": 16.32
+        },
+        {
+          "timestamp": "2026-03-28T12:00:00.000-05:00",
+          "streamflow_cfs": 6770.0,
+          "gage_height_ft": 16.29
+        },
+        {
+          "timestamp": "2026-03-28T13:00:00.000-05:00",
+          "streamflow_cfs": 6720.0,
+          "gage_height_ft": 16.26
+        },
+        {
+          "timestamp": "2026-03-28T14:00:00.000-05:00",
+          "streamflow_cfs": 6930.0,
+          "gage_height_ft": 16.38
+        },
+        {
+          "timestamp": "2026-03-28T15:00:00.000-05:00",
+          "streamflow_cfs": 6960.0,
+          "gage_height_ft": 16.4
+        },
+        {
+          "timestamp": "2026-03-28T16:00:00.000-05:00",
+          "streamflow_cfs": 6950.0,
+          "gage_height_ft": 16.39
+        },
+        {
+          "timestamp": "2026-03-28T17:00:00.000-05:00",
+          "streamflow_cfs": 6930.0,
+          "gage_height_ft": 16.38
+        },
+        {
+          "timestamp": "2026-03-28T18:00:00.000-05:00",
+          "streamflow_cfs": 6950.0,
+          "gage_height_ft": 16.39
+        },
+        {
+          "timestamp": "2026-03-28T19:00:00.000-05:00",
+          "streamflow_cfs": 6910.0,
+          "gage_height_ft": 16.37
+        },
+        {
+          "timestamp": "2026-03-28T20:00:00.000-05:00",
+          "streamflow_cfs": 6890.0,
+          "gage_height_ft": 16.36
+        },
+        {
+          "timestamp": "2026-03-28T21:00:00.000-05:00",
+          "streamflow_cfs": 6880.0,
+          "gage_height_ft": 16.35
+        },
+        {
+          "timestamp": "2026-03-28T22:00:00.000-05:00",
+          "streamflow_cfs": 6890.0,
+          "gage_height_ft": 16.36
+        },
+        {
+          "timestamp": "2026-03-28T23:00:00.000-05:00",
+          "streamflow_cfs": 6880.0,
+          "gage_height_ft": 16.35
+        },
+        {
+          "timestamp": "2026-03-29T00:00:00.000-05:00",
+          "streamflow_cfs": 6880.0,
+          "gage_height_ft": 16.35
+        },
+        {
+          "timestamp": "2026-03-29T01:00:00.000-05:00",
+          "streamflow_cfs": 6860.0,
+          "gage_height_ft": 16.34
+        },
+        {
+          "timestamp": "2026-03-29T02:00:00.000-05:00",
+          "streamflow_cfs": 6880.0,
+          "gage_height_ft": 16.35
+        },
+        {
+          "timestamp": "2026-03-29T03:00:00.000-05:00",
+          "streamflow_cfs": 6860.0,
+          "gage_height_ft": 16.34
+        },
+        {
+          "timestamp": "2026-03-29T04:00:00.000-05:00",
+          "streamflow_cfs": 6670.0,
+          "gage_height_ft": 16.23
+        },
+        {
+          "timestamp": "2026-03-29T05:00:00.000-05:00",
+          "streamflow_cfs": 6390.0,
+          "gage_height_ft": 16.01
+        },
+        {
+          "timestamp": "2026-03-29T06:00:00.000-05:00",
+          "streamflow_cfs": 6080.0,
+          "gage_height_ft": 15.84
+        },
+        {
+          "timestamp": "2026-03-29T07:00:00.000-05:00",
+          "streamflow_cfs": 6020.0,
+          "gage_height_ft": 15.8
+        },
+        {
+          "timestamp": "2026-03-29T08:00:00.000-05:00",
+          "streamflow_cfs": 6310.0,
+          "gage_height_ft": 15.94
+        },
+        {
+          "timestamp": "2026-03-29T09:00:00.000-05:00",
+          "streamflow_cfs": 6370.0,
+          "gage_height_ft": 15.96
+        },
+        {
+          "timestamp": "2026-03-29T10:00:00.000-05:00",
+          "streamflow_cfs": 6360.0,
+          "gage_height_ft": 15.95
+        },
+        {
+          "timestamp": "2026-03-29T11:00:00.000-05:00",
+          "streamflow_cfs": 6380.0,
+          "gage_height_ft": 15.96
+        },
+        {
+          "timestamp": "2026-03-29T12:00:00.000-05:00",
+          "streamflow_cfs": 6350.0,
+          "gage_height_ft": 15.94
+        },
+        {
+          "timestamp": "2026-03-29T13:00:00.000-05:00",
+          "streamflow_cfs": 6380.0,
+          "gage_height_ft": 15.95
+        },
+        {
+          "timestamp": "2026-03-29T14:00:00.000-05:00",
+          "streamflow_cfs": 6170.0,
+          "gage_height_ft": 15.84
+        },
+        {
+          "timestamp": "2026-03-29T15:00:00.000-05:00",
+          "streamflow_cfs": 6060.0,
+          "gage_height_ft": 15.78
+        },
+        {
+          "timestamp": "2026-03-29T16:00:00.000-05:00",
+          "streamflow_cfs": 6020.0,
+          "gage_height_ft": 15.75
+        },
+        {
+          "timestamp": "2026-03-29T17:00:00.000-05:00",
+          "streamflow_cfs": 6050.0,
+          "gage_height_ft": 15.76
+        },
+        {
+          "timestamp": "2026-03-29T18:00:00.000-05:00",
+          "streamflow_cfs": 5990.0,
+          "gage_height_ft": 15.72
+        },
+        {
+          "timestamp": "2026-03-29T19:00:00.000-05:00",
+          "streamflow_cfs": 6020.0,
+          "gage_height_ft": 15.73
+        },
+        {
+          "timestamp": "2026-03-29T20:00:00.000-05:00",
+          "streamflow_cfs": 6030.0,
+          "gage_height_ft": 15.73
+        },
+        {
+          "timestamp": "2026-03-29T21:00:00.000-05:00",
+          "streamflow_cfs": 6170.0,
+          "gage_height_ft": 15.8
+        },
+        {
+          "timestamp": "2026-03-29T22:00:00.000-05:00",
+          "streamflow_cfs": 6290.0,
+          "gage_height_ft": 15.86
+        },
+        {
+          "timestamp": "2026-03-29T23:00:00.000-05:00",
+          "streamflow_cfs": 6350.0,
+          "gage_height_ft": 15.89
+        },
+        {
+          "timestamp": "2026-03-30T00:00:00.000-05:00",
+          "streamflow_cfs": 6310.0,
+          "gage_height_ft": 15.87
+        },
+        {
+          "timestamp": "2026-03-30T01:00:00.000-05:00",
+          "streamflow_cfs": 6350.0,
+          "gage_height_ft": 15.89
+        },
+        {
+          "timestamp": "2026-03-30T02:00:00.000-05:00",
+          "streamflow_cfs": 6500.0,
+          "gage_height_ft": 15.97
+        },
+        {
+          "timestamp": "2026-03-30T03:00:00.000-05:00",
+          "streamflow_cfs": 6630.0,
+          "gage_height_ft": 16.04
+        },
+        {
+          "timestamp": "2026-03-30T04:00:00.000-05:00",
+          "streamflow_cfs": 6680.0,
+          "gage_height_ft": 16.07
+        },
+        {
+          "timestamp": "2026-03-30T05:00:00.000-05:00",
+          "streamflow_cfs": 6910.0,
+          "gage_height_ft": 16.19
+        },
+        {
+          "timestamp": "2026-03-30T06:00:00.000-05:00",
+          "streamflow_cfs": 6630.0,
+          "gage_height_ft": 16.21
+        },
+        {
+          "timestamp": "2026-03-30T07:00:00.000-05:00",
+          "streamflow_cfs": 6650.0,
+          "gage_height_ft": 16.22
+        },
+        {
+          "timestamp": "2026-03-30T08:00:00.000-05:00",
+          "streamflow_cfs": 6650.0,
+          "gage_height_ft": 16.22
+        },
+        {
+          "timestamp": "2026-03-30T09:00:00.000-05:00",
+          "streamflow_cfs": 6670.0,
+          "gage_height_ft": 16.23
+        },
+        {
+          "timestamp": "2026-03-30T10:00:00.000-05:00",
+          "streamflow_cfs": 6670.0,
+          "gage_height_ft": 16.23
+        },
+        {
+          "timestamp": "2026-03-30T11:00:00.000-05:00",
+          "streamflow_cfs": 6670.0,
+          "gage_height_ft": 16.23
+        },
+        {
+          "timestamp": "2026-03-30T12:00:00.000-05:00",
+          "streamflow_cfs": 6700.0,
+          "gage_height_ft": 16.25
+        },
+        {
+          "timestamp": "2026-03-30T13:00:00.000-05:00",
+          "streamflow_cfs": 6630.0,
+          "gage_height_ft": 16.21
+        },
+        {
+          "timestamp": "2026-03-30T14:00:00.000-05:00",
+          "streamflow_cfs": 6620.0,
+          "gage_height_ft": 16.2
+        },
+        {
+          "timestamp": "2026-03-30T15:00:00.000-05:00",
+          "streamflow_cfs": 6770.0,
+          "gage_height_ft": 16.18
+        },
+        {
+          "timestamp": "2026-03-30T16:00:00.000-05:00",
+          "streamflow_cfs": 6620.0,
+          "gage_height_ft": 16.2
+        },
+        {
+          "timestamp": "2026-03-30T17:00:00.000-05:00",
+          "streamflow_cfs": 6630.0,
+          "gage_height_ft": 16.21
+        },
+        {
+          "timestamp": "2026-03-30T18:00:00.000-05:00",
+          "streamflow_cfs": 6650.0,
+          "gage_height_ft": 16.22
+        },
+        {
+          "timestamp": "2026-03-30T19:00:00.000-05:00",
+          "streamflow_cfs": 6630.0,
+          "gage_height_ft": 16.21
+        },
+        {
+          "timestamp": "2026-03-30T20:00:00.000-05:00",
+          "streamflow_cfs": 6650.0,
+          "gage_height_ft": 16.22
         }
       ],
+      "fishing": {
+        "species": [
+          "Walleye",
+          "Smallmouth Bass",
+          "Musky",
+          "Channel Catfish",
+          "Sturgeon"
+        ],
+        "trout_class": null,
+        "regulations": [
+          {
+            "species": "Walleye",
+            "rule": "15\" min, 5 daily bag"
+          },
+          {
+            "species": "Musky",
+            "rule": "50\" min, 1 daily"
+          },
+          {
+            "species": "Bass",
+            "rule": "14\" min, 5 daily"
+          }
+        ],
+        "season_notes": [
+          "Walleye/Sauger open first Sat in May",
+          "Catch-and-release bass season Mar\u2013Jun"
+        ],
+        "access_points": [
+          {
+            "name": "Rothschild Boat Landing",
+            "directions": "Off River Dr, east of Hwy 51 bridge",
+            "lat": 44.8872,
+            "lng": -89.6173
+          },
+          {
+            "name": "Wausau Whitewater Park",
+            "directions": "River Dr near downtown Wausau",
+            "lat": 44.9619,
+            "lng": -89.6301
+          }
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
+      },
+      "recreation": {
+        "kayaking": "ideal",
+        "tubing": "ideal"
+      },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05398000/",
       "nws_url": "https://water.noaa.gov/gauges/rotw3"
     },
@@ -66,12 +931,727 @@
       "lon": -89.6884,
       "flood_stages": null,
       "flood_status": "normal",
+      "has_temp_sensor": false,
       "nws_flood_category": null,
       "current": {
-        "timestamp": "2026-03-30T18:00:00.000-05:00",
-        "gage_height_ft": 12.23
+        "timestamp": "2026-03-30T20:00:00.000-05:00",
+        "gage_height_ft": 12.13
       },
-      "history": [],
+      "history": [
+        {
+          "timestamp": "2026-03-23T20:50:00.000-05:00",
+          "gage_height_ft": 12.89
+        },
+        {
+          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "gage_height_ft": 12.86
+        },
+        {
+          "timestamp": "2026-03-23T22:00:00.000-05:00",
+          "gage_height_ft": 12.83
+        },
+        {
+          "timestamp": "2026-03-23T23:00:00.000-05:00",
+          "gage_height_ft": 12.8
+        },
+        {
+          "timestamp": "2026-03-24T00:00:00.000-05:00",
+          "gage_height_ft": 12.78
+        },
+        {
+          "timestamp": "2026-03-24T01:00:00.000-05:00",
+          "gage_height_ft": 12.78
+        },
+        {
+          "timestamp": "2026-03-24T02:00:00.000-05:00",
+          "gage_height_ft": 12.79
+        },
+        {
+          "timestamp": "2026-03-24T03:00:00.000-05:00",
+          "gage_height_ft": 12.8
+        },
+        {
+          "timestamp": "2026-03-24T04:00:00.000-05:00",
+          "gage_height_ft": 12.81
+        },
+        {
+          "timestamp": "2026-03-24T05:00:00.000-05:00",
+          "gage_height_ft": 12.81
+        },
+        {
+          "timestamp": "2026-03-24T06:00:00.000-05:00",
+          "gage_height_ft": 12.81
+        },
+        {
+          "timestamp": "2026-03-24T07:00:00.000-05:00",
+          "gage_height_ft": 12.8
+        },
+        {
+          "timestamp": "2026-03-24T08:00:00.000-05:00",
+          "gage_height_ft": 12.79
+        },
+        {
+          "timestamp": "2026-03-24T09:00:00.000-05:00",
+          "gage_height_ft": 12.78
+        },
+        {
+          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "gage_height_ft": 12.77
+        },
+        {
+          "timestamp": "2026-03-24T11:00:00.000-05:00",
+          "gage_height_ft": 12.76
+        },
+        {
+          "timestamp": "2026-03-24T12:00:00.000-05:00",
+          "gage_height_ft": 12.73
+        },
+        {
+          "timestamp": "2026-03-24T13:00:00.000-05:00",
+          "gage_height_ft": 12.72
+        },
+        {
+          "timestamp": "2026-03-24T14:00:00.000-05:00",
+          "gage_height_ft": 12.73
+        },
+        {
+          "timestamp": "2026-03-24T15:00:00.000-05:00",
+          "gage_height_ft": 12.73
+        },
+        {
+          "timestamp": "2026-03-24T16:00:00.000-05:00",
+          "gage_height_ft": 12.73
+        },
+        {
+          "timestamp": "2026-03-24T17:00:00.000-05:00",
+          "gage_height_ft": 12.73
+        },
+        {
+          "timestamp": "2026-03-24T18:00:00.000-05:00",
+          "gage_height_ft": 12.72
+        },
+        {
+          "timestamp": "2026-03-24T19:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-24T20:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-24T21:00:00.000-05:00",
+          "gage_height_ft": 12.68
+        },
+        {
+          "timestamp": "2026-03-24T22:00:00.000-05:00",
+          "gage_height_ft": 12.66
+        },
+        {
+          "timestamp": "2026-03-24T23:00:00.000-05:00",
+          "gage_height_ft": 12.68
+        },
+        {
+          "timestamp": "2026-03-25T00:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-25T01:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-25T02:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-25T03:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-25T04:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-25T05:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-25T06:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-25T07:00:00.000-05:00",
+          "gage_height_ft": 12.68
+        },
+        {
+          "timestamp": "2026-03-25T08:00:00.000-05:00",
+          "gage_height_ft": 12.66
+        },
+        {
+          "timestamp": "2026-03-25T09:00:00.000-05:00",
+          "gage_height_ft": 12.61
+        },
+        {
+          "timestamp": "2026-03-25T10:00:00.000-05:00",
+          "gage_height_ft": 12.63
+        },
+        {
+          "timestamp": "2026-03-25T11:00:00.000-05:00",
+          "gage_height_ft": 12.63
+        },
+        {
+          "timestamp": "2026-03-25T12:00:00.000-05:00",
+          "gage_height_ft": 12.64
+        },
+        {
+          "timestamp": "2026-03-25T13:00:00.000-05:00",
+          "gage_height_ft": 12.65
+        },
+        {
+          "timestamp": "2026-03-25T14:00:00.000-05:00",
+          "gage_height_ft": 12.66
+        },
+        {
+          "timestamp": "2026-03-25T15:00:00.000-05:00",
+          "gage_height_ft": 12.67
+        },
+        {
+          "timestamp": "2026-03-25T16:00:00.000-05:00",
+          "gage_height_ft": 12.68
+        },
+        {
+          "timestamp": "2026-03-25T17:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-25T18:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-25T19:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-25T20:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-25T21:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-25T22:00:00.000-05:00",
+          "gage_height_ft": 12.71
+        },
+        {
+          "timestamp": "2026-03-25T23:00:00.000-05:00",
+          "gage_height_ft": 12.71
+        },
+        {
+          "timestamp": "2026-03-26T00:00:00.000-05:00",
+          "gage_height_ft": 12.72
+        },
+        {
+          "timestamp": "2026-03-26T01:00:00.000-05:00",
+          "gage_height_ft": 12.72
+        },
+        {
+          "timestamp": "2026-03-26T02:00:00.000-05:00",
+          "gage_height_ft": 12.72
+        },
+        {
+          "timestamp": "2026-03-26T03:00:00.000-05:00",
+          "gage_height_ft": 12.73
+        },
+        {
+          "timestamp": "2026-03-26T04:00:00.000-05:00",
+          "gage_height_ft": 12.75
+        },
+        {
+          "timestamp": "2026-03-26T05:00:00.000-05:00",
+          "gage_height_ft": 12.78
+        },
+        {
+          "timestamp": "2026-03-26T06:00:00.000-05:00",
+          "gage_height_ft": 12.82
+        },
+        {
+          "timestamp": "2026-03-26T07:00:00.000-05:00",
+          "gage_height_ft": 12.83
+        },
+        {
+          "timestamp": "2026-03-26T08:00:00.000-05:00",
+          "gage_height_ft": 12.83
+        },
+        {
+          "timestamp": "2026-03-26T09:00:00.000-05:00",
+          "gage_height_ft": 12.85
+        },
+        {
+          "timestamp": "2026-03-26T10:00:00.000-05:00",
+          "gage_height_ft": 12.88
+        },
+        {
+          "timestamp": "2026-03-26T11:00:00.000-05:00",
+          "gage_height_ft": 12.91
+        },
+        {
+          "timestamp": "2026-03-26T12:00:00.000-05:00",
+          "gage_height_ft": 12.94
+        },
+        {
+          "timestamp": "2026-03-26T13:00:00.000-05:00",
+          "gage_height_ft": 12.93
+        },
+        {
+          "timestamp": "2026-03-26T14:00:00.000-05:00",
+          "gage_height_ft": 12.93
+        },
+        {
+          "timestamp": "2026-03-26T15:00:00.000-05:00",
+          "gage_height_ft": 12.94
+        },
+        {
+          "timestamp": "2026-03-26T16:00:00.000-05:00",
+          "gage_height_ft": 12.96
+        },
+        {
+          "timestamp": "2026-03-26T17:00:00.000-05:00",
+          "gage_height_ft": 12.96
+        },
+        {
+          "timestamp": "2026-03-26T18:00:00.000-05:00",
+          "gage_height_ft": 12.97
+        },
+        {
+          "timestamp": "2026-03-26T19:00:00.000-05:00",
+          "gage_height_ft": 12.98
+        },
+        {
+          "timestamp": "2026-03-26T20:00:00.000-05:00",
+          "gage_height_ft": 13.0
+        },
+        {
+          "timestamp": "2026-03-26T21:00:00.000-05:00",
+          "gage_height_ft": 13.03
+        },
+        {
+          "timestamp": "2026-03-26T22:00:00.000-05:00",
+          "gage_height_ft": 13.05
+        },
+        {
+          "timestamp": "2026-03-26T23:00:00.000-05:00",
+          "gage_height_ft": 13.06
+        },
+        {
+          "timestamp": "2026-03-27T00:00:00.000-05:00",
+          "gage_height_ft": 13.05
+        },
+        {
+          "timestamp": "2026-03-27T01:00:00.000-05:00",
+          "gage_height_ft": 13.07
+        },
+        {
+          "timestamp": "2026-03-27T02:00:00.000-05:00",
+          "gage_height_ft": 13.09
+        },
+        {
+          "timestamp": "2026-03-27T03:00:00.000-05:00",
+          "gage_height_ft": 13.09
+        },
+        {
+          "timestamp": "2026-03-27T04:00:00.000-05:00",
+          "gage_height_ft": 13.09
+        },
+        {
+          "timestamp": "2026-03-27T05:00:00.000-05:00",
+          "gage_height_ft": 13.09
+        },
+        {
+          "timestamp": "2026-03-27T06:00:00.000-05:00",
+          "gage_height_ft": 13.09
+        },
+        {
+          "timestamp": "2026-03-27T07:00:00.000-05:00",
+          "gage_height_ft": 13.09
+        },
+        {
+          "timestamp": "2026-03-27T08:00:00.000-05:00",
+          "gage_height_ft": 13.08
+        },
+        {
+          "timestamp": "2026-03-27T09:00:00.000-05:00",
+          "gage_height_ft": 13.08
+        },
+        {
+          "timestamp": "2026-03-27T10:00:00.000-05:00",
+          "gage_height_ft": 13.07
+        },
+        {
+          "timestamp": "2026-03-27T11:00:00.000-05:00",
+          "gage_height_ft": 13.04
+        },
+        {
+          "timestamp": "2026-03-27T12:00:00.000-05:00",
+          "gage_height_ft": 13.01
+        },
+        {
+          "timestamp": "2026-03-27T13:00:00.000-05:00",
+          "gage_height_ft": 12.97
+        },
+        {
+          "timestamp": "2026-03-27T14:00:00.000-05:00",
+          "gage_height_ft": 12.92
+        },
+        {
+          "timestamp": "2026-03-27T15:00:00.000-05:00",
+          "gage_height_ft": 12.87
+        },
+        {
+          "timestamp": "2026-03-27T16:00:00.000-05:00",
+          "gage_height_ft": 12.86
+        },
+        {
+          "timestamp": "2026-03-27T17:00:00.000-05:00",
+          "gage_height_ft": 12.84
+        },
+        {
+          "timestamp": "2026-03-27T18:00:00.000-05:00",
+          "gage_height_ft": 12.81
+        },
+        {
+          "timestamp": "2026-03-27T19:00:00.000-05:00",
+          "gage_height_ft": 12.78
+        },
+        {
+          "timestamp": "2026-03-27T20:00:00.000-05:00",
+          "gage_height_ft": 12.77
+        },
+        {
+          "timestamp": "2026-03-27T21:00:00.000-05:00",
+          "gage_height_ft": 12.76
+        },
+        {
+          "timestamp": "2026-03-27T22:00:00.000-05:00",
+          "gage_height_ft": 12.76
+        },
+        {
+          "timestamp": "2026-03-27T23:00:00.000-05:00",
+          "gage_height_ft": 12.74
+        },
+        {
+          "timestamp": "2026-03-28T00:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-28T01:00:00.000-05:00",
+          "gage_height_ft": 12.67
+        },
+        {
+          "timestamp": "2026-03-28T02:00:00.000-05:00",
+          "gage_height_ft": 12.68
+        },
+        {
+          "timestamp": "2026-03-28T03:00:00.000-05:00",
+          "gage_height_ft": 12.67
+        },
+        {
+          "timestamp": "2026-03-28T04:00:00.000-05:00",
+          "gage_height_ft": 12.66
+        },
+        {
+          "timestamp": "2026-03-28T05:00:00.000-05:00",
+          "gage_height_ft": 12.66
+        },
+        {
+          "timestamp": "2026-03-28T06:00:00.000-05:00",
+          "gage_height_ft": 12.69
+        },
+        {
+          "timestamp": "2026-03-28T07:00:00.000-05:00",
+          "gage_height_ft": 12.7
+        },
+        {
+          "timestamp": "2026-03-28T08:00:00.000-05:00",
+          "gage_height_ft": 12.68
+        },
+        {
+          "timestamp": "2026-03-28T09:00:00.000-05:00",
+          "gage_height_ft": 12.65
+        },
+        {
+          "timestamp": "2026-03-28T10:00:00.000-05:00",
+          "gage_height_ft": 12.64
+        },
+        {
+          "timestamp": "2026-03-28T11:00:00.000-05:00",
+          "gage_height_ft": 12.6
+        },
+        {
+          "timestamp": "2026-03-28T12:00:00.000-05:00",
+          "gage_height_ft": 12.57
+        },
+        {
+          "timestamp": "2026-03-28T13:00:00.000-05:00",
+          "gage_height_ft": 12.53
+        },
+        {
+          "timestamp": "2026-03-28T14:00:00.000-05:00",
+          "gage_height_ft": 12.5
+        },
+        {
+          "timestamp": "2026-03-28T15:00:00.000-05:00",
+          "gage_height_ft": 12.48
+        },
+        {
+          "timestamp": "2026-03-28T16:00:00.000-05:00",
+          "gage_height_ft": 12.47
+        },
+        {
+          "timestamp": "2026-03-28T17:00:00.000-05:00",
+          "gage_height_ft": 12.46
+        },
+        {
+          "timestamp": "2026-03-28T18:00:00.000-05:00",
+          "gage_height_ft": 12.46
+        },
+        {
+          "timestamp": "2026-03-28T19:00:00.000-05:00",
+          "gage_height_ft": 12.45
+        },
+        {
+          "timestamp": "2026-03-28T20:00:00.000-05:00",
+          "gage_height_ft": 12.44
+        },
+        {
+          "timestamp": "2026-03-28T21:00:00.000-05:00",
+          "gage_height_ft": 12.44
+        },
+        {
+          "timestamp": "2026-03-28T22:00:00.000-05:00",
+          "gage_height_ft": 12.43
+        },
+        {
+          "timestamp": "2026-03-28T23:00:00.000-05:00",
+          "gage_height_ft": 12.42
+        },
+        {
+          "timestamp": "2026-03-29T00:00:00.000-05:00",
+          "gage_height_ft": 12.42
+        },
+        {
+          "timestamp": "2026-03-29T01:00:00.000-05:00",
+          "gage_height_ft": 12.42
+        },
+        {
+          "timestamp": "2026-03-29T02:00:00.000-05:00",
+          "gage_height_ft": 12.41
+        },
+        {
+          "timestamp": "2026-03-29T03:00:00.000-05:00",
+          "gage_height_ft": 12.4
+        },
+        {
+          "timestamp": "2026-03-29T04:00:00.000-05:00",
+          "gage_height_ft": 12.4
+        },
+        {
+          "timestamp": "2026-03-29T05:00:00.000-05:00",
+          "gage_height_ft": 12.39
+        },
+        {
+          "timestamp": "2026-03-29T06:00:00.000-05:00",
+          "gage_height_ft": 12.36
+        },
+        {
+          "timestamp": "2026-03-29T07:00:00.000-05:00",
+          "gage_height_ft": 12.33
+        },
+        {
+          "timestamp": "2026-03-29T08:00:00.000-05:00",
+          "gage_height_ft": 12.28
+        },
+        {
+          "timestamp": "2026-03-29T09:00:00.000-05:00",
+          "gage_height_ft": 12.25
+        },
+        {
+          "timestamp": "2026-03-29T10:00:00.000-05:00",
+          "gage_height_ft": 12.23
+        },
+        {
+          "timestamp": "2026-03-29T11:00:00.000-05:00",
+          "gage_height_ft": 12.22
+        },
+        {
+          "timestamp": "2026-03-29T12:00:00.000-05:00",
+          "gage_height_ft": 12.21
+        },
+        {
+          "timestamp": "2026-03-29T13:00:00.000-05:00",
+          "gage_height_ft": 12.2
+        },
+        {
+          "timestamp": "2026-03-29T14:00:00.000-05:00",
+          "gage_height_ft": 12.19
+        },
+        {
+          "timestamp": "2026-03-29T15:00:00.000-05:00",
+          "gage_height_ft": 12.18
+        },
+        {
+          "timestamp": "2026-03-29T16:00:00.000-05:00",
+          "gage_height_ft": 12.15
+        },
+        {
+          "timestamp": "2026-03-29T17:00:00.000-05:00",
+          "gage_height_ft": 12.14
+        },
+        {
+          "timestamp": "2026-03-29T18:00:00.000-05:00",
+          "gage_height_ft": 12.12
+        },
+        {
+          "timestamp": "2026-03-29T19:00:00.000-05:00",
+          "gage_height_ft": 12.1
+        },
+        {
+          "timestamp": "2026-03-29T20:00:00.000-05:00",
+          "gage_height_ft": 12.09
+        },
+        {
+          "timestamp": "2026-03-29T21:00:00.000-05:00",
+          "gage_height_ft": 12.08
+        },
+        {
+          "timestamp": "2026-03-29T22:00:00.000-05:00",
+          "gage_height_ft": 12.07
+        },
+        {
+          "timestamp": "2026-03-29T23:00:00.000-05:00",
+          "gage_height_ft": 12.07
+        },
+        {
+          "timestamp": "2026-03-30T00:00:00.000-05:00",
+          "gage_height_ft": 12.07
+        },
+        {
+          "timestamp": "2026-03-30T01:00:00.000-05:00",
+          "gage_height_ft": 12.08
+        },
+        {
+          "timestamp": "2026-03-30T02:00:00.000-05:00",
+          "gage_height_ft": 12.08
+        },
+        {
+          "timestamp": "2026-03-30T03:00:00.000-05:00",
+          "gage_height_ft": 12.09
+        },
+        {
+          "timestamp": "2026-03-30T04:00:00.000-05:00",
+          "gage_height_ft": 12.11
+        },
+        {
+          "timestamp": "2026-03-30T05:00:00.000-05:00",
+          "gage_height_ft": 12.12
+        },
+        {
+          "timestamp": "2026-03-30T06:00:00.000-05:00",
+          "gage_height_ft": 12.14
+        },
+        {
+          "timestamp": "2026-03-30T07:00:00.000-05:00",
+          "gage_height_ft": 12.16
+        },
+        {
+          "timestamp": "2026-03-30T08:00:00.000-05:00",
+          "gage_height_ft": 12.18
+        },
+        {
+          "timestamp": "2026-03-30T09:00:00.000-05:00",
+          "gage_height_ft": 12.2
+        },
+        {
+          "timestamp": "2026-03-30T10:00:00.000-05:00",
+          "gage_height_ft": 12.22
+        },
+        {
+          "timestamp": "2026-03-30T11:00:00.000-05:00",
+          "gage_height_ft": 12.24
+        },
+        {
+          "timestamp": "2026-03-30T12:00:00.000-05:00",
+          "gage_height_ft": 12.25
+        },
+        {
+          "timestamp": "2026-03-30T13:00:00.000-05:00",
+          "gage_height_ft": 12.25
+        },
+        {
+          "timestamp": "2026-03-30T14:00:00.000-05:00",
+          "gage_height_ft": 12.27
+        },
+        {
+          "timestamp": "2026-03-30T15:00:00.000-05:00",
+          "gage_height_ft": 12.28
+        },
+        {
+          "timestamp": "2026-03-30T16:00:00.000-05:00",
+          "gage_height_ft": 12.28
+        },
+        {
+          "timestamp": "2026-03-30T17:00:00.000-05:00",
+          "gage_height_ft": 12.23
+        },
+        {
+          "timestamp": "2026-03-30T18:00:00.000-05:00",
+          "gage_height_ft": 12.18
+        },
+        {
+          "timestamp": "2026-03-30T19:00:00.000-05:00",
+          "gage_height_ft": 12.15
+        },
+        {
+          "timestamp": "2026-03-30T20:00:00.000-05:00",
+          "gage_height_ft": 12.13
+        }
+      ],
+      "fishing": {
+        "species": [
+          "Walleye",
+          "Smallmouth Bass",
+          "Musky",
+          "Channel Catfish"
+        ],
+        "trout_class": null,
+        "regulations": [
+          {
+            "species": "Walleye",
+            "rule": "15\" min, 5 daily bag"
+          },
+          {
+            "species": "Musky",
+            "rule": "50\" min, 1 daily"
+          },
+          {
+            "species": "Bass",
+            "rule": "14\" min, 5 daily"
+          }
+        ],
+        "season_notes": [
+          "Walleye/Sauger open first Sat in May",
+          "Catch-and-release bass season Mar\u2013Jun"
+        ],
+        "access_points": [
+          {
+            "name": "Mosinee Boat Landing",
+            "directions": "Off Main St near the Mosinee dam",
+            "lat": 44.7931,
+            "lng": -89.6906
+          }
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
+      },
+      "recreation": null,
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05398100/",
       "nws_url": null
     },
@@ -90,42 +1670,892 @@
         "major": 15.0
       },
       "flood_status": "normal",
+      "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T18:00:00.000-05:00",
-        "streamflow_cfs": 473.0,
-        "gage_height_ft": 3.55
+        "timestamp": "2026-03-30T20:00:00.000-05:00",
+        "streamflow_cfs": 481.0,
+        "gage_height_ft": 3.57
       },
       "history": [
         {
-          "date": "2026-03-23",
-          "streamflow_cfs": 1930.0
+          "timestamp": "2026-03-23T20:50:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 5.35
         },
         {
-          "date": "2026-03-24",
-          "streamflow_cfs": 1210.0
+          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 5.35
         },
         {
-          "date": "2026-03-25",
-          "streamflow_cfs": 1020.0
+          "timestamp": "2026-03-23T22:00:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 5.35
         },
         {
-          "date": "2026-03-26",
-          "streamflow_cfs": 1500.0
+          "timestamp": "2026-03-23T23:00:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 5.35
         },
         {
-          "date": "2026-03-27",
-          "streamflow_cfs": 1160.0
+          "timestamp": "2026-03-24T00:00:00.000-05:00",
+          "streamflow_cfs": 1610.0,
+          "gage_height_ft": 5.36
         },
         {
-          "date": "2026-03-28",
-          "streamflow_cfs": 624.0
+          "timestamp": "2026-03-24T01:00:00.000-05:00",
+          "streamflow_cfs": 1590.0,
+          "gage_height_ft": 5.34
         },
         {
-          "date": "2026-03-29",
-          "streamflow_cfs": 504.0
+          "timestamp": "2026-03-24T02:00:00.000-05:00",
+          "streamflow_cfs": 1560.0,
+          "gage_height_ft": 5.3
+        },
+        {
+          "timestamp": "2026-03-24T03:00:00.000-05:00",
+          "streamflow_cfs": 1530.0,
+          "gage_height_ft": 5.26
+        },
+        {
+          "timestamp": "2026-03-24T04:00:00.000-05:00",
+          "streamflow_cfs": 1480.0,
+          "gage_height_ft": 5.2
+        },
+        {
+          "timestamp": "2026-03-24T05:00:00.000-05:00",
+          "streamflow_cfs": 1440.0,
+          "gage_height_ft": 5.14
+        },
+        {
+          "timestamp": "2026-03-24T06:00:00.000-05:00",
+          "streamflow_cfs": 1390.0,
+          "gage_height_ft": 5.08
+        },
+        {
+          "timestamp": "2026-03-24T07:00:00.000-05:00",
+          "streamflow_cfs": 1360.0,
+          "gage_height_ft": 5.03
+        },
+        {
+          "timestamp": "2026-03-24T08:00:00.000-05:00",
+          "streamflow_cfs": 1310.0,
+          "gage_height_ft": 4.96
+        },
+        {
+          "timestamp": "2026-03-24T09:00:00.000-05:00",
+          "streamflow_cfs": 1270.0,
+          "gage_height_ft": 4.91
+        },
+        {
+          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "streamflow_cfs": 1220.0,
+          "gage_height_ft": 4.85
+        },
+        {
+          "timestamp": "2026-03-24T11:00:00.000-05:00",
+          "streamflow_cfs": 1190.0,
+          "gage_height_ft": 4.79
+        },
+        {
+          "timestamp": "2026-03-24T12:00:00.000-05:00",
+          "streamflow_cfs": 1140.0,
+          "gage_height_ft": 4.73
+        },
+        {
+          "timestamp": "2026-03-24T13:00:00.000-05:00",
+          "streamflow_cfs": 1110.0,
+          "gage_height_ft": 4.68
+        },
+        {
+          "timestamp": "2026-03-24T14:00:00.000-05:00",
+          "streamflow_cfs": 1080.0,
+          "gage_height_ft": 4.63
+        },
+        {
+          "timestamp": "2026-03-24T15:00:00.000-05:00",
+          "streamflow_cfs": 1050.0,
+          "gage_height_ft": 4.59
+        },
+        {
+          "timestamp": "2026-03-24T16:00:00.000-05:00",
+          "streamflow_cfs": 1030.0,
+          "gage_height_ft": 4.55
+        },
+        {
+          "timestamp": "2026-03-24T17:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 4.52
+        },
+        {
+          "timestamp": "2026-03-24T18:00:00.000-05:00",
+          "streamflow_cfs": 1000.0,
+          "gage_height_ft": 4.52
+        },
+        {
+          "timestamp": "2026-03-24T19:00:00.000-05:00",
+          "streamflow_cfs": 997.0,
+          "gage_height_ft": 4.51
+        },
+        {
+          "timestamp": "2026-03-24T20:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 4.52
+        },
+        {
+          "timestamp": "2026-03-24T21:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 4.53
+        },
+        {
+          "timestamp": "2026-03-24T22:00:00.000-05:00",
+          "streamflow_cfs": 1030.0,
+          "gage_height_ft": 4.56
+        },
+        {
+          "timestamp": "2026-03-24T23:00:00.000-05:00",
+          "streamflow_cfs": 1040.0,
+          "gage_height_ft": 4.58
+        },
+        {
+          "timestamp": "2026-03-25T00:00:00.000-05:00",
+          "streamflow_cfs": 1060.0,
+          "gage_height_ft": 4.6
+        },
+        {
+          "timestamp": "2026-03-25T01:00:00.000-05:00",
+          "streamflow_cfs": 1070.0,
+          "gage_height_ft": 4.62
+        },
+        {
+          "timestamp": "2026-03-25T02:00:00.000-05:00",
+          "streamflow_cfs": 1070.0,
+          "gage_height_ft": 4.62
+        },
+        {
+          "timestamp": "2026-03-25T03:00:00.000-05:00",
+          "streamflow_cfs": 1070.0,
+          "gage_height_ft": 4.62
+        },
+        {
+          "timestamp": "2026-03-25T04:00:00.000-05:00",
+          "streamflow_cfs": 1060.0,
+          "gage_height_ft": 4.6
+        },
+        {
+          "timestamp": "2026-03-25T05:00:00.000-05:00",
+          "streamflow_cfs": 1050.0,
+          "gage_height_ft": 4.59
+        },
+        {
+          "timestamp": "2026-03-25T06:00:00.000-05:00",
+          "streamflow_cfs": 1040.0,
+          "gage_height_ft": 4.57
+        },
+        {
+          "timestamp": "2026-03-25T07:00:00.000-05:00",
+          "streamflow_cfs": 1020.0,
+          "gage_height_ft": 4.55
+        },
+        {
+          "timestamp": "2026-03-25T08:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 4.53
+        },
+        {
+          "timestamp": "2026-03-25T09:00:00.000-05:00",
+          "streamflow_cfs": 987.0,
+          "gage_height_ft": 4.49
+        },
+        {
+          "timestamp": "2026-03-25T10:00:00.000-05:00",
+          "streamflow_cfs": 971.0,
+          "gage_height_ft": 4.47
+        },
+        {
+          "timestamp": "2026-03-25T11:00:00.000-05:00",
+          "streamflow_cfs": 963.0,
+          "gage_height_ft": 4.45
+        },
+        {
+          "timestamp": "2026-03-25T12:00:00.000-05:00",
+          "streamflow_cfs": 945.0,
+          "gage_height_ft": 4.42
+        },
+        {
+          "timestamp": "2026-03-25T13:00:00.000-05:00",
+          "streamflow_cfs": 925.0,
+          "gage_height_ft": 4.39
+        },
+        {
+          "timestamp": "2026-03-25T14:00:00.000-05:00",
+          "streamflow_cfs": 919.0,
+          "gage_height_ft": 4.38
+        },
+        {
+          "timestamp": "2026-03-25T15:00:00.000-05:00",
+          "streamflow_cfs": 913.0,
+          "gage_height_ft": 4.37
+        },
+        {
+          "timestamp": "2026-03-25T16:00:00.000-05:00",
+          "streamflow_cfs": 925.0,
+          "gage_height_ft": 4.39
+        },
+        {
+          "timestamp": "2026-03-25T17:00:00.000-05:00",
+          "streamflow_cfs": 940.0,
+          "gage_height_ft": 4.42
+        },
+        {
+          "timestamp": "2026-03-25T18:00:00.000-05:00",
+          "streamflow_cfs": 970.0,
+          "gage_height_ft": 4.46
+        },
+        {
+          "timestamp": "2026-03-25T19:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 4.53
+        },
+        {
+          "timestamp": "2026-03-25T20:00:00.000-05:00",
+          "streamflow_cfs": 1050.0,
+          "gage_height_ft": 4.59
+        },
+        {
+          "timestamp": "2026-03-25T21:00:00.000-05:00",
+          "streamflow_cfs": 1100.0,
+          "gage_height_ft": 4.67
+        },
+        {
+          "timestamp": "2026-03-25T22:00:00.000-05:00",
+          "streamflow_cfs": 1140.0,
+          "gage_height_ft": 4.73
+        },
+        {
+          "timestamp": "2026-03-25T23:00:00.000-05:00",
+          "streamflow_cfs": 1170.0,
+          "gage_height_ft": 4.77
+        },
+        {
+          "timestamp": "2026-03-26T00:00:00.000-05:00",
+          "streamflow_cfs": 1190.0,
+          "gage_height_ft": 4.8
+        },
+        {
+          "timestamp": "2026-03-26T01:00:00.000-05:00",
+          "streamflow_cfs": 1200.0,
+          "gage_height_ft": 4.81
+        },
+        {
+          "timestamp": "2026-03-26T02:00:00.000-05:00",
+          "streamflow_cfs": 1200.0,
+          "gage_height_ft": 4.81
+        },
+        {
+          "timestamp": "2026-03-26T03:00:00.000-05:00",
+          "streamflow_cfs": 1190.0,
+          "gage_height_ft": 4.8
+        },
+        {
+          "timestamp": "2026-03-26T04:00:00.000-05:00",
+          "streamflow_cfs": 1170.0,
+          "gage_height_ft": 4.77
+        },
+        {
+          "timestamp": "2026-03-26T05:00:00.000-05:00",
+          "streamflow_cfs": 1160.0,
+          "gage_height_ft": 4.75
+        },
+        {
+          "timestamp": "2026-03-26T06:00:00.000-05:00",
+          "streamflow_cfs": 1140.0,
+          "gage_height_ft": 4.72
+        },
+        {
+          "timestamp": "2026-03-26T07:00:00.000-05:00",
+          "streamflow_cfs": 1140.0,
+          "gage_height_ft": 4.72
+        },
+        {
+          "timestamp": "2026-03-26T08:00:00.000-05:00",
+          "streamflow_cfs": 1120.0,
+          "gage_height_ft": 4.69
+        },
+        {
+          "timestamp": "2026-03-26T09:00:00.000-05:00",
+          "streamflow_cfs": 1130.0,
+          "gage_height_ft": 4.71
+        },
+        {
+          "timestamp": "2026-03-26T10:00:00.000-05:00",
+          "streamflow_cfs": 1160.0,
+          "gage_height_ft": 4.76
+        },
+        {
+          "timestamp": "2026-03-26T11:00:00.000-05:00",
+          "streamflow_cfs": 1220.0,
+          "gage_height_ft": 4.84
+        },
+        {
+          "timestamp": "2026-03-26T12:00:00.000-05:00",
+          "streamflow_cfs": 1300.0,
+          "gage_height_ft": 4.96
+        },
+        {
+          "timestamp": "2026-03-26T13:00:00.000-05:00",
+          "streamflow_cfs": 1420.0,
+          "gage_height_ft": 5.12
+        },
+        {
+          "timestamp": "2026-03-26T14:00:00.000-05:00",
+          "streamflow_cfs": 1570.0,
+          "gage_height_ft": 5.31
+        },
+        {
+          "timestamp": "2026-03-26T15:00:00.000-05:00",
+          "streamflow_cfs": 1740.0,
+          "gage_height_ft": 5.52
+        },
+        {
+          "timestamp": "2026-03-26T16:00:00.000-05:00",
+          "streamflow_cfs": 1870.0,
+          "gage_height_ft": 5.68
+        },
+        {
+          "timestamp": "2026-03-26T17:00:00.000-05:00",
+          "streamflow_cfs": 1980.0,
+          "gage_height_ft": 5.8
+        },
+        {
+          "timestamp": "2026-03-26T18:00:00.000-05:00",
+          "streamflow_cfs": 2020.0,
+          "gage_height_ft": 5.85
+        },
+        {
+          "timestamp": "2026-03-26T19:00:00.000-05:00",
+          "streamflow_cfs": 2040.0,
+          "gage_height_ft": 5.88
+        },
+        {
+          "timestamp": "2026-03-26T20:00:00.000-05:00",
+          "streamflow_cfs": 2010.0,
+          "gage_height_ft": 5.84
+        },
+        {
+          "timestamp": "2026-03-26T21:00:00.000-05:00",
+          "streamflow_cfs": 1960.0,
+          "gage_height_ft": 5.79
+        },
+        {
+          "timestamp": "2026-03-26T22:00:00.000-05:00",
+          "streamflow_cfs": 1910.0,
+          "gage_height_ft": 5.73
+        },
+        {
+          "timestamp": "2026-03-26T23:00:00.000-05:00",
+          "streamflow_cfs": 1840.0,
+          "gage_height_ft": 5.64
+        },
+        {
+          "timestamp": "2026-03-27T00:00:00.000-05:00",
+          "streamflow_cfs": 1780.0,
+          "gage_height_ft": 5.57
+        },
+        {
+          "timestamp": "2026-03-27T01:00:00.000-05:00",
+          "streamflow_cfs": 1710.0,
+          "gage_height_ft": 5.48
+        },
+        {
+          "timestamp": "2026-03-27T02:00:00.000-05:00",
+          "streamflow_cfs": 1640.0,
+          "gage_height_ft": 5.4
+        },
+        {
+          "timestamp": "2026-03-27T03:00:00.000-05:00",
+          "streamflow_cfs": 1570.0,
+          "gage_height_ft": 5.31
+        },
+        {
+          "timestamp": "2026-03-27T04:00:00.000-05:00",
+          "streamflow_cfs": 1500.0,
+          "gage_height_ft": 5.22
+        },
+        {
+          "timestamp": "2026-03-27T05:00:00.000-05:00",
+          "streamflow_cfs": 1430.0,
+          "gage_height_ft": 5.13
+        },
+        {
+          "timestamp": "2026-03-27T06:00:00.000-05:00",
+          "streamflow_cfs": 1370.0,
+          "gage_height_ft": 5.05
+        },
+        {
+          "timestamp": "2026-03-27T07:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 4.97
+        },
+        {
+          "timestamp": "2026-03-27T08:00:00.000-05:00",
+          "streamflow_cfs": 1250.0,
+          "gage_height_ft": 4.89
+        },
+        {
+          "timestamp": "2026-03-27T09:00:00.000-05:00",
+          "streamflow_cfs": 1190.0,
+          "gage_height_ft": 4.8
+        },
+        {
+          "timestamp": "2026-03-27T10:00:00.000-05:00",
+          "streamflow_cfs": 1150.0,
+          "gage_height_ft": 4.74
+        },
+        {
+          "timestamp": "2026-03-27T11:00:00.000-05:00",
+          "streamflow_cfs": 1110.0,
+          "gage_height_ft": 4.68
+        },
+        {
+          "timestamp": "2026-03-27T12:00:00.000-05:00",
+          "streamflow_cfs": 1090.0,
+          "gage_height_ft": 4.66
+        },
+        {
+          "timestamp": "2026-03-27T13:00:00.000-05:00",
+          "streamflow_cfs": 1070.0,
+          "gage_height_ft": 4.63
+        },
+        {
+          "timestamp": "2026-03-27T14:00:00.000-05:00",
+          "streamflow_cfs": 1040.0,
+          "gage_height_ft": 4.58
+        },
+        {
+          "timestamp": "2026-03-27T15:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 4.54
+        },
+        {
+          "timestamp": "2026-03-27T16:00:00.000-05:00",
+          "streamflow_cfs": 982.0,
+          "gage_height_ft": 4.48
+        },
+        {
+          "timestamp": "2026-03-27T17:00:00.000-05:00",
+          "streamflow_cfs": 952.0,
+          "gage_height_ft": 4.44
+        },
+        {
+          "timestamp": "2026-03-27T18:00:00.000-05:00",
+          "streamflow_cfs": 921.0,
+          "gage_height_ft": 4.39
+        },
+        {
+          "timestamp": "2026-03-27T19:00:00.000-05:00",
+          "streamflow_cfs": 887.0,
+          "gage_height_ft": 4.33
+        },
+        {
+          "timestamp": "2026-03-27T20:00:00.000-05:00",
+          "streamflow_cfs": 873.0,
+          "gage_height_ft": 4.31
+        },
+        {
+          "timestamp": "2026-03-27T21:00:00.000-05:00",
+          "streamflow_cfs": 858.0,
+          "gage_height_ft": 4.28
+        },
+        {
+          "timestamp": "2026-03-27T22:00:00.000-05:00",
+          "streamflow_cfs": 856.0,
+          "gage_height_ft": 4.28
+        },
+        {
+          "timestamp": "2026-03-27T23:00:00.000-05:00",
+          "streamflow_cfs": 848.0,
+          "gage_height_ft": 4.27
+        },
+        {
+          "timestamp": "2026-03-28T00:00:00.000-05:00",
+          "streamflow_cfs": 841.0,
+          "gage_height_ft": 4.25
+        },
+        {
+          "timestamp": "2026-03-28T01:00:00.000-05:00",
+          "streamflow_cfs": 821.0,
+          "gage_height_ft": 4.22
+        },
+        {
+          "timestamp": "2026-03-28T02:00:00.000-05:00",
+          "streamflow_cfs": 796.0,
+          "gage_height_ft": 4.18
+        },
+        {
+          "timestamp": "2026-03-28T03:00:00.000-05:00",
+          "streamflow_cfs": 761.0,
+          "gage_height_ft": 4.12
+        },
+        {
+          "timestamp": "2026-03-28T04:00:00.000-05:00",
+          "streamflow_cfs": 722.0,
+          "gage_height_ft": 4.04
+        },
+        {
+          "timestamp": "2026-03-28T05:00:00.000-05:00",
+          "streamflow_cfs": 708.0,
+          "gage_height_ft": 4.02
+        },
+        {
+          "timestamp": "2026-03-28T06:00:00.000-05:00",
+          "streamflow_cfs": 680.0,
+          "gage_height_ft": 3.97
+        },
+        {
+          "timestamp": "2026-03-28T07:00:00.000-05:00",
+          "streamflow_cfs": 650.0,
+          "gage_height_ft": 3.91
+        },
+        {
+          "timestamp": "2026-03-28T08:00:00.000-05:00",
+          "streamflow_cfs": 628.0,
+          "gage_height_ft": 3.87
+        },
+        {
+          "timestamp": "2026-03-28T09:00:00.000-05:00",
+          "streamflow_cfs": 617.0,
+          "gage_height_ft": 3.85
+        },
+        {
+          "timestamp": "2026-03-28T10:00:00.000-05:00",
+          "streamflow_cfs": 611.0,
+          "gage_height_ft": 3.84
+        },
+        {
+          "timestamp": "2026-03-28T11:00:00.000-05:00",
+          "streamflow_cfs": 594.0,
+          "gage_height_ft": 3.8
+        },
+        {
+          "timestamp": "2026-03-28T12:00:00.000-05:00",
+          "streamflow_cfs": 590.0,
+          "gage_height_ft": 3.79
+        },
+        {
+          "timestamp": "2026-03-28T13:00:00.000-05:00",
+          "streamflow_cfs": 584.0,
+          "gage_height_ft": 3.78
+        },
+        {
+          "timestamp": "2026-03-28T14:00:00.000-05:00",
+          "streamflow_cfs": 562.0,
+          "gage_height_ft": 3.74
+        },
+        {
+          "timestamp": "2026-03-28T15:00:00.000-05:00",
+          "streamflow_cfs": 556.0,
+          "gage_height_ft": 3.72
+        },
+        {
+          "timestamp": "2026-03-28T16:00:00.000-05:00",
+          "streamflow_cfs": 547.0,
+          "gage_height_ft": 3.71
+        },
+        {
+          "timestamp": "2026-03-28T17:00:00.000-05:00",
+          "streamflow_cfs": 539.0,
+          "gage_height_ft": 3.69
+        },
+        {
+          "timestamp": "2026-03-28T18:00:00.000-05:00",
+          "streamflow_cfs": 536.0,
+          "gage_height_ft": 3.68
+        },
+        {
+          "timestamp": "2026-03-28T19:00:00.000-05:00",
+          "streamflow_cfs": 539.0,
+          "gage_height_ft": 3.69
+        },
+        {
+          "timestamp": "2026-03-28T20:00:00.000-05:00",
+          "streamflow_cfs": 545.0,
+          "gage_height_ft": 3.7
+        },
+        {
+          "timestamp": "2026-03-28T21:00:00.000-05:00",
+          "streamflow_cfs": 551.0,
+          "gage_height_ft": 3.72
+        },
+        {
+          "timestamp": "2026-03-28T22:00:00.000-05:00",
+          "streamflow_cfs": 562.0,
+          "gage_height_ft": 3.74
+        },
+        {
+          "timestamp": "2026-03-28T23:00:00.000-05:00",
+          "streamflow_cfs": 575.0,
+          "gage_height_ft": 3.76
+        },
+        {
+          "timestamp": "2026-03-29T00:00:00.000-05:00",
+          "streamflow_cfs": 586.0,
+          "gage_height_ft": 3.79
+        },
+        {
+          "timestamp": "2026-03-29T01:00:00.000-05:00",
+          "streamflow_cfs": 598.0,
+          "gage_height_ft": 3.81
+        },
+        {
+          "timestamp": "2026-03-29T02:00:00.000-05:00",
+          "streamflow_cfs": 605.0,
+          "gage_height_ft": 3.82
+        },
+        {
+          "timestamp": "2026-03-29T03:00:00.000-05:00",
+          "streamflow_cfs": 602.0,
+          "gage_height_ft": 3.82
+        },
+        {
+          "timestamp": "2026-03-29T04:00:00.000-05:00",
+          "streamflow_cfs": 587.0,
+          "gage_height_ft": 3.79
+        },
+        {
+          "timestamp": "2026-03-29T05:00:00.000-05:00",
+          "streamflow_cfs": 585.0,
+          "gage_height_ft": 3.78
+        },
+        {
+          "timestamp": "2026-03-29T06:00:00.000-05:00",
+          "streamflow_cfs": 570.0,
+          "gage_height_ft": 3.75
+        },
+        {
+          "timestamp": "2026-03-29T07:00:00.000-05:00",
+          "streamflow_cfs": 556.0,
+          "gage_height_ft": 3.73
+        },
+        {
+          "timestamp": "2026-03-29T08:00:00.000-05:00",
+          "streamflow_cfs": 540.0,
+          "gage_height_ft": 3.69
+        },
+        {
+          "timestamp": "2026-03-29T09:00:00.000-05:00",
+          "streamflow_cfs": 518.0,
+          "gage_height_ft": 3.64
+        },
+        {
+          "timestamp": "2026-03-29T10:00:00.000-05:00",
+          "streamflow_cfs": 498.0,
+          "gage_height_ft": 3.6
+        },
+        {
+          "timestamp": "2026-03-29T11:00:00.000-05:00",
+          "streamflow_cfs": 484.0,
+          "gage_height_ft": 3.57
+        },
+        {
+          "timestamp": "2026-03-29T12:00:00.000-05:00",
+          "streamflow_cfs": 475.0,
+          "gage_height_ft": 3.55
+        },
+        {
+          "timestamp": "2026-03-29T13:00:00.000-05:00",
+          "streamflow_cfs": 467.0,
+          "gage_height_ft": 3.54
+        },
+        {
+          "timestamp": "2026-03-29T14:00:00.000-05:00",
+          "streamflow_cfs": 455.0,
+          "gage_height_ft": 3.51
+        },
+        {
+          "timestamp": "2026-03-29T15:00:00.000-05:00",
+          "streamflow_cfs": 441.0,
+          "gage_height_ft": 3.48
+        },
+        {
+          "timestamp": "2026-03-29T16:00:00.000-05:00",
+          "streamflow_cfs": 435.0,
+          "gage_height_ft": 3.46
+        },
+        {
+          "timestamp": "2026-03-29T17:00:00.000-05:00",
+          "streamflow_cfs": 433.0,
+          "gage_height_ft": 3.46
+        },
+        {
+          "timestamp": "2026-03-29T18:00:00.000-05:00",
+          "streamflow_cfs": 436.0,
+          "gage_height_ft": 3.46
+        },
+        {
+          "timestamp": "2026-03-29T19:00:00.000-05:00",
+          "streamflow_cfs": 440.0,
+          "gage_height_ft": 3.47
+        },
+        {
+          "timestamp": "2026-03-29T20:00:00.000-05:00",
+          "streamflow_cfs": 448.0,
+          "gage_height_ft": 3.49
+        },
+        {
+          "timestamp": "2026-03-29T21:00:00.000-05:00",
+          "streamflow_cfs": 457.0,
+          "gage_height_ft": 3.51
+        },
+        {
+          "timestamp": "2026-03-29T22:00:00.000-05:00",
+          "streamflow_cfs": 469.0,
+          "gage_height_ft": 3.54
+        },
+        {
+          "timestamp": "2026-03-29T23:00:00.000-05:00",
+          "streamflow_cfs": 479.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-30T00:00:00.000-05:00",
+          "streamflow_cfs": 491.0,
+          "gage_height_ft": 3.59
+        },
+        {
+          "timestamp": "2026-03-30T01:00:00.000-05:00",
+          "streamflow_cfs": 495.0,
+          "gage_height_ft": 3.6
+        },
+        {
+          "timestamp": "2026-03-30T02:00:00.000-05:00",
+          "streamflow_cfs": 501.0,
+          "gage_height_ft": 3.61
+        },
+        {
+          "timestamp": "2026-03-30T03:00:00.000-05:00",
+          "streamflow_cfs": 498.0,
+          "gage_height_ft": 3.6
+        },
+        {
+          "timestamp": "2026-03-30T04:00:00.000-05:00",
+          "streamflow_cfs": 501.0,
+          "gage_height_ft": 3.61
+        },
+        {
+          "timestamp": "2026-03-30T05:00:00.000-05:00",
+          "streamflow_cfs": 494.0,
+          "gage_height_ft": 3.59
+        },
+        {
+          "timestamp": "2026-03-30T06:00:00.000-05:00",
+          "streamflow_cfs": 490.0,
+          "gage_height_ft": 3.59
+        },
+        {
+          "timestamp": "2026-03-30T07:00:00.000-05:00",
+          "streamflow_cfs": 489.0,
+          "gage_height_ft": 3.58
+        },
+        {
+          "timestamp": "2026-03-30T08:00:00.000-05:00",
+          "streamflow_cfs": 484.0,
+          "gage_height_ft": 3.57
+        },
+        {
+          "timestamp": "2026-03-30T09:00:00.000-05:00",
+          "streamflow_cfs": 483.0,
+          "gage_height_ft": 3.57
+        },
+        {
+          "timestamp": "2026-03-30T10:00:00.000-05:00",
+          "streamflow_cfs": 477.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-30T11:00:00.000-05:00",
+          "streamflow_cfs": 476.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-30T12:00:00.000-05:00",
+          "streamflow_cfs": 470.0,
+          "gage_height_ft": 3.54
+        },
+        {
+          "timestamp": "2026-03-30T13:00:00.000-05:00",
+          "streamflow_cfs": 470.0,
+          "gage_height_ft": 3.54
+        },
+        {
+          "timestamp": "2026-03-30T14:00:00.000-05:00",
+          "streamflow_cfs": 470.0,
+          "gage_height_ft": 3.54
+        },
+        {
+          "timestamp": "2026-03-30T15:00:00.000-05:00",
+          "streamflow_cfs": 471.0,
+          "gage_height_ft": 3.54
+        },
+        {
+          "timestamp": "2026-03-30T16:00:00.000-05:00",
+          "streamflow_cfs": 472.0,
+          "gage_height_ft": 3.55
+        },
+        {
+          "timestamp": "2026-03-30T17:00:00.000-05:00",
+          "streamflow_cfs": 476.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-30T18:00:00.000-05:00",
+          "streamflow_cfs": 478.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-30T19:00:00.000-05:00",
+          "streamflow_cfs": 481.0,
+          "gage_height_ft": 3.57
+        },
+        {
+          "timestamp": "2026-03-30T20:00:00.000-05:00",
+          "streamflow_cfs": 481.0,
+          "gage_height_ft": 3.57
         }
       ],
+      "fishing": {
+        "species": [
+          "Brook Trout",
+          "Brown Trout",
+          "Smallmouth Bass"
+        ],
+        "trout_class": "Class I\u2013III (varies by reach)",
+        "regulations": [
+          {
+            "species": "Trout",
+            "rule": "Category 3: 3 daily bag, 8\" min"
+          },
+          {
+            "species": "Note",
+            "rule": "Special regs on some upstream reaches"
+          }
+        ],
+        "season_notes": [
+          "Early catch-and-release trout opens first Sat in Jan",
+          "Regular season first Sat in May"
+        ],
+        "access_points": [
+          {
+            "name": "Rib Falls Dam",
+            "directions": "County Rd N at Rib Falls",
+            "lat": 44.9653,
+            "lng": -89.8134
+          }
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Lands/FisheriesAreas/185bigribriver"
+      },
+      "recreation": null,
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05396000/",
       "nws_url": "https://water.noaa.gov/gauges/ribw3"
     },
@@ -139,11 +2569,38 @@
       "lon": -89.6793,
       "flood_stages": null,
       "flood_status": "normal",
+      "has_temp_sensor": false,
       "nws_flood_category": null,
       "current": {
         "timestamp": null
       },
       "history": [],
+      "fishing": {
+        "species": [
+          "Brook Trout"
+        ],
+        "trout_class": "Class II",
+        "regulations": [
+          {
+            "species": "Trout",
+            "rule": "Category 3: 3 daily bag, 8\" min"
+          }
+        ],
+        "season_notes": [
+          "Early catch-and-release trout opens first Sat in Jan",
+          "Regular season first Sat in May"
+        ],
+        "access_points": [
+          {
+            "name": "Cty Rd J Crossing",
+            "directions": "County Rd J west of Wausau",
+            "lat": 44.9472,
+            "lng": -89.6793
+          }
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
+      },
+      "recreation": null,
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05396500/",
       "nws_url": null
     },
@@ -162,42 +2619,893 @@
         "major": 15.0
       },
       "flood_status": "normal",
+      "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T18:00:00.000-05:00",
-        "streamflow_cfs": 891.0,
-        "gage_height_ft": 2.64
+        "timestamp": "2026-03-30T20:00:00.000-05:00",
+        "streamflow_cfs": 909.0,
+        "gage_height_ft": 2.68
       },
       "history": [
         {
-          "date": "2026-03-23",
-          "streamflow_cfs": 915.0
+          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
         },
         {
-          "date": "2026-03-24",
-          "streamflow_cfs": 918.0
+          "timestamp": "2026-03-23T22:00:00.000-05:00",
+          "streamflow_cfs": 905.0,
+          "gage_height_ft": 2.68
         },
         {
-          "date": "2026-03-25",
-          "streamflow_cfs": 998.0
+          "timestamp": "2026-03-23T23:00:00.000-05:00",
+          "streamflow_cfs": 900.0,
+          "gage_height_ft": 2.66
         },
         {
-          "date": "2026-03-26",
-          "streamflow_cfs": 1450.0
+          "timestamp": "2026-03-24T00:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
         },
         {
-          "date": "2026-03-27",
-          "streamflow_cfs": 1470.0
+          "timestamp": "2026-03-24T01:00:00.000-05:00",
+          "streamflow_cfs": 896.0,
+          "gage_height_ft": 2.66
         },
         {
-          "date": "2026-03-28",
-          "streamflow_cfs": 1060.0
+          "timestamp": "2026-03-24T02:00:00.000-05:00",
+          "streamflow_cfs": 896.0,
+          "gage_height_ft": 2.66
         },
         {
-          "date": "2026-03-29",
-          "streamflow_cfs": 899.0
+          "timestamp": "2026-03-24T03:00:00.000-05:00",
+          "streamflow_cfs": 891.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-24T04:00:00.000-05:00",
+          "streamflow_cfs": 896.0,
+          "gage_height_ft": 2.66
+        },
+        {
+          "timestamp": "2026-03-24T05:00:00.000-05:00",
+          "streamflow_cfs": 891.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-24T06:00:00.000-05:00",
+          "streamflow_cfs": 891.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-24T07:00:00.000-05:00",
+          "streamflow_cfs": 900.0,
+          "gage_height_ft": 2.66
+        },
+        {
+          "timestamp": "2026-03-24T08:00:00.000-05:00",
+          "streamflow_cfs": 913.0,
+          "gage_height_ft": 2.7
+        },
+        {
+          "timestamp": "2026-03-24T09:00:00.000-05:00",
+          "streamflow_cfs": 905.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "streamflow_cfs": 905.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-24T11:00:00.000-05:00",
+          "streamflow_cfs": 913.0,
+          "gage_height_ft": 2.7
+        },
+        {
+          "timestamp": "2026-03-24T12:00:00.000-05:00",
+          "streamflow_cfs": 922.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-24T13:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-24T14:00:00.000-05:00",
+          "streamflow_cfs": 918.0,
+          "gage_height_ft": 2.7
+        },
+        {
+          "timestamp": "2026-03-24T15:00:00.000-05:00",
+          "streamflow_cfs": 931.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-24T16:00:00.000-05:00",
+          "streamflow_cfs": 931.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-24T17:00:00.000-05:00",
+          "streamflow_cfs": 936.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-24T18:00:00.000-05:00",
+          "streamflow_cfs": 918.0,
+          "gage_height_ft": 2.7
+        },
+        {
+          "timestamp": "2026-03-24T19:00:00.000-05:00",
+          "streamflow_cfs": 927.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-24T20:00:00.000-05:00",
+          "streamflow_cfs": 931.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-24T21:00:00.000-05:00",
+          "streamflow_cfs": 936.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-24T22:00:00.000-05:00",
+          "streamflow_cfs": 958.0,
+          "gage_height_ft": 2.8
+        },
+        {
+          "timestamp": "2026-03-24T23:00:00.000-05:00",
+          "streamflow_cfs": 936.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-25T00:00:00.000-05:00",
+          "streamflow_cfs": 954.0,
+          "gage_height_ft": 2.78
+        },
+        {
+          "timestamp": "2026-03-25T01:00:00.000-05:00",
+          "streamflow_cfs": 967.0,
+          "gage_height_ft": 2.82
+        },
+        {
+          "timestamp": "2026-03-25T02:00:00.000-05:00",
+          "streamflow_cfs": 972.0,
+          "gage_height_ft": 2.82
+        },
+        {
+          "timestamp": "2026-03-25T03:00:00.000-05:00",
+          "streamflow_cfs": 981.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T04:00:00.000-05:00",
+          "streamflow_cfs": 981.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T05:00:00.000-05:00",
+          "streamflow_cfs": 972.0,
+          "gage_height_ft": 2.82
+        },
+        {
+          "timestamp": "2026-03-25T06:00:00.000-05:00",
+          "streamflow_cfs": 985.0,
+          "gage_height_ft": 2.86
+        },
+        {
+          "timestamp": "2026-03-25T07:00:00.000-05:00",
+          "streamflow_cfs": 972.0,
+          "gage_height_ft": 2.82
+        },
+        {
+          "timestamp": "2026-03-25T08:00:00.000-05:00",
+          "streamflow_cfs": 985.0,
+          "gage_height_ft": 2.86
+        },
+        {
+          "timestamp": "2026-03-25T09:00:00.000-05:00",
+          "streamflow_cfs": 981.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T10:00:00.000-05:00",
+          "streamflow_cfs": 967.0,
+          "gage_height_ft": 2.82
+        },
+        {
+          "timestamp": "2026-03-25T11:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T12:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T13:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T14:00:00.000-05:00",
+          "streamflow_cfs": 981.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T15:00:00.000-05:00",
+          "streamflow_cfs": 958.0,
+          "gage_height_ft": 2.8
+        },
+        {
+          "timestamp": "2026-03-25T16:00:00.000-05:00",
+          "streamflow_cfs": 958.0,
+          "gage_height_ft": 2.8
+        },
+        {
+          "timestamp": "2026-03-25T17:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T18:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-25T19:00:00.000-05:00",
+          "streamflow_cfs": 994.0,
+          "gage_height_ft": 2.88
+        },
+        {
+          "timestamp": "2026-03-25T20:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 2.92
+        },
+        {
+          "timestamp": "2026-03-25T21:00:00.000-05:00",
+          "streamflow_cfs": 1060.0,
+          "gage_height_ft": 3.02
+        },
+        {
+          "timestamp": "2026-03-25T22:00:00.000-05:00",
+          "streamflow_cfs": 1090.0,
+          "gage_height_ft": 3.08
+        },
+        {
+          "timestamp": "2026-03-25T23:00:00.000-05:00",
+          "streamflow_cfs": 1130.0,
+          "gage_height_ft": 3.18
+        },
+        {
+          "timestamp": "2026-03-26T00:00:00.000-05:00",
+          "streamflow_cfs": 1190.0,
+          "gage_height_ft": 3.3
+        },
+        {
+          "timestamp": "2026-03-26T01:00:00.000-05:00",
+          "streamflow_cfs": 1210.0,
+          "gage_height_ft": 3.34
+        },
+        {
+          "timestamp": "2026-03-26T02:00:00.000-05:00",
+          "streamflow_cfs": 1240.0,
+          "gage_height_ft": 3.4
+        },
+        {
+          "timestamp": "2026-03-26T03:00:00.000-05:00",
+          "streamflow_cfs": 1260.0,
+          "gage_height_ft": 3.44
+        },
+        {
+          "timestamp": "2026-03-26T04:00:00.000-05:00",
+          "streamflow_cfs": 1280.0,
+          "gage_height_ft": 3.48
+        },
+        {
+          "timestamp": "2026-03-26T05:00:00.000-05:00",
+          "streamflow_cfs": 1300.0,
+          "gage_height_ft": 3.52
+        },
+        {
+          "timestamp": "2026-03-26T06:00:00.000-05:00",
+          "streamflow_cfs": 1300.0,
+          "gage_height_ft": 3.52
+        },
+        {
+          "timestamp": "2026-03-26T07:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-26T08:00:00.000-05:00",
+          "streamflow_cfs": 1350.0,
+          "gage_height_ft": 3.62
+        },
+        {
+          "timestamp": "2026-03-26T09:00:00.000-05:00",
+          "streamflow_cfs": 1370.0,
+          "gage_height_ft": 3.66
+        },
+        {
+          "timestamp": "2026-03-26T10:00:00.000-05:00",
+          "streamflow_cfs": 1380.0,
+          "gage_height_ft": 3.68
+        },
+        {
+          "timestamp": "2026-03-26T11:00:00.000-05:00",
+          "streamflow_cfs": 1370.0,
+          "gage_height_ft": 3.66
+        },
+        {
+          "timestamp": "2026-03-26T12:00:00.000-05:00",
+          "streamflow_cfs": 1390.0,
+          "gage_height_ft": 3.7
+        },
+        {
+          "timestamp": "2026-03-26T13:00:00.000-05:00",
+          "streamflow_cfs": 1400.0,
+          "gage_height_ft": 3.72
+        },
+        {
+          "timestamp": "2026-03-26T14:00:00.000-05:00",
+          "streamflow_cfs": 1420.0,
+          "gage_height_ft": 3.76
+        },
+        {
+          "timestamp": "2026-03-26T15:00:00.000-05:00",
+          "streamflow_cfs": 1460.0,
+          "gage_height_ft": 3.84
+        },
+        {
+          "timestamp": "2026-03-26T16:00:00.000-05:00",
+          "streamflow_cfs": 1500.0,
+          "gage_height_ft": 3.92
+        },
+        {
+          "timestamp": "2026-03-26T17:00:00.000-05:00",
+          "streamflow_cfs": 1550.0,
+          "gage_height_ft": 4.02
+        },
+        {
+          "timestamp": "2026-03-26T18:00:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 4.1
+        },
+        {
+          "timestamp": "2026-03-26T19:00:00.000-05:00",
+          "streamflow_cfs": 1640.0,
+          "gage_height_ft": 4.18
+        },
+        {
+          "timestamp": "2026-03-26T20:00:00.000-05:00",
+          "streamflow_cfs": 1660.0,
+          "gage_height_ft": 4.24
+        },
+        {
+          "timestamp": "2026-03-26T21:00:00.000-05:00",
+          "streamflow_cfs": 1700.0,
+          "gage_height_ft": 4.3
+        },
+        {
+          "timestamp": "2026-03-26T22:00:00.000-05:00",
+          "streamflow_cfs": 1730.0,
+          "gage_height_ft": 4.36
+        },
+        {
+          "timestamp": "2026-03-26T23:00:00.000-05:00",
+          "streamflow_cfs": 1730.0,
+          "gage_height_ft": 4.36
+        },
+        {
+          "timestamp": "2026-03-27T00:00:00.000-05:00",
+          "streamflow_cfs": 1740.0,
+          "gage_height_ft": 4.38
+        },
+        {
+          "timestamp": "2026-03-27T01:00:00.000-05:00",
+          "streamflow_cfs": 1710.0,
+          "gage_height_ft": 4.32
+        },
+        {
+          "timestamp": "2026-03-27T02:00:00.000-05:00",
+          "streamflow_cfs": 1710.0,
+          "gage_height_ft": 4.32
+        },
+        {
+          "timestamp": "2026-03-27T03:00:00.000-05:00",
+          "streamflow_cfs": 1660.0,
+          "gage_height_ft": 4.24
+        },
+        {
+          "timestamp": "2026-03-27T04:00:00.000-05:00",
+          "streamflow_cfs": 1630.0,
+          "gage_height_ft": 4.16
+        },
+        {
+          "timestamp": "2026-03-27T05:00:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 4.12
+        },
+        {
+          "timestamp": "2026-03-27T06:00:00.000-05:00",
+          "streamflow_cfs": 1570.0,
+          "gage_height_ft": 4.06
+        },
+        {
+          "timestamp": "2026-03-27T07:00:00.000-05:00",
+          "streamflow_cfs": 1530.0,
+          "gage_height_ft": 3.98
+        },
+        {
+          "timestamp": "2026-03-27T08:00:00.000-05:00",
+          "streamflow_cfs": 1510.0,
+          "gage_height_ft": 3.94
+        },
+        {
+          "timestamp": "2026-03-27T09:00:00.000-05:00",
+          "streamflow_cfs": 1480.0,
+          "gage_height_ft": 3.88
+        },
+        {
+          "timestamp": "2026-03-27T10:00:00.000-05:00",
+          "streamflow_cfs": 1450.0,
+          "gage_height_ft": 3.82
+        },
+        {
+          "timestamp": "2026-03-27T11:00:00.000-05:00",
+          "streamflow_cfs": 1430.0,
+          "gage_height_ft": 3.78
+        },
+        {
+          "timestamp": "2026-03-27T12:00:00.000-05:00",
+          "streamflow_cfs": 1430.0,
+          "gage_height_ft": 3.78
+        },
+        {
+          "timestamp": "2026-03-27T13:00:00.000-05:00",
+          "streamflow_cfs": 1410.0,
+          "gage_height_ft": 3.74
+        },
+        {
+          "timestamp": "2026-03-27T14:00:00.000-05:00",
+          "streamflow_cfs": 1410.0,
+          "gage_height_ft": 3.74
+        },
+        {
+          "timestamp": "2026-03-27T15:00:00.000-05:00",
+          "streamflow_cfs": 1400.0,
+          "gage_height_ft": 3.72
+        },
+        {
+          "timestamp": "2026-03-27T16:00:00.000-05:00",
+          "streamflow_cfs": 1400.0,
+          "gage_height_ft": 3.72
+        },
+        {
+          "timestamp": "2026-03-27T17:00:00.000-05:00",
+          "streamflow_cfs": 1400.0,
+          "gage_height_ft": 3.72
+        },
+        {
+          "timestamp": "2026-03-27T18:00:00.000-05:00",
+          "streamflow_cfs": 1390.0,
+          "gage_height_ft": 3.7
+        },
+        {
+          "timestamp": "2026-03-27T19:00:00.000-05:00",
+          "streamflow_cfs": 1360.0,
+          "gage_height_ft": 3.64
+        },
+        {
+          "timestamp": "2026-03-27T20:00:00.000-05:00",
+          "streamflow_cfs": 1360.0,
+          "gage_height_ft": 3.64
+        },
+        {
+          "timestamp": "2026-03-27T21:00:00.000-05:00",
+          "streamflow_cfs": 1350.0,
+          "gage_height_ft": 3.62
+        },
+        {
+          "timestamp": "2026-03-27T22:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-27T23:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 3.56
+        },
+        {
+          "timestamp": "2026-03-28T00:00:00.000-05:00",
+          "streamflow_cfs": 1290.0,
+          "gage_height_ft": 3.5
+        },
+        {
+          "timestamp": "2026-03-28T01:00:00.000-05:00",
+          "streamflow_cfs": 1280.0,
+          "gage_height_ft": 3.48
+        },
+        {
+          "timestamp": "2026-03-28T02:00:00.000-05:00",
+          "streamflow_cfs": 1240.0,
+          "gage_height_ft": 3.4
+        },
+        {
+          "timestamp": "2026-03-28T03:00:00.000-05:00",
+          "streamflow_cfs": 1200.0,
+          "gage_height_ft": 3.3
+        },
+        {
+          "timestamp": "2026-03-28T04:00:00.000-05:00",
+          "streamflow_cfs": 1170.0,
+          "gage_height_ft": 3.26
+        },
+        {
+          "timestamp": "2026-03-28T05:00:00.000-05:00",
+          "streamflow_cfs": 1130.0,
+          "gage_height_ft": 3.18
+        },
+        {
+          "timestamp": "2026-03-28T06:00:00.000-05:00",
+          "streamflow_cfs": 1100.0,
+          "gage_height_ft": 3.12
+        },
+        {
+          "timestamp": "2026-03-28T07:00:00.000-05:00",
+          "streamflow_cfs": 1080.0,
+          "gage_height_ft": 3.06
+        },
+        {
+          "timestamp": "2026-03-28T08:00:00.000-05:00",
+          "streamflow_cfs": 1050.0,
+          "gage_height_ft": 3.0
+        },
+        {
+          "timestamp": "2026-03-28T09:00:00.000-05:00",
+          "streamflow_cfs": 1020.0,
+          "gage_height_ft": 2.92
+        },
+        {
+          "timestamp": "2026-03-28T10:00:00.000-05:00",
+          "streamflow_cfs": 994.0,
+          "gage_height_ft": 2.88
+        },
+        {
+          "timestamp": "2026-03-28T11:00:00.000-05:00",
+          "streamflow_cfs": 981.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-28T12:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-28T13:00:00.000-05:00",
+          "streamflow_cfs": 994.0,
+          "gage_height_ft": 2.88
+        },
+        {
+          "timestamp": "2026-03-28T14:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 2.9
+        },
+        {
+          "timestamp": "2026-03-28T15:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 2.9
+        },
+        {
+          "timestamp": "2026-03-28T16:00:00.000-05:00",
+          "streamflow_cfs": 1020.0,
+          "gage_height_ft": 2.94
+        },
+        {
+          "timestamp": "2026-03-28T17:00:00.000-05:00",
+          "streamflow_cfs": 1020.0,
+          "gage_height_ft": 2.94
+        },
+        {
+          "timestamp": "2026-03-28T18:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 2.9
+        },
+        {
+          "timestamp": "2026-03-28T19:00:00.000-05:00",
+          "streamflow_cfs": 999.0,
+          "gage_height_ft": 2.88
+        },
+        {
+          "timestamp": "2026-03-28T20:00:00.000-05:00",
+          "streamflow_cfs": 990.0,
+          "gage_height_ft": 2.86
+        },
+        {
+          "timestamp": "2026-03-28T21:00:00.000-05:00",
+          "streamflow_cfs": 994.0,
+          "gage_height_ft": 2.88
+        },
+        {
+          "timestamp": "2026-03-28T22:00:00.000-05:00",
+          "streamflow_cfs": 1000.0,
+          "gage_height_ft": 2.9
+        },
+        {
+          "timestamp": "2026-03-28T23:00:00.000-05:00",
+          "streamflow_cfs": 999.0,
+          "gage_height_ft": 2.88
+        },
+        {
+          "timestamp": "2026-03-29T00:00:00.000-05:00",
+          "streamflow_cfs": 1010.0,
+          "gage_height_ft": 2.9
+        },
+        {
+          "timestamp": "2026-03-29T01:00:00.000-05:00",
+          "streamflow_cfs": 981.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-29T02:00:00.000-05:00",
+          "streamflow_cfs": 976.0,
+          "gage_height_ft": 2.84
+        },
+        {
+          "timestamp": "2026-03-29T03:00:00.000-05:00",
+          "streamflow_cfs": 954.0,
+          "gage_height_ft": 2.78
+        },
+        {
+          "timestamp": "2026-03-29T04:00:00.000-05:00",
+          "streamflow_cfs": 940.0,
+          "gage_height_ft": 2.76
+        },
+        {
+          "timestamp": "2026-03-29T05:00:00.000-05:00",
+          "streamflow_cfs": 927.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-29T06:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-29T07:00:00.000-05:00",
+          "streamflow_cfs": 905.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-29T08:00:00.000-05:00",
+          "streamflow_cfs": 887.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-29T09:00:00.000-05:00",
+          "streamflow_cfs": 873.0,
+          "gage_height_ft": 2.6
+        },
+        {
+          "timestamp": "2026-03-29T10:00:00.000-05:00",
+          "streamflow_cfs": 873.0,
+          "gage_height_ft": 2.6
+        },
+        {
+          "timestamp": "2026-03-29T11:00:00.000-05:00",
+          "streamflow_cfs": 868.0,
+          "gage_height_ft": 2.6
+        },
+        {
+          "timestamp": "2026-03-29T12:00:00.000-05:00",
+          "streamflow_cfs": 863.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T13:00:00.000-05:00",
+          "streamflow_cfs": 863.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T14:00:00.000-05:00",
+          "streamflow_cfs": 863.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T15:00:00.000-05:00",
+          "streamflow_cfs": 858.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T16:00:00.000-05:00",
+          "streamflow_cfs": 863.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T17:00:00.000-05:00",
+          "streamflow_cfs": 858.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T18:00:00.000-05:00",
+          "streamflow_cfs": 858.0,
+          "gage_height_ft": 2.58
+        },
+        {
+          "timestamp": "2026-03-29T19:00:00.000-05:00",
+          "streamflow_cfs": 878.0,
+          "gage_height_ft": 2.62
+        },
+        {
+          "timestamp": "2026-03-29T20:00:00.000-05:00",
+          "streamflow_cfs": 887.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-29T21:00:00.000-05:00",
+          "streamflow_cfs": 900.0,
+          "gage_height_ft": 2.66
+        },
+        {
+          "timestamp": "2026-03-29T22:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-29T23:00:00.000-05:00",
+          "streamflow_cfs": 927.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-30T00:00:00.000-05:00",
+          "streamflow_cfs": 927.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-30T01:00:00.000-05:00",
+          "streamflow_cfs": 940.0,
+          "gage_height_ft": 2.76
+        },
+        {
+          "timestamp": "2026-03-30T02:00:00.000-05:00",
+          "streamflow_cfs": 945.0,
+          "gage_height_ft": 2.76
+        },
+        {
+          "timestamp": "2026-03-30T03:00:00.000-05:00",
+          "streamflow_cfs": 931.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-30T04:00:00.000-05:00",
+          "streamflow_cfs": 936.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-30T05:00:00.000-05:00",
+          "streamflow_cfs": 936.0,
+          "gage_height_ft": 2.74
+        },
+        {
+          "timestamp": "2026-03-30T06:00:00.000-05:00",
+          "streamflow_cfs": 927.0,
+          "gage_height_ft": 2.72
+        },
+        {
+          "timestamp": "2026-03-30T07:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-30T08:00:00.000-05:00",
+          "streamflow_cfs": 913.0,
+          "gage_height_ft": 2.7
+        },
+        {
+          "timestamp": "2026-03-30T09:00:00.000-05:00",
+          "streamflow_cfs": 913.0,
+          "gage_height_ft": 2.7
+        },
+        {
+          "timestamp": "2026-03-30T10:00:00.000-05:00",
+          "streamflow_cfs": 896.0,
+          "gage_height_ft": 2.66
+        },
+        {
+          "timestamp": "2026-03-30T11:00:00.000-05:00",
+          "streamflow_cfs": 900.0,
+          "gage_height_ft": 2.66
+        },
+        {
+          "timestamp": "2026-03-30T12:00:00.000-05:00",
+          "streamflow_cfs": 891.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-30T13:00:00.000-05:00",
+          "streamflow_cfs": 878.0,
+          "gage_height_ft": 2.62
+        },
+        {
+          "timestamp": "2026-03-30T14:00:00.000-05:00",
+          "streamflow_cfs": 882.0,
+          "gage_height_ft": 2.62
+        },
+        {
+          "timestamp": "2026-03-30T15:00:00.000-05:00",
+          "streamflow_cfs": 887.0,
+          "gage_height_ft": 2.64
+        },
+        {
+          "timestamp": "2026-03-30T16:00:00.000-05:00",
+          "streamflow_cfs": 882.0,
+          "gage_height_ft": 2.62
+        },
+        {
+          "timestamp": "2026-03-30T17:00:00.000-05:00",
+          "streamflow_cfs": 878.0,
+          "gage_height_ft": 2.62
+        },
+        {
+          "timestamp": "2026-03-30T18:00:00.000-05:00",
+          "streamflow_cfs": 896.0,
+          "gage_height_ft": 2.66
+        },
+        {
+          "timestamp": "2026-03-30T19:00:00.000-05:00",
+          "streamflow_cfs": 905.0,
+          "gage_height_ft": 2.68
+        },
+        {
+          "timestamp": "2026-03-30T20:00:00.000-05:00",
+          "streamflow_cfs": 909.0,
+          "gage_height_ft": 2.68
         }
       ],
+      "fishing": {
+        "species": [
+          "Smallmouth Bass",
+          "Walleye",
+          "Brown Trout"
+        ],
+        "trout_class": null,
+        "regulations": [
+          {
+            "species": "Walleye",
+            "rule": "15\" min, 5 daily bag"
+          },
+          {
+            "species": "Bass",
+            "rule": "14\" min, 5 daily"
+          },
+          {
+            "species": "Trout",
+            "rule": "3 daily bag on upper reaches"
+          }
+        ],
+        "season_notes": [
+          "Trout regs apply on upper reaches",
+          "General inland rules downstream"
+        ],
+        "access_points": [
+          {
+            "name": "Kelly Dam Landing",
+            "directions": "Off Cty Rd Y near Kelly",
+            "lat": 44.8583,
+            "lng": -89.4417
+          }
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
+      },
+      "recreation": {
+        "kayaking": "caution"
+      },
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05397500/",
       "nws_url": "https://water.noaa.gov/gauges/kelw3"
     },
@@ -216,42 +3524,897 @@
         "major": 22.5
       },
       "flood_status": "normal",
+      "has_temp_sensor": false,
       "nws_flood_category": "no_flooding",
       "current": {
-        "timestamp": "2026-03-30T18:00:00.000-05:00",
-        "streamflow_cfs": 309.0,
-        "gage_height_ft": 4.22
+        "timestamp": "2026-03-30T20:00:00.000-05:00",
+        "streamflow_cfs": 319.0,
+        "gage_height_ft": 4.26
       },
       "history": [
         {
-          "date": "2026-03-23",
-          "streamflow_cfs": 1990.0
+          "timestamp": "2026-03-23T20:50:00.000-05:00",
+          "streamflow_cfs": 1620.0,
+          "gage_height_ft": 7.45
         },
         {
-          "date": "2026-03-24",
-          "streamflow_cfs": 1220.0
+          "timestamp": "2026-03-23T21:00:00.000-05:00",
+          "streamflow_cfs": 1630.0,
+          "gage_height_ft": 7.46
         },
         {
-          "date": "2026-03-25",
-          "streamflow_cfs": 1230.0
+          "timestamp": "2026-03-23T22:00:00.000-05:00",
+          "streamflow_cfs": 1630.0,
+          "gage_height_ft": 7.46
         },
         {
-          "date": "2026-03-26",
-          "streamflow_cfs": 1840.0
+          "timestamp": "2026-03-23T23:00:00.000-05:00",
+          "streamflow_cfs": 1620.0,
+          "gage_height_ft": 7.45
         },
         {
-          "date": "2026-03-27",
-          "streamflow_cfs": 1080.0
+          "timestamp": "2026-03-24T00:00:00.000-05:00",
+          "streamflow_cfs": 1610.0,
+          "gage_height_ft": 7.43
         },
         {
-          "date": "2026-03-28",
-          "streamflow_cfs": 450.0
+          "timestamp": "2026-03-24T01:00:00.000-05:00",
+          "streamflow_cfs": 1590.0,
+          "gage_height_ft": 7.39
         },
         {
-          "date": "2026-03-29",
-          "streamflow_cfs": 330.0
+          "timestamp": "2026-03-24T02:00:00.000-05:00",
+          "streamflow_cfs": 1550.0,
+          "gage_height_ft": 7.33
+        },
+        {
+          "timestamp": "2026-03-24T03:00:00.000-05:00",
+          "streamflow_cfs": 1520.0,
+          "gage_height_ft": 7.27
+        },
+        {
+          "timestamp": "2026-03-24T04:00:00.000-05:00",
+          "streamflow_cfs": 1470.0,
+          "gage_height_ft": 7.19
+        },
+        {
+          "timestamp": "2026-03-24T05:00:00.000-05:00",
+          "streamflow_cfs": 1420.0,
+          "gage_height_ft": 7.1
+        },
+        {
+          "timestamp": "2026-03-24T06:00:00.000-05:00",
+          "streamflow_cfs": 1390.0,
+          "gage_height_ft": 7.04
+        },
+        {
+          "timestamp": "2026-03-24T07:00:00.000-05:00",
+          "streamflow_cfs": 1330.0,
+          "gage_height_ft": 6.93
+        },
+        {
+          "timestamp": "2026-03-24T08:00:00.000-05:00",
+          "streamflow_cfs": 1270.0,
+          "gage_height_ft": 6.82
+        },
+        {
+          "timestamp": "2026-03-24T09:00:00.000-05:00",
+          "streamflow_cfs": 1220.0,
+          "gage_height_ft": 6.73
+        },
+        {
+          "timestamp": "2026-03-24T10:00:00.000-05:00",
+          "streamflow_cfs": 1160.0,
+          "gage_height_ft": 6.6
+        },
+        {
+          "timestamp": "2026-03-24T11:00:00.000-05:00",
+          "streamflow_cfs": 1110.0,
+          "gage_height_ft": 6.5
+        },
+        {
+          "timestamp": "2026-03-24T12:00:00.000-05:00",
+          "streamflow_cfs": 1070.0,
+          "gage_height_ft": 6.41
+        },
+        {
+          "timestamp": "2026-03-24T13:00:00.000-05:00",
+          "streamflow_cfs": 1020.0,
+          "gage_height_ft": 6.31
+        },
+        {
+          "timestamp": "2026-03-24T14:00:00.000-05:00",
+          "streamflow_cfs": 997.0,
+          "gage_height_ft": 6.25
+        },
+        {
+          "timestamp": "2026-03-24T15:00:00.000-05:00",
+          "streamflow_cfs": 967.0,
+          "gage_height_ft": 6.18
+        },
+        {
+          "timestamp": "2026-03-24T16:00:00.000-05:00",
+          "streamflow_cfs": 946.0,
+          "gage_height_ft": 6.13
+        },
+        {
+          "timestamp": "2026-03-24T17:00:00.000-05:00",
+          "streamflow_cfs": 963.0,
+          "gage_height_ft": 6.17
+        },
+        {
+          "timestamp": "2026-03-24T18:00:00.000-05:00",
+          "streamflow_cfs": 997.0,
+          "gage_height_ft": 6.25
+        },
+        {
+          "timestamp": "2026-03-24T19:00:00.000-05:00",
+          "streamflow_cfs": 1060.0,
+          "gage_height_ft": 6.39
+        },
+        {
+          "timestamp": "2026-03-24T20:00:00.000-05:00",
+          "streamflow_cfs": 1120.0,
+          "gage_height_ft": 6.53
+        },
+        {
+          "timestamp": "2026-03-24T21:00:00.000-05:00",
+          "streamflow_cfs": 1200.0,
+          "gage_height_ft": 6.68
+        },
+        {
+          "timestamp": "2026-03-24T22:00:00.000-05:00",
+          "streamflow_cfs": 1250.0,
+          "gage_height_ft": 6.79
+        },
+        {
+          "timestamp": "2026-03-24T23:00:00.000-05:00",
+          "streamflow_cfs": 1280.0,
+          "gage_height_ft": 6.84
+        },
+        {
+          "timestamp": "2026-03-25T00:00:00.000-05:00",
+          "streamflow_cfs": 1300.0,
+          "gage_height_ft": 6.87
+        },
+        {
+          "timestamp": "2026-03-25T01:00:00.000-05:00",
+          "streamflow_cfs": 1290.0,
+          "gage_height_ft": 6.85
+        },
+        {
+          "timestamp": "2026-03-25T02:00:00.000-05:00",
+          "streamflow_cfs": 1290.0,
+          "gage_height_ft": 6.85
+        },
+        {
+          "timestamp": "2026-03-25T03:00:00.000-05:00",
+          "streamflow_cfs": 1260.0,
+          "gage_height_ft": 6.81
+        },
+        {
+          "timestamp": "2026-03-25T04:00:00.000-05:00",
+          "streamflow_cfs": 1250.0,
+          "gage_height_ft": 6.78
+        },
+        {
+          "timestamp": "2026-03-25T05:00:00.000-05:00",
+          "streamflow_cfs": 1210.0,
+          "gage_height_ft": 6.71
+        },
+        {
+          "timestamp": "2026-03-25T06:00:00.000-05:00",
+          "streamflow_cfs": 1190.0,
+          "gage_height_ft": 6.66
+        },
+        {
+          "timestamp": "2026-03-25T07:00:00.000-05:00",
+          "streamflow_cfs": 1140.0,
+          "gage_height_ft": 6.57
+        },
+        {
+          "timestamp": "2026-03-25T08:00:00.000-05:00",
+          "streamflow_cfs": 1110.0,
+          "gage_height_ft": 6.51
+        },
+        {
+          "timestamp": "2026-03-25T09:00:00.000-05:00",
+          "streamflow_cfs": 1070.0,
+          "gage_height_ft": 6.42
+        },
+        {
+          "timestamp": "2026-03-25T10:00:00.000-05:00",
+          "streamflow_cfs": 1040.0,
+          "gage_height_ft": 6.34
+        },
+        {
+          "timestamp": "2026-03-25T11:00:00.000-05:00",
+          "streamflow_cfs": 1000.0,
+          "gage_height_ft": 6.26
+        },
+        {
+          "timestamp": "2026-03-25T12:00:00.000-05:00",
+          "streamflow_cfs": 975.0,
+          "gage_height_ft": 6.2
+        },
+        {
+          "timestamp": "2026-03-25T13:00:00.000-05:00",
+          "streamflow_cfs": 958.0,
+          "gage_height_ft": 6.16
+        },
+        {
+          "timestamp": "2026-03-25T14:00:00.000-05:00",
+          "streamflow_cfs": 937.0,
+          "gage_height_ft": 6.11
+        },
+        {
+          "timestamp": "2026-03-25T15:00:00.000-05:00",
+          "streamflow_cfs": 967.0,
+          "gage_height_ft": 6.18
+        },
+        {
+          "timestamp": "2026-03-25T16:00:00.000-05:00",
+          "streamflow_cfs": 1050.0,
+          "gage_height_ft": 6.37
+        },
+        {
+          "timestamp": "2026-03-25T17:00:00.000-05:00",
+          "streamflow_cfs": 1170.0,
+          "gage_height_ft": 6.62
+        },
+        {
+          "timestamp": "2026-03-25T18:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 6.92
+        },
+        {
+          "timestamp": "2026-03-25T19:00:00.000-05:00",
+          "streamflow_cfs": 1480.0,
+          "gage_height_ft": 7.2
+        },
+        {
+          "timestamp": "2026-03-25T20:00:00.000-05:00",
+          "streamflow_cfs": 1580.0,
+          "gage_height_ft": 7.37
+        },
+        {
+          "timestamp": "2026-03-25T21:00:00.000-05:00",
+          "streamflow_cfs": 1620.0,
+          "gage_height_ft": 7.45
+        },
+        {
+          "timestamp": "2026-03-25T22:00:00.000-05:00",
+          "streamflow_cfs": 1630.0,
+          "gage_height_ft": 7.46
+        },
+        {
+          "timestamp": "2026-03-25T23:00:00.000-05:00",
+          "streamflow_cfs": 1610.0,
+          "gage_height_ft": 7.43
+        },
+        {
+          "timestamp": "2026-03-26T00:00:00.000-05:00",
+          "streamflow_cfs": 1580.0,
+          "gage_height_ft": 7.37
+        },
+        {
+          "timestamp": "2026-03-26T01:00:00.000-05:00",
+          "streamflow_cfs": 1530.0,
+          "gage_height_ft": 7.29
+        },
+        {
+          "timestamp": "2026-03-26T02:00:00.000-05:00",
+          "streamflow_cfs": 1480.0,
+          "gage_height_ft": 7.2
+        },
+        {
+          "timestamp": "2026-03-26T03:00:00.000-05:00",
+          "streamflow_cfs": 1420.0,
+          "gage_height_ft": 7.1
+        },
+        {
+          "timestamp": "2026-03-26T04:00:00.000-05:00",
+          "streamflow_cfs": 1370.0,
+          "gage_height_ft": 7.0
+        },
+        {
+          "timestamp": "2026-03-26T05:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 6.92
+        },
+        {
+          "timestamp": "2026-03-26T06:00:00.000-05:00",
+          "streamflow_cfs": 1270.0,
+          "gage_height_ft": 6.83
+        },
+        {
+          "timestamp": "2026-03-26T07:00:00.000-05:00",
+          "streamflow_cfs": 1240.0,
+          "gage_height_ft": 6.76
+        },
+        {
+          "timestamp": "2026-03-26T08:00:00.000-05:00",
+          "streamflow_cfs": 1260.0,
+          "gage_height_ft": 6.81
+        },
+        {
+          "timestamp": "2026-03-26T09:00:00.000-05:00",
+          "streamflow_cfs": 1380.0,
+          "gage_height_ft": 7.02
+        },
+        {
+          "timestamp": "2026-03-26T10:00:00.000-05:00",
+          "streamflow_cfs": 1590.0,
+          "gage_height_ft": 7.39
+        },
+        {
+          "timestamp": "2026-03-26T11:00:00.000-05:00",
+          "streamflow_cfs": 1850.0,
+          "gage_height_ft": 7.82
+        },
+        {
+          "timestamp": "2026-03-26T12:00:00.000-05:00",
+          "streamflow_cfs": 2160.0,
+          "gage_height_ft": 8.28
+        },
+        {
+          "timestamp": "2026-03-26T13:00:00.000-05:00",
+          "streamflow_cfs": 2340.0,
+          "gage_height_ft": 8.53
+        },
+        {
+          "timestamp": "2026-03-26T14:00:00.000-05:00",
+          "streamflow_cfs": 2400.0,
+          "gage_height_ft": 8.61
+        },
+        {
+          "timestamp": "2026-03-26T15:00:00.000-05:00",
+          "streamflow_cfs": 2400.0,
+          "gage_height_ft": 8.61
+        },
+        {
+          "timestamp": "2026-03-26T16:00:00.000-05:00",
+          "streamflow_cfs": 2380.0,
+          "gage_height_ft": 8.59
+        },
+        {
+          "timestamp": "2026-03-26T17:00:00.000-05:00",
+          "streamflow_cfs": 2340.0,
+          "gage_height_ft": 8.53
+        },
+        {
+          "timestamp": "2026-03-26T18:00:00.000-05:00",
+          "streamflow_cfs": 2270.0,
+          "gage_height_ft": 8.44
+        },
+        {
+          "timestamp": "2026-03-26T19:00:00.000-05:00",
+          "streamflow_cfs": 2200.0,
+          "gage_height_ft": 8.34
+        },
+        {
+          "timestamp": "2026-03-26T20:00:00.000-05:00",
+          "streamflow_cfs": 2120.0,
+          "gage_height_ft": 8.22
+        },
+        {
+          "timestamp": "2026-03-26T21:00:00.000-05:00",
+          "streamflow_cfs": 2040.0,
+          "gage_height_ft": 8.1
+        },
+        {
+          "timestamp": "2026-03-26T22:00:00.000-05:00",
+          "streamflow_cfs": 1990.0,
+          "gage_height_ft": 8.03
+        },
+        {
+          "timestamp": "2026-03-26T23:00:00.000-05:00",
+          "streamflow_cfs": 1930.0,
+          "gage_height_ft": 7.94
+        },
+        {
+          "timestamp": "2026-03-27T00:00:00.000-05:00",
+          "streamflow_cfs": 1850.0,
+          "gage_height_ft": 7.82
+        },
+        {
+          "timestamp": "2026-03-27T01:00:00.000-05:00",
+          "streamflow_cfs": 1780.0,
+          "gage_height_ft": 7.71
+        },
+        {
+          "timestamp": "2026-03-27T02:00:00.000-05:00",
+          "streamflow_cfs": 1700.0,
+          "gage_height_ft": 7.58
+        },
+        {
+          "timestamp": "2026-03-27T03:00:00.000-05:00",
+          "streamflow_cfs": 1600.0,
+          "gage_height_ft": 7.41
+        },
+        {
+          "timestamp": "2026-03-27T04:00:00.000-05:00",
+          "streamflow_cfs": 1500.0,
+          "gage_height_ft": 7.24
+        },
+        {
+          "timestamp": "2026-03-27T05:00:00.000-05:00",
+          "streamflow_cfs": 1400.0,
+          "gage_height_ft": 7.07
+        },
+        {
+          "timestamp": "2026-03-27T06:00:00.000-05:00",
+          "streamflow_cfs": 1320.0,
+          "gage_height_ft": 6.92
+        },
+        {
+          "timestamp": "2026-03-27T07:00:00.000-05:00",
+          "streamflow_cfs": 1240.0,
+          "gage_height_ft": 6.76
+        },
+        {
+          "timestamp": "2026-03-27T08:00:00.000-05:00",
+          "streamflow_cfs": 1170.0,
+          "gage_height_ft": 6.63
+        },
+        {
+          "timestamp": "2026-03-27T09:00:00.000-05:00",
+          "streamflow_cfs": 1110.0,
+          "gage_height_ft": 6.5
+        },
+        {
+          "timestamp": "2026-03-27T10:00:00.000-05:00",
+          "streamflow_cfs": 1050.0,
+          "gage_height_ft": 6.38
+        },
+        {
+          "timestamp": "2026-03-27T11:00:00.000-05:00",
+          "streamflow_cfs": 1020.0,
+          "gage_height_ft": 6.3
+        },
+        {
+          "timestamp": "2026-03-27T12:00:00.000-05:00",
+          "streamflow_cfs": 967.0,
+          "gage_height_ft": 6.18
+        },
+        {
+          "timestamp": "2026-03-27T13:00:00.000-05:00",
+          "streamflow_cfs": 933.0,
+          "gage_height_ft": 6.1
+        },
+        {
+          "timestamp": "2026-03-27T14:00:00.000-05:00",
+          "streamflow_cfs": 900.0,
+          "gage_height_ft": 6.02
+        },
+        {
+          "timestamp": "2026-03-27T15:00:00.000-05:00",
+          "streamflow_cfs": 875.0,
+          "gage_height_ft": 5.96
+        },
+        {
+          "timestamp": "2026-03-27T16:00:00.000-05:00",
+          "streamflow_cfs": 855.0,
+          "gage_height_ft": 5.91
+        },
+        {
+          "timestamp": "2026-03-27T17:00:00.000-05:00",
+          "streamflow_cfs": 831.0,
+          "gage_height_ft": 5.85
+        },
+        {
+          "timestamp": "2026-03-27T18:00:00.000-05:00",
+          "streamflow_cfs": 807.0,
+          "gage_height_ft": 5.79
+        },
+        {
+          "timestamp": "2026-03-27T19:00:00.000-05:00",
+          "streamflow_cfs": 784.0,
+          "gage_height_ft": 5.73
+        },
+        {
+          "timestamp": "2026-03-27T20:00:00.000-05:00",
+          "streamflow_cfs": 761.0,
+          "gage_height_ft": 5.67
+        },
+        {
+          "timestamp": "2026-03-27T21:00:00.000-05:00",
+          "streamflow_cfs": 742.0,
+          "gage_height_ft": 5.62
+        },
+        {
+          "timestamp": "2026-03-27T22:00:00.000-05:00",
+          "streamflow_cfs": 712.0,
+          "gage_height_ft": 5.54
+        },
+        {
+          "timestamp": "2026-03-27T23:00:00.000-05:00",
+          "streamflow_cfs": 683.0,
+          "gage_height_ft": 5.46
+        },
+        {
+          "timestamp": "2026-03-28T00:00:00.000-05:00",
+          "streamflow_cfs": 655.0,
+          "gage_height_ft": 5.38
+        },
+        {
+          "timestamp": "2026-03-28T01:00:00.000-05:00",
+          "streamflow_cfs": 627.0,
+          "gage_height_ft": 5.3
+        },
+        {
+          "timestamp": "2026-03-28T02:00:00.000-05:00",
+          "streamflow_cfs": 596.0,
+          "gage_height_ft": 5.21
+        },
+        {
+          "timestamp": "2026-03-28T03:00:00.000-05:00",
+          "streamflow_cfs": 586.0,
+          "gage_height_ft": 5.18
+        },
+        {
+          "timestamp": "2026-03-28T04:00:00.000-05:00",
+          "streamflow_cfs": 553.0,
+          "gage_height_ft": 5.08
+        },
+        {
+          "timestamp": "2026-03-28T05:00:00.000-05:00",
+          "streamflow_cfs": 533.0,
+          "gage_height_ft": 5.02
+        },
+        {
+          "timestamp": "2026-03-28T06:00:00.000-05:00",
+          "streamflow_cfs": 508.0,
+          "gage_height_ft": 4.94
+        },
+        {
+          "timestamp": "2026-03-28T07:00:00.000-05:00",
+          "streamflow_cfs": 496.0,
+          "gage_height_ft": 4.9
+        },
+        {
+          "timestamp": "2026-03-28T08:00:00.000-05:00",
+          "streamflow_cfs": 472.0,
+          "gage_height_ft": 4.82
+        },
+        {
+          "timestamp": "2026-03-28T09:00:00.000-05:00",
+          "streamflow_cfs": 460.0,
+          "gage_height_ft": 4.78
+        },
+        {
+          "timestamp": "2026-03-28T10:00:00.000-05:00",
+          "streamflow_cfs": 448.0,
+          "gage_height_ft": 4.74
+        },
+        {
+          "timestamp": "2026-03-28T11:00:00.000-05:00",
+          "streamflow_cfs": 439.0,
+          "gage_height_ft": 4.71
+        },
+        {
+          "timestamp": "2026-03-28T12:00:00.000-05:00",
+          "streamflow_cfs": 428.0,
+          "gage_height_ft": 4.67
+        },
+        {
+          "timestamp": "2026-03-28T13:00:00.000-05:00",
+          "streamflow_cfs": 411.0,
+          "gage_height_ft": 4.61
+        },
+        {
+          "timestamp": "2026-03-28T14:00:00.000-05:00",
+          "streamflow_cfs": 400.0,
+          "gage_height_ft": 4.57
+        },
+        {
+          "timestamp": "2026-03-28T15:00:00.000-05:00",
+          "streamflow_cfs": 392.0,
+          "gage_height_ft": 4.54
+        },
+        {
+          "timestamp": "2026-03-28T16:00:00.000-05:00",
+          "streamflow_cfs": 378.0,
+          "gage_height_ft": 4.49
+        },
+        {
+          "timestamp": "2026-03-28T17:00:00.000-05:00",
+          "streamflow_cfs": 370.0,
+          "gage_height_ft": 4.46
+        },
+        {
+          "timestamp": "2026-03-28T18:00:00.000-05:00",
+          "streamflow_cfs": 373.0,
+          "gage_height_ft": 4.47
+        },
+        {
+          "timestamp": "2026-03-28T19:00:00.000-05:00",
+          "streamflow_cfs": 373.0,
+          "gage_height_ft": 4.47
+        },
+        {
+          "timestamp": "2026-03-28T20:00:00.000-05:00",
+          "streamflow_cfs": 373.0,
+          "gage_height_ft": 4.47
+        },
+        {
+          "timestamp": "2026-03-28T21:00:00.000-05:00",
+          "streamflow_cfs": 367.0,
+          "gage_height_ft": 4.45
+        },
+        {
+          "timestamp": "2026-03-28T22:00:00.000-05:00",
+          "streamflow_cfs": 367.0,
+          "gage_height_ft": 4.45
+        },
+        {
+          "timestamp": "2026-03-28T23:00:00.000-05:00",
+          "streamflow_cfs": 367.0,
+          "gage_height_ft": 4.45
+        },
+        {
+          "timestamp": "2026-03-29T00:00:00.000-05:00",
+          "streamflow_cfs": 365.0,
+          "gage_height_ft": 4.44
+        },
+        {
+          "timestamp": "2026-03-29T01:00:00.000-05:00",
+          "streamflow_cfs": 365.0,
+          "gage_height_ft": 4.44
+        },
+        {
+          "timestamp": "2026-03-29T02:00:00.000-05:00",
+          "streamflow_cfs": 365.0,
+          "gage_height_ft": 4.44
+        },
+        {
+          "timestamp": "2026-03-29T03:00:00.000-05:00",
+          "streamflow_cfs": 362.0,
+          "gage_height_ft": 4.43
+        },
+        {
+          "timestamp": "2026-03-29T04:00:00.000-05:00",
+          "streamflow_cfs": 357.0,
+          "gage_height_ft": 4.41
+        },
+        {
+          "timestamp": "2026-03-29T05:00:00.000-05:00",
+          "streamflow_cfs": 352.0,
+          "gage_height_ft": 4.39
+        },
+        {
+          "timestamp": "2026-03-29T06:00:00.000-05:00",
+          "streamflow_cfs": 349.0,
+          "gage_height_ft": 4.38
+        },
+        {
+          "timestamp": "2026-03-29T07:00:00.000-05:00",
+          "streamflow_cfs": 344.0,
+          "gage_height_ft": 4.36
+        },
+        {
+          "timestamp": "2026-03-29T08:00:00.000-05:00",
+          "streamflow_cfs": 334.0,
+          "gage_height_ft": 4.32
+        },
+        {
+          "timestamp": "2026-03-29T09:00:00.000-05:00",
+          "streamflow_cfs": 329.0,
+          "gage_height_ft": 4.3
+        },
+        {
+          "timestamp": "2026-03-29T10:00:00.000-05:00",
+          "streamflow_cfs": 326.0,
+          "gage_height_ft": 4.29
+        },
+        {
+          "timestamp": "2026-03-29T11:00:00.000-05:00",
+          "streamflow_cfs": 321.0,
+          "gage_height_ft": 4.27
+        },
+        {
+          "timestamp": "2026-03-29T12:00:00.000-05:00",
+          "streamflow_cfs": 316.0,
+          "gage_height_ft": 4.25
+        },
+        {
+          "timestamp": "2026-03-29T13:00:00.000-05:00",
+          "streamflow_cfs": 314.0,
+          "gage_height_ft": 4.24
+        },
+        {
+          "timestamp": "2026-03-29T14:00:00.000-05:00",
+          "streamflow_cfs": 311.0,
+          "gage_height_ft": 4.23
+        },
+        {
+          "timestamp": "2026-03-29T15:00:00.000-05:00",
+          "streamflow_cfs": 304.0,
+          "gage_height_ft": 4.2
+        },
+        {
+          "timestamp": "2026-03-29T16:00:00.000-05:00",
+          "streamflow_cfs": 309.0,
+          "gage_height_ft": 4.22
+        },
+        {
+          "timestamp": "2026-03-29T17:00:00.000-05:00",
+          "streamflow_cfs": 309.0,
+          "gage_height_ft": 4.22
+        },
+        {
+          "timestamp": "2026-03-29T18:00:00.000-05:00",
+          "streamflow_cfs": 311.0,
+          "gage_height_ft": 4.23
+        },
+        {
+          "timestamp": "2026-03-29T19:00:00.000-05:00",
+          "streamflow_cfs": 314.0,
+          "gage_height_ft": 4.24
+        },
+        {
+          "timestamp": "2026-03-29T20:00:00.000-05:00",
+          "streamflow_cfs": 316.0,
+          "gage_height_ft": 4.25
+        },
+        {
+          "timestamp": "2026-03-29T21:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-29T22:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-29T23:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-30T00:00:00.000-05:00",
+          "streamflow_cfs": 326.0,
+          "gage_height_ft": 4.29
+        },
+        {
+          "timestamp": "2026-03-30T01:00:00.000-05:00",
+          "streamflow_cfs": 324.0,
+          "gage_height_ft": 4.28
+        },
+        {
+          "timestamp": "2026-03-30T02:00:00.000-05:00",
+          "streamflow_cfs": 324.0,
+          "gage_height_ft": 4.28
+        },
+        {
+          "timestamp": "2026-03-30T03:00:00.000-05:00",
+          "streamflow_cfs": 326.0,
+          "gage_height_ft": 4.29
+        },
+        {
+          "timestamp": "2026-03-30T04:00:00.000-05:00",
+          "streamflow_cfs": 321.0,
+          "gage_height_ft": 4.27
+        },
+        {
+          "timestamp": "2026-03-30T05:00:00.000-05:00",
+          "streamflow_cfs": 324.0,
+          "gage_height_ft": 4.28
+        },
+        {
+          "timestamp": "2026-03-30T06:00:00.000-05:00",
+          "streamflow_cfs": 321.0,
+          "gage_height_ft": 4.27
+        },
+        {
+          "timestamp": "2026-03-30T07:00:00.000-05:00",
+          "streamflow_cfs": 316.0,
+          "gage_height_ft": 4.25
+        },
+        {
+          "timestamp": "2026-03-30T08:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-30T09:00:00.000-05:00",
+          "streamflow_cfs": 311.0,
+          "gage_height_ft": 4.23
+        },
+        {
+          "timestamp": "2026-03-30T10:00:00.000-05:00",
+          "streamflow_cfs": 309.0,
+          "gage_height_ft": 4.22
+        },
+        {
+          "timestamp": "2026-03-30T11:00:00.000-05:00",
+          "streamflow_cfs": 314.0,
+          "gage_height_ft": 4.24
+        },
+        {
+          "timestamp": "2026-03-30T12:00:00.000-05:00",
+          "streamflow_cfs": 309.0,
+          "gage_height_ft": 4.22
+        },
+        {
+          "timestamp": "2026-03-30T13:00:00.000-05:00",
+          "streamflow_cfs": 304.0,
+          "gage_height_ft": 4.2
+        },
+        {
+          "timestamp": "2026-03-30T14:00:00.000-05:00",
+          "streamflow_cfs": 306.0,
+          "gage_height_ft": 4.21
+        },
+        {
+          "timestamp": "2026-03-30T15:00:00.000-05:00",
+          "streamflow_cfs": 311.0,
+          "gage_height_ft": 4.23
+        },
+        {
+          "timestamp": "2026-03-30T16:00:00.000-05:00",
+          "streamflow_cfs": 316.0,
+          "gage_height_ft": 4.25
+        },
+        {
+          "timestamp": "2026-03-30T17:00:00.000-05:00",
+          "streamflow_cfs": 314.0,
+          "gage_height_ft": 4.24
+        },
+        {
+          "timestamp": "2026-03-30T18:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-30T19:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
+        },
+        {
+          "timestamp": "2026-03-30T20:00:00.000-05:00",
+          "streamflow_cfs": 319.0,
+          "gage_height_ft": 4.26
         }
       ],
+      "fishing": {
+        "species": [
+          "Walleye",
+          "Northern Pike",
+          "Panfish",
+          "Largemouth Bass"
+        ],
+        "trout_class": null,
+        "regulations": [
+          {
+            "species": "Walleye",
+            "rule": "15\" min, 5 daily bag"
+          },
+          {
+            "species": "Northern Pike",
+            "rule": "24\" min, 5 daily"
+          },
+          {
+            "species": "Bass",
+            "rule": "14\" min, 5 daily"
+          }
+        ],
+        "season_notes": [
+          "Walleye open first Sat in May",
+          "Reservoir influence \u2014 good ice fishing in winter"
+        ],
+        "access_points": [
+          {
+            "name": "Eau Pleine County Park",
+            "directions": "Off Cty Rd HH south of Stratford",
+            "lat": 44.78,
+            "lng": -90.07
+          }
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing"
+      },
+      "recreation": null,
       "usgs_url": "https://waterdata.usgs.gov/monitoring-location/USGS-05399500/",
       "nws_url": "https://water.noaa.gov/gauges/strw3"
     }
@@ -261,49 +4424,159 @@
     {
       "name": "Rainbow Reservoir",
       "slug": "rainbow",
-      "current_level_ft": null,
-      "source_url": "https://wvic.com/Content/rainbow_Level_Flows.cfm",
-      "last_updated": null
+      "feet_below_max": -6.28,
+      "has_data": true,
+      "source_url": "https://wvic.com/Content/Data--Reports.cfm",
+      "last_updated": "2026-03-31T01:45:30.615137+00:00"
     },
     {
       "name": "Willow Reservoir",
       "slug": "willow",
-      "current_level_ft": null,
-      "source_url": "https://wvic.com/Content/willow_Level_Flows.cfm",
-      "last_updated": null
+      "feet_below_max": -6.82,
+      "has_data": true,
+      "source_url": "https://wvic.com/Content/Data--Reports.cfm",
+      "last_updated": "2026-03-31T01:45:30.615137+00:00"
     },
     {
       "name": "Spirit Reservoir",
       "slug": "spirit",
-      "current_level_ft": null,
-      "source_url": "https://wvic.com/Content/spirit_Level_Flows.cfm",
-      "last_updated": null
+      "feet_below_max": -1.03,
+      "has_data": true,
+      "source_url": "https://wvic.com/Content/Data--Reports.cfm",
+      "last_updated": "2026-03-31T01:45:30.615137+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
       "slug": "eau-pleine",
-      "current_level_ft": null,
-      "source_url": "https://wvic.com/Content/eau_pleine_Level_Flows.cfm",
-      "last_updated": null
+      "feet_below_max": -1.5,
+      "has_data": true,
+      "source_url": "https://wvic.com/Content/Data--Reports.cfm",
+      "last_updated": "2026-03-31T01:45:30.615137+00:00"
     },
     {
       "name": "Rice Reservoir",
       "slug": "rice",
-      "current_level_ft": null,
-      "source_url": "https://wvic.com/Content/rice_Level_Flows.cfm",
-      "last_updated": null
+      "feet_below_max": -4.71,
+      "has_data": true,
+      "source_url": "https://wvic.com/Content/Data--Reports.cfm",
+      "last_updated": "2026-03-31T01:45:30.615137+00:00"
     },
     {
       "name": "Lake Wausau",
       "slug": "lake-wausau",
-      "current_level_ft": null,
-      "source_url": "https://wvic.com/Content/lake_wausau_Level_Flows.cfm",
+      "feet_below_max": null,
+      "has_data": false,
+      "source_url": "https://wvic.com/Content/Data--Reports.cfm",
       "last_updated": null
     }
   ],
+  "fishing_conditions": {
+    "pressure_hpa": 1006.8,
+    "pressure_trend": "rising",
+    "wind_speed_mph": 8.4,
+    "wind_direction_deg": 74,
+    "wind_direction": "E",
+    "sunrise": "6:38 AM",
+    "sunset": "7:26 PM",
+    "civil_dawn": "6:10 AM",
+    "civil_dusk": "7:54 PM",
+    "moon_phase": "Waxing Gibbous",
+    "day_rating": 3,
+    "major_periods": [
+      {
+        "start": "22:02",
+        "end": "24:02"
+      },
+      {
+        "start": "10:25",
+        "end": "12:25"
+      }
+    ],
+    "minor_periods": [
+      {
+        "start": "16:42",
+        "end": "17:42"
+      },
+      {
+        "start": "05:19",
+        "end": "06:19"
+      }
+    ],
+    "hourly_ratings": {
+      "0": 40,
+      "1": 40,
+      "2": 40,
+      "3": 40,
+      "4": 40,
+      "5": 60,
+      "6": 80,
+      "7": 60,
+      "8": 40,
+      "9": 40,
+      "10": 60,
+      "11": 60,
+      "12": 60,
+      "13": 60,
+      "14": 40,
+      "15": 40,
+      "16": 40,
+      "17": 60,
+      "18": 60,
+      "19": 60,
+      "20": 60,
+      "21": 40,
+      "22": 60,
+      "23": 60
+    }
+  },
+  "weather_forecast": [
+    {
+      "date": "2026-03-30",
+      "high_f": 66,
+      "low_f": 35,
+      "precip_pct": 6,
+      "weather_code": 61
+    },
+    {
+      "date": "2026-03-31",
+      "high_f": 58,
+      "low_f": 35,
+      "precip_pct": 44,
+      "weather_code": 51
+    },
+    {
+      "date": "2026-04-01",
+      "high_f": 40,
+      "low_f": 28,
+      "precip_pct": 46,
+      "weather_code": 75
+    },
+    {
+      "date": "2026-04-02",
+      "high_f": 32,
+      "low_f": 28,
+      "precip_pct": 87,
+      "weather_code": 75
+    },
+    {
+      "date": "2026-04-03",
+      "high_f": 34,
+      "low_f": 22,
+      "precip_pct": 67,
+      "weather_code": 56
+    }
+  ],
+  "community_links": {
+    "fishing_report_form": "https://forms.gle/YOUR_FORM_ID",
+    "photo_hashtag": "#WausauFishing",
+    "social_url": "https://facebook.com/wausaupilotandreview",
+    "email": "news@wausaupilotandreview.com"
+  },
   "sources": {
     "usgs": "https://waterservices.usgs.gov/",
     "nws": "https://api.weather.gov/",
-    "wvic": "https://wvic.com/"
+    "wvic": "https://wvic.com/",
+    "open_meteo": "https://open-meteo.com/",
+    "solunar": "https://solunar.org/"
   }
 }
