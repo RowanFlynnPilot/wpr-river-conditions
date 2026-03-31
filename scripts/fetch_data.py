@@ -1024,6 +1024,140 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
     return summaries
 
 
+def generate_daily_summary(
+    gauges: list, fishing_conditions: dict | None, forecast: list,
+    conditions_summary: list, upcoming_events: list, seasonal: dict | None,
+) -> str:
+    """
+    Generate a concise AP-style daily fishing conditions summary as an
+    HTML snippet. Sentence case headline, <=30 words. Body is 2-3 sentences.
+    """
+    today = datetime.now()
+    date_str = f"{today.strftime('%B')} {today.day}, {today.year}"  # e.g., "March 31, 2026"
+    day_of_week = today.strftime("%A")
+
+    # --- Build headline (sentence case, <=30 words) ---
+    # Key data points for headline
+    primary_gauge = next((g for g in gauges if g["id"] == "05398000"), None)
+    primary_flow = primary_gauge["current"].get("streamflow_cfs") if primary_gauge else None
+    primary_ht = primary_gauge["current"].get("gage_height_ft") if primary_gauge else None
+
+    # Fishing rating
+    rating = fishing_conditions.get("day_rating") if fishing_conditions else None
+    pressure_trend = fishing_conditions.get("pressure_trend") if fishing_conditions else None
+
+    # Weather today
+    today_wx = forecast[0] if forecast else None
+    high_temp = today_wx["high_f"] if today_wx else None
+
+    # Flow direction
+    flow_direction = "stable"
+    if conditions_summary:
+        combined = " ".join(conditions_summary).lower()
+        if "rising" in combined:
+            flow_direction = "rising"
+        elif "dropping" in combined or "falling" in combined:
+            flow_direction = "falling"
+
+    # Upcoming event within 3 days?
+    near_event = None
+    today_iso = today.strftime("%Y-%m-%d")
+    for evt in upcoming_events:
+        days_until = (datetime.strptime(evt["date"], "%Y-%m-%d") - today).days
+        if 0 <= days_until <= 3:
+            near_event = evt
+            break
+
+    # Compose headline
+    parts = []
+    if primary_flow:
+        parts.append(f"Wisconsin River at {int(primary_flow):,} cfs with {flow_direction} flows")
+    if rating:
+        rating_word = "poor" if rating <= 3 else "fair" if rating <= 5 else "good" if rating <= 7 else "excellent"
+        parts.append(f"{rating_word} fishing rated {rating}/10")
+
+    headline = "; ".join(parts) if parts else f"Central Wisconsin fishing conditions for {day_of_week}"
+
+    # Capitalize first letter only (sentence case)
+    headline = headline[0].upper() + headline[1:]
+
+    # --- Build body (2-3 AP-style sentences) ---
+    body_parts = []
+
+    # Sentence 1: conditions
+    if primary_flow and primary_ht:
+        body_parts.append(
+            f"The Wisconsin River at Rothschild is running at {int(primary_flow):,} cubic feet per second "
+            f"with a gage height of {primary_ht} feet."
+        )
+
+    # Sentence 2: flow trend + clarity
+    if conditions_summary:
+        # Use the first summary line, cleaned up
+        body_parts.append(conditions_summary[0])
+
+    # Sentence 3: fishing outlook
+    outlook_parts = []
+    if pressure_trend:
+        trend_text = {"falling": "dropping pressure favors feeding activity",
+                      "rising": "rising pressure may slow bite",
+                      "steady": "steady barometric pressure"}
+        outlook_parts.append(trend_text.get(pressure_trend, ""))
+    if high_temp:
+        outlook_parts.append(f"high of {high_temp}\u00b0F expected")
+    if fishing_conditions and fishing_conditions.get("best_time"):
+        bt = fishing_conditions["best_time"]
+
+        def fmt_time(t):
+            """Convert '11:09' to '11:09 a.m.' AP style."""
+            h, m = int(t.split(":")[0]), int(t.split(":")[1])
+            ampm = "a.m." if h < 12 else "p.m."
+            hr = h % 12 or 12
+            return f"{hr}:{m:02d} {ampm}"
+
+        outlook_parts.append(f"best fishing window {fmt_time(bt['start'])}\u2013{fmt_time(bt['end'])}")
+
+    if outlook_parts:
+        outlook = ", ".join(p for p in outlook_parts if p)
+        outlook = outlook[0].upper() + outlook[1:]
+        # Avoid double period after abbreviations like "p.m."
+        if not outlook.endswith("."):
+            outlook += "."
+        body_parts.append(outlook)
+
+    # Optional: upcoming event callout
+    if near_event:
+        days = (datetime.strptime(near_event["date"], "%Y-%m-%d") - today).days
+        if days == 0:
+            body_parts.append(f"Today: {near_event['name']}.")
+        elif days == 1:
+            body_parts.append(f"Tomorrow: {near_event['name']}.")
+        else:
+            evt_date = datetime.strptime(near_event["date"], "%Y-%m-%d")
+            evt_fmt = f"{evt_date.strftime('%A')}, {evt_date.strftime('%B')} {evt_date.day}"
+            body_parts.append(f"Coming up {evt_fmt}: {near_event['name']}.")
+
+    body = " ".join(body_parts)
+
+    # Seasonal note
+    seasonal_note = ""
+    if seasonal and seasonal.get("activity"):
+        seasonal_note = seasonal["activity"][0]
+
+    # --- Format as HTML snippet ---
+    widget_url = "https://rowanflynnpilot.github.io/wpr-river-conditions/"
+    html = f"""<div class="wpr-fishing-summary">
+  <p class="wpr-fishing-summary__date">{date_str}</p>
+  <h3 class="wpr-fishing-summary__headline">{headline}</h3>
+  <p class="wpr-fishing-summary__body">{body}</p>
+  {f'<p class="wpr-fishing-summary__seasonal"><em>{seasonal_note}</em></p>' if seasonal_note else ''}
+  <p class="wpr-fishing-summary__cta"><a href="{widget_url}">View full river conditions, fishing forecast and more \u2192</a></p>
+  <p class="wpr-fishing-summary__credit"><small>Data from USGS, National Weather Service and Solunar.org. Updated every 30 minutes.</small></p>
+</div>"""
+
+    return html
+
+
 # ---------------------------------------------------------------------------
 # Main: Assemble and write JSON
 # ---------------------------------------------------------------------------
@@ -1142,6 +1276,24 @@ def main():
             "solunar": "https://solunar.org/",
         },
     }
+
+    # Generate daily fishing summary (AP style)
+    daily_summary = generate_daily_summary(
+        gauges_data, fishing_conditions, weather_forecast,
+        conditions_summary, upcoming_events, seasonal
+    )
+
+    # Write summary as standalone HTML snippet
+    summary_path = Path(__file__).parent.parent / "src" / "data" / "daily-summary.html"
+    summary_path.write_text(daily_summary, encoding="utf-8")
+    log.info(f"Wrote daily summary ({summary_path.stat().st_size:,} bytes)")
+
+    # Also write as JSON for programmatic consumption
+    summary_json_path = Path(__file__).parent.parent / "src" / "data" / "daily-summary.json"
+    summary_json_path.write_text(json.dumps({
+        "generated_at": now,
+        "html": daily_summary,
+    }, indent=2, ensure_ascii=False), encoding="utf-8")
 
     # Write to src/data/
     out_path = Path(__file__).parent.parent / "src" / "data" / "river-data.json"
