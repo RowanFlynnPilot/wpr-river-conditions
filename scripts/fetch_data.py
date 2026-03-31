@@ -793,6 +793,191 @@ def estimate_water_clarity(current_cfs: float | None, history: list[dict]) -> di
         return {"rating": "clear", "description": "Low, stable flow \u2014 good visibility"}
 
 
+def compute_best_fishing_time(fishing_conditions: dict) -> dict | None:
+    """
+    Determine the best fishing window today by combining solunar major
+    periods with sunrise/sunset to find the best daylight feeding window.
+    """
+    if not fishing_conditions:
+        return None
+
+    sunrise = fishing_conditions.get("sunrise")
+    sunset = fishing_conditions.get("sunset")
+    major_periods = fishing_conditions.get("major_periods", [])
+    minor_periods = fishing_conditions.get("minor_periods", [])
+    pressure_trend = fishing_conditions.get("pressure_trend")
+    day_rating = fishing_conditions.get("day_rating")
+
+    if not major_periods and not minor_periods:
+        return None
+
+    def time_to_minutes(t_str):
+        """Convert 'H:MM AM/PM' or 'HH:MM' to minutes since midnight."""
+        if not t_str:
+            return None
+        t_str = t_str.strip()
+        try:
+            if "AM" in t_str or "PM" in t_str:
+                parts = t_str.replace("AM", "").replace("PM", "").strip().split(":")
+                h, m = int(parts[0]), int(parts[1])
+                if "PM" in t_str and h != 12:
+                    h += 12
+                if "AM" in t_str and h == 12:
+                    h = 0
+                return h * 60 + m
+            else:
+                parts = t_str.split(":")
+                return int(parts[0]) * 60 + int(parts[1])
+        except (ValueError, IndexError):
+            return None
+
+    sunrise_min = time_to_minutes(sunrise) or 360  # default 6am
+    sunset_min = time_to_minutes(sunset) or 1140   # default 7pm
+
+    # Score each period: major periods get higher base score
+    best = None
+    best_score = -1
+
+    all_periods = [(p, "major") for p in major_periods] + [(p, "minor") for p in minor_periods]
+
+    for period, ptype in all_periods:
+        start_min = time_to_minutes(period.get("start"))
+        end_min = time_to_minutes(period.get("end"))
+        if start_min is None or end_min is None:
+            continue
+
+        # Handle overnight periods
+        if end_min < start_min:
+            end_min += 1440
+
+        mid = (start_min + end_min) / 2
+
+        # Score: base points for type
+        score = 10 if ptype == "major" else 5
+
+        # Bonus for daylight hours
+        if sunrise_min <= mid <= sunset_min:
+            score += 5
+
+        # Bonus for dawn/dusk (golden hours)
+        if abs(mid - sunrise_min) < 90 or abs(mid - sunset_min) < 90:
+            score += 3
+
+        # Bonus for falling pressure
+        if pressure_trend == "falling":
+            score += 2
+
+        if score > best_score:
+            best_score = score
+            best = {
+                "start": period["start"],
+                "end": period["end"],
+                "type": ptype,
+                "score": score,
+            }
+
+    if not best:
+        return None
+
+    # Generate recommendation text
+    qualifiers = []
+    if pressure_trend == "falling":
+        qualifiers.append("falling barometer")
+    if day_rating and day_rating >= 7:
+        qualifiers.append("strong solunar activity")
+
+    reason = ""
+    if qualifiers:
+        reason = f" ({', '.join(qualifiers)})"
+
+    return {
+        "start": best["start"],
+        "end": best["end"],
+        "type": best["type"],
+        "reason": reason,
+    }
+
+
+# Seasonal fish activity by month (central Wisconsin)
+SEASONAL_CALENDAR = {
+    1:  {"label": "January",   "activity": ["Ice fishing for panfish & walleye", "Early catch-and-release trout season opens", "Target crappie in deep basin areas"]},
+    2:  {"label": "February",  "activity": ["Late ice fishing \u2014 panfish remain active", "Walleye start moving shallower under ice", "Scout open-water spots for early spring"]},
+    3:  {"label": "March",     "activity": ["Ice-out approaching \u2014 use caution on ice", "Walleye pre-spawn staging in river mouths", "Suckers running \u2014 good live bait source"]},
+    4:  {"label": "April",     "activity": ["Walleye spawning run in the WI River", "Smallmouth bass moving to shallow gravel", "Trout stocking by DNR in area streams"]},
+    5:  {"label": "May",       "activity": ["General fishing opener first Saturday", "Walleye & bass seasons open", "Musky opener \u2014 try big bucktails"]},
+    6:  {"label": "June",      "activity": ["Topwater bass fishing peaks", "Musky active on weed edges", "Mayfly hatches on trout streams"]},
+    7:  {"label": "July",      "activity": ["Early morning & evening best \u2014 fish go deep midday", "Catfish active at night on the WI River", "Panfish on beds in reservoir shallows"]},
+    8:  {"label": "August",    "activity": ["Smallmouth bass schooling on river sandbars", "Night fishing for walleye and catfish", "Trout in spring-fed streams seeking cold water"]},
+    9:  {"label": "September", "activity": ["Fall musky season begins \u2014 prime time", "Walleye transition to fall patterns", "Cooling water temps improve all fishing"]},
+    10: {"label": "October",   "activity": ["Peak musky fishing \u2014 figure-8s at the boat", "Walleye stacking up near dam tailwaters", "Brown trout spawning run in tributaries"]},
+    11: {"label": "November",  "activity": ["Late fall walleye in deep holes", "First ice forming \u2014 do NOT venture out yet", "Musky season closing \u2014 last chance"]},
+    12: {"label": "December",  "activity": ["Early ice fishing when safe (4\"+ clear ice)", "Panfish in deep weed edges", "Walleye in basin areas of reservoirs"]},
+}
+
+
+def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
+    """
+    Auto-generate a narrative summary of recent conditions based on
+    flow trends across all gauges.
+    """
+    summaries = []
+
+    # Analyze flow trends across reporting gauges
+    rising = []
+    falling = []
+    stable = []
+    flood_alerts = []
+
+    for g in gauges_data:
+        name = g["short_name"]
+        current_cfs = g["current"].get("streamflow_cfs")
+        history = g.get("history", [])
+        status = g.get("flood_status", "normal")
+
+        if status in ("minor", "moderate", "major"):
+            flood_alerts.append(f"{name} at {status} flood stage")
+
+        if current_cfs is None or len(history) < 24:
+            continue
+
+        # Compare current to 24h ago
+        old_flows = [h["streamflow_cfs"] for h in history[:24] if h.get("streamflow_cfs")]
+        if not old_flows:
+            continue
+
+        avg_24h_ago = sum(old_flows) / len(old_flows)
+        pct = ((current_cfs - avg_24h_ago) / avg_24h_ago * 100) if avg_24h_ago > 0 else 0
+
+        if pct > 15:
+            rising.append((name, round(pct)))
+        elif pct < -15:
+            falling.append((name, round(abs(pct))))
+        else:
+            stable.append(name)
+
+    # Build summary sentences
+    if flood_alerts:
+        summaries.append("\u26a0\ufe0f " + "; ".join(flood_alerts) + ".")
+
+    if rising:
+        parts = [f"{n} (+{p}%)" for n, p in rising]
+        summaries.append(f"Flows rising on {', '.join(parts)} \u2014 expect reduced clarity.")
+
+    if falling:
+        parts = [f"{n} (-{p}%)" for n, p in falling]
+        summaries.append(f"Flows dropping on {', '.join(parts)} \u2014 clarity improving.")
+
+    if stable and not rising and not falling:
+        summaries.append("All gauges showing stable flows \u2014 consistent conditions.")
+    elif stable:
+        summaries.append(f"Stable on {', '.join(stable)}.")
+
+    if not summaries:
+        summaries.append("Conditions data is limited \u2014 check individual gauges for details.")
+
+    return summaries
+
+
 # ---------------------------------------------------------------------------
 # Main: Assemble and write JSON
 # ---------------------------------------------------------------------------
@@ -874,6 +1059,18 @@ def main():
     log.info("Fetching 5-day weather forecast...")
     weather_forecast = fetch_weather_forecast()
 
+    # Compute best fishing time
+    best_time = compute_best_fishing_time(fishing_conditions)
+    if fishing_conditions and best_time:
+        fishing_conditions["best_time"] = best_time
+
+    # Seasonal calendar for current month
+    current_month = datetime.now().month
+    seasonal = SEASONAL_CALENDAR.get(current_month)
+
+    # Auto-generated conditions summary
+    conditions_summary = compute_conditions_summary(gauges_data)
+
     # Assemble output
     output = {
         "generated_at": now,
@@ -883,6 +1080,8 @@ def main():
         "reservoirs": reservoirs,
         "fishing_conditions": fishing_conditions,
         "weather_forecast": weather_forecast,
+        "seasonal_activity": seasonal,
+        "conditions_summary": conditions_summary,
         "community_links": COMMUNITY_LINKS,
         "sources": {
             "usgs": "https://waterservices.usgs.gov/",

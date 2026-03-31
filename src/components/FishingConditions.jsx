@@ -91,6 +91,18 @@ export default function FishingConditions({ conditions }) {
 
   return (
     <div className="fishing-panel">
+      {conditions.best_time && (
+        <div className="fishing-panel__best-time">
+          <span className="fishing-panel__best-time-label">{'\uD83C\uDFA3'} Best Window Today</span>
+          <span className="fishing-panel__best-time-value">
+            {formatPeriod(conditions.best_time)}
+          </span>
+          <span className="fishing-panel__best-time-type">
+            {conditions.best_time.type === 'major' ? 'Major feed' : 'Minor feed'}
+            {conditions.best_time.reason}
+          </span>
+        </div>
+      )}
       <div className="fishing-panel__grid">
         {/* Weather */}
         <div className="fishing-panel__group">

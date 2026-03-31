@@ -6,6 +6,7 @@ import FishingConditions from './components/FishingConditions';
 import FishingReference from './components/FishingReference';
 import WeatherForecast from './components/WeatherForecast';
 import CommunityBar from './components/CommunityBar';
+import ConditionsSummary from './components/ConditionsSummary';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -126,6 +127,12 @@ export default function App() {
 
       {/* Alerts */}
       <AlertBanner alerts={data.alerts} />
+
+      {/* Conditions Summary & Seasonal */}
+      <ConditionsSummary
+        summary={data.conditions_summary}
+        seasonal={data.seasonal_activity}
+      />
 
       {/* Stream Gauges */}
       <div className="section-header">

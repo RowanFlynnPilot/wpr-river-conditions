@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31T14:49:20.547121+00:00",
+  "generated_at": "2026-03-31T14:57:49.186868+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -25,11 +25,6 @@
         "gage_height_ft": 16.39
       },
       "history": [
-        {
-          "timestamp": "2026-03-24T09:50:00.000-05:00",
-          "streamflow_cfs": 10200.0,
-          "gage_height_ft": 17.95
-        },
         {
           "timestamp": "2026-03-24T10:00:00.000-05:00",
           "streamflow_cfs": 9800.0,
@@ -950,10 +945,6 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T09:50:00.000-05:00",
-          "gage_height_ft": 12.78
-        },
-        {
           "timestamp": "2026-03-24T10:00:00.000-05:00",
           "gage_height_ft": 12.77
         },
@@ -1692,11 +1683,6 @@
         "gage_height_ft": 3.58
       },
       "history": [
-        {
-          "timestamp": "2026-03-24T09:50:00.000-05:00",
-          "streamflow_cfs": 1270.0,
-          "gage_height_ft": 4.91
-        },
         {
           "timestamp": "2026-03-24T10:00:00.000-05:00",
           "streamflow_cfs": 1220.0,
@@ -3564,11 +3550,6 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T09:50:00.000-05:00",
-          "streamflow_cfs": 1220.0,
-          "gage_height_ft": 6.73
-        },
-        {
           "timestamp": "2026-03-24T10:00:00.000-05:00",
           "streamflow_cfs": 1160.0,
           "gage_height_ft": 6.6
@@ -4469,7 +4450,7 @@
       "feet_below_max": -6.16,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:49:30.322082+00:00"
+      "last_updated": "2026-03-31T14:57:56.964739+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -4478,7 +4459,7 @@
       "feet_below_max": -6.75,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:49:30.322082+00:00"
+      "last_updated": "2026-03-31T14:57:56.964739+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -4487,7 +4468,7 @@
       "feet_below_max": -0.92,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:49:30.322082+00:00"
+      "last_updated": "2026-03-31T14:57:56.964739+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -4496,7 +4477,7 @@
       "feet_below_max": -1.37,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:49:30.322082+00:00"
+      "last_updated": "2026-03-31T14:57:56.964739+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -4505,7 +4486,7 @@
       "feet_below_max": -4.59,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:49:30.322082+00:00"
+      "last_updated": "2026-03-31T14:57:56.964739+00:00"
     },
     {
       "name": "Lake Wausau",
@@ -4575,6 +4556,12 @@
       "21": 60,
       "22": 80,
       "23": 80
+    },
+    "best_time": {
+      "start": "11:09",
+      "end": "13:09",
+      "type": "major",
+      "reason": ""
     }
   },
   "weather_forecast": [
@@ -4613,6 +4600,18 @@
       "precip_pct": 84,
       "weather_code": 73
     }
+  ],
+  "seasonal_activity": {
+    "label": "March",
+    "activity": [
+      "Ice-out approaching \u2014 use caution on ice",
+      "Walleye pre-spawn staging in river mouths",
+      "Suckers running \u2014 good live bait source"
+    ]
+  },
+  "conditions_summary": [
+    "Flows dropping on WI River \u2014 Rothschild (-23%), Big Rib River (-54%), Big Eau Pleine (-64%) \u2014 clarity improving.",
+    "Stable on Eau Claire River."
   ],
   "community_links": {
     "fishing_report_form": "https://forms.gle/YOUR_FORM_ID",
