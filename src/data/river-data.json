@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31T14:41:43.796798+00:00",
+  "generated_at": "2026-03-31T14:49:20.547121+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -26,7 +26,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T09:45:00.000-05:00",
+          "timestamp": "2026-03-24T09:50:00.000-05:00",
           "streamflow_cfs": 10200.0,
           "gage_height_ft": 17.95
         },
@@ -880,6 +880,13 @@
           "Sturgeon"
         ],
         "trout_class": null,
+        "tips": {
+          "Walleye": "Jigs tipped with minnows near current breaks and dam tailwaters. Best at dawn/dusk. Try 1/4 oz jig heads bounced along sandy bottoms.",
+          "Smallmouth Bass": "Crankbaits and tube jigs around rocky shorelines and bridge pilings. Topwater action in summer evenings.",
+          "Musky": "Large bucktails and jerkbaits along weed edges and deep structure. Fall is prime \u2014 focus on figure-8s at the boat.",
+          "Channel Catfish": "Cut bait or stink bait on the bottom near deeper holes. Night fishing in summer is most productive.",
+          "Sturgeon": "Catch-and-release only. Observe from shore during the spring spawning run \u2014 a spectacular sight near Rothschild dam."
+        },
         "regulations": [
           {
             "species": "Walleye",
@@ -943,7 +950,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T09:45:00.000-05:00",
+          "timestamp": "2026-03-24T09:50:00.000-05:00",
           "gage_height_ft": 12.78
         },
         {
@@ -1623,6 +1630,12 @@
           "Channel Catfish"
         ],
         "trout_class": null,
+        "tips": {
+          "Walleye": "Work the Mosinee dam tailrace with jigs and live bait. Current seams hold fish especially in spring.",
+          "Smallmouth Bass": "Crawfish-pattern crankbaits and ned rigs along the rocky banks below the dam.",
+          "Musky": "Trolling large crankbaits through the deeper pools downstream. Look for baitfish schools on electronics.",
+          "Channel Catfish": "Chicken liver or nightcrawlers fished on bottom rigs in the slower pools below the dam."
+        },
         "regulations": [
           {
             "species": "Walleye",
@@ -1680,7 +1693,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T09:45:00.000-05:00",
+          "timestamp": "2026-03-24T09:50:00.000-05:00",
           "streamflow_cfs": 1270.0,
           "gage_height_ft": 4.91
         },
@@ -2532,6 +2545,11 @@
           "Smallmouth Bass"
         ],
         "trout_class": "Class I\u2013III (varies by reach)",
+        "tips": {
+          "Brook Trout": "Small spinners (#0\u2013#2 Mepps) and worms in the upper Class I reaches. Wade quietly upstream \u2014 brookies spook easily.",
+          "Brown Trout": "Larger streamers and Rapala minnows in the deeper pools. Best fishing is early morning or after dark in summer.",
+          "Smallmouth Bass": "Small crankbaits and soft plastics in the lower reaches near Rib Falls. Look for them near log jams."
+        },
         "regulations": [
           {
             "species": "Trout",
@@ -2585,6 +2603,9 @@
           "Brook Trout"
         ],
         "trout_class": "Class II",
+        "tips": {
+          "Brook Trout": "Ultra-light gear with small spinners or live worms. A small, brushy stream \u2014 short casts and stealth are key. Best in spring and early summer."
+        },
         "regulations": [
           {
             "species": "Trout",
@@ -2633,11 +2654,6 @@
         "gage_height_ft": 2.96
       },
       "history": [
-        {
-          "timestamp": "2026-03-24T09:45:00.000-05:00",
-          "streamflow_cfs": 905.0,
-          "gage_height_ft": 2.68
-        },
         {
           "timestamp": "2026-03-24T10:00:00.000-05:00",
           "streamflow_cfs": 905.0,
@@ -3481,6 +3497,11 @@
           "Brown Trout"
         ],
         "trout_class": null,
+        "tips": {
+          "Smallmouth Bass": "Tube jigs and soft plastic crawfish along rocky runs. The Eau Claire has excellent wade fishing for bronzebacks.",
+          "Walleye": "Jig and minnow combos in deeper pools near Kelly dam. Evening and night fishing most productive.",
+          "Brown Trout": "Found in the cooler upper reaches. Drift nymphs or swing wet flies through the riffles."
+        },
         "regulations": [
           {
             "species": "Walleye",
@@ -3543,7 +3564,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T09:45:00.000-05:00",
+          "timestamp": "2026-03-24T09:50:00.000-05:00",
           "streamflow_cfs": 1220.0,
           "gage_height_ft": 6.73
         },
@@ -4396,6 +4417,12 @@
           "Largemouth Bass"
         ],
         "trout_class": null,
+        "tips": {
+          "Walleye": "Jig and minnow near the reservoir inlet in spring. Troll crankbaits along drop-offs in summer.",
+          "Northern Pike": "Spinnerbaits and large spoons along weed edges. Spring pike stack up near creek inlets after ice-out.",
+          "Panfish": "Small jigs tipped with wax worms near submerged timber. Excellent ice fishing for crappie and bluegill in winter.",
+          "Largemouth Bass": "Texas-rigged soft plastics and spinnerbaits around fallen trees and lily pad edges in summer."
+        },
         "regulations": [
           {
             "species": "Walleye",
@@ -4442,7 +4469,7 @@
       "feet_below_max": -6.16,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:41:54.254617+00:00"
+      "last_updated": "2026-03-31T14:49:30.322082+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -4451,7 +4478,7 @@
       "feet_below_max": -6.75,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:41:54.254617+00:00"
+      "last_updated": "2026-03-31T14:49:30.322082+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -4460,7 +4487,7 @@
       "feet_below_max": -0.92,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:41:54.254617+00:00"
+      "last_updated": "2026-03-31T14:49:30.322082+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -4469,7 +4496,7 @@
       "feet_below_max": -1.37,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:41:54.254617+00:00"
+      "last_updated": "2026-03-31T14:49:30.322082+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -4478,7 +4505,7 @@
       "feet_below_max": -4.59,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T14:41:54.254617+00:00"
+      "last_updated": "2026-03-31T14:49:30.322082+00:00"
     },
     {
       "name": "Lake Wausau",

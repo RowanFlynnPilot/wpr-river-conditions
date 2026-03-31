@@ -143,6 +143,13 @@ FISHING_REFERENCE = {
     "05398000": {  # WI River at Rothschild
         "species": ["Walleye", "Smallmouth Bass", "Musky", "Channel Catfish", "Sturgeon"],
         "trout_class": None,
+        "tips": {
+            "Walleye": "Jigs tipped with minnows near current breaks and dam tailwaters. Best at dawn/dusk. Try 1/4 oz jig heads bounced along sandy bottoms.",
+            "Smallmouth Bass": "Crankbaits and tube jigs around rocky shorelines and bridge pilings. Topwater action in summer evenings.",
+            "Musky": "Large bucktails and jerkbaits along weed edges and deep structure. Fall is prime \u2014 focus on figure-8s at the boat.",
+            "Channel Catfish": "Cut bait or stink bait on the bottom near deeper holes. Night fishing in summer is most productive.",
+            "Sturgeon": "Catch-and-release only. Observe from shore during the spring spawning run \u2014 a spectacular sight near Rothschild dam.",
+        },
         "regulations": [
             {"species": "Walleye", "rule": '15" min, 5 daily bag'},
             {"species": "Musky", "rule": '50" min, 1 daily'},
@@ -161,6 +168,12 @@ FISHING_REFERENCE = {
     "05398100": {  # WI River at Mosinee
         "species": ["Walleye", "Smallmouth Bass", "Musky", "Channel Catfish"],
         "trout_class": None,
+        "tips": {
+            "Walleye": "Work the Mosinee dam tailrace with jigs and live bait. Current seams hold fish especially in spring.",
+            "Smallmouth Bass": "Crawfish-pattern crankbaits and ned rigs along the rocky banks below the dam.",
+            "Musky": "Trolling large crankbaits through the deeper pools downstream. Look for baitfish schools on electronics.",
+            "Channel Catfish": "Chicken liver or nightcrawlers fished on bottom rigs in the slower pools below the dam.",
+        },
         "regulations": [
             {"species": "Walleye", "rule": '15" min, 5 daily bag'},
             {"species": "Musky", "rule": '50" min, 1 daily'},
@@ -178,6 +191,11 @@ FISHING_REFERENCE = {
     "05396000": {  # Big Rib River at Rib Falls
         "species": ["Brook Trout", "Brown Trout", "Smallmouth Bass"],
         "trout_class": "Class I\u2013III (varies by reach)",
+        "tips": {
+            "Brook Trout": "Small spinners (#0\u2013#2 Mepps) and worms in the upper Class I reaches. Wade quietly upstream \u2014 brookies spook easily.",
+            "Brown Trout": "Larger streamers and Rapala minnows in the deeper pools. Best fishing is early morning or after dark in summer.",
+            "Smallmouth Bass": "Small crankbaits and soft plastics in the lower reaches near Rib Falls. Look for them near log jams.",
+        },
         "regulations": [
             {"species": "Trout", "rule": 'Category 3: 3 daily bag, 8" min'},
             {"species": "Note", "rule": "Special regs on some upstream reaches"},
@@ -194,6 +212,9 @@ FISHING_REFERENCE = {
     "05396500": {  # Little Rib River near Wausau
         "species": ["Brook Trout"],
         "trout_class": "Class II",
+        "tips": {
+            "Brook Trout": "Ultra-light gear with small spinners or live worms. A small, brushy stream \u2014 short casts and stealth are key. Best in spring and early summer.",
+        },
         "regulations": [
             {"species": "Trout", "rule": 'Category 3: 3 daily bag, 8" min'},
         ],
@@ -209,6 +230,11 @@ FISHING_REFERENCE = {
     "05397500": {  # Eau Claire River near Kelly
         "species": ["Smallmouth Bass", "Walleye", "Brown Trout"],
         "trout_class": None,
+        "tips": {
+            "Smallmouth Bass": "Tube jigs and soft plastic crawfish along rocky runs. The Eau Claire has excellent wade fishing for bronzebacks.",
+            "Walleye": "Jig and minnow combos in deeper pools near Kelly dam. Evening and night fishing most productive.",
+            "Brown Trout": "Found in the cooler upper reaches. Drift nymphs or swing wet flies through the riffles.",
+        },
         "regulations": [
             {"species": "Walleye", "rule": '15" min, 5 daily bag'},
             {"species": "Bass", "rule": '14" min, 5 daily'},
@@ -226,6 +252,12 @@ FISHING_REFERENCE = {
     "05399500": {  # Big Eau Pleine at Stratford
         "species": ["Walleye", "Northern Pike", "Panfish", "Largemouth Bass"],
         "trout_class": None,
+        "tips": {
+            "Walleye": "Jig and minnow near the reservoir inlet in spring. Troll crankbaits along drop-offs in summer.",
+            "Northern Pike": "Spinnerbaits and large spoons along weed edges. Spring pike stack up near creek inlets after ice-out.",
+            "Panfish": "Small jigs tipped with wax worms near submerged timber. Excellent ice fishing for crappie and bluegill in winter.",
+            "Largemouth Bass": "Texas-rigged soft plastics and spinnerbaits around fallen trees and lily pad edges in summer.",
+        },
         "regulations": [
             {"species": "Walleye", "rule": '15" min, 5 daily bag'},
             {"species": "Northern Pike", "rule": '24" min, 5 daily'},
