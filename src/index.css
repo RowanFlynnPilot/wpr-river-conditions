@@ -1050,6 +1050,10 @@ body {
   font-weight: 600;
 }
 
+.fishing-ref-card__tips-list li {
+  margin-bottom: 6px;
+}
+
 .fishing-ref-card__detail-label {
   display: block;
   font-family: var(--font-mono);

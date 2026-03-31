@@ -38,6 +38,20 @@ export default function FishingReference({ gauges }) {
                   ))}
                 </div>
 
+                {/* Tips */}
+                {f.tips && Object.keys(f.tips).length > 0 && (
+                  <div className="fishing-ref-card__detail">
+                    <span className="fishing-ref-card__detail-label">Tips</span>
+                    <ul className="fishing-ref-card__list fishing-ref-card__tips-list">
+                      {Object.entries(f.tips).map(([species, tip]) => (
+                        <li key={species}>
+                          <strong>{species}:</strong> {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Trout classification */}
                 {f.trout_class && (
                   <div className="fishing-ref-card__detail">
