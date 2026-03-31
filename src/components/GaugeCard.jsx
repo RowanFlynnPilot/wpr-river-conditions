@@ -1,6 +1,26 @@
 import React from 'react';
 import Sparkline from './Sparkline';
 
+function getTempStyle(tempF) {
+  if (tempF < 40) return { color: '#78716c', label: 'Cold' };
+  if (tempF < 55) return { color: '#2563eb', label: 'Cool' };
+  if (tempF < 70) return { color: '#0d7377', label: 'Moderate' };
+  if (tempF < 80) return { color: '#ea580c', label: 'Warm' };
+  return { color: '#dc2626', label: 'Hot' };
+}
+
+const REC_STATUS = {
+  ideal:     { label: 'Ideal', css: 'ideal' },
+  caution:   { label: 'Caution', css: 'caution' },
+  dangerous: { label: 'Dangerous', css: 'dangerous' },
+  low:       { label: 'Low Flow', css: 'low' },
+};
+
+const ACTIVITY_LABELS = {
+  kayaking: 'Kayaking',
+  tubing: 'Tubing',
+};
+
 const STATUS_CONFIG = {
   normal:   { label: 'Normal',      css: 'normal' },
   action:   { label: 'Action',      css: 'action' },
@@ -111,12 +131,26 @@ export default function GaugeCard({ gauge }) {
                 </div>
               </div>
             )}
-            {current.water_temp_f != null && (
+            {current.water_temp_f != null && (() => {
+              const tempStyle = getTempStyle(current.water_temp_f);
+              return (
+                <div className="gauge-card__reading">
+                  <div className="gauge-card__reading-label">Water Temp</div>
+                  <div className="gauge-card__reading-value" style={{ color: tempStyle.color }}>
+                    {formatNumber(current.water_temp_f, 1)}
+                    <span className="gauge-card__reading-unit">&deg;F</span>
+                  </div>
+                  <div className="gauge-card__temp-context" style={{ color: tempStyle.color }}>
+                    {tempStyle.label}
+                  </div>
+                </div>
+              );
+            })()}
+            {current.water_temp_f == null && gauge.has_temp_sensor && (
               <div className="gauge-card__reading">
                 <div className="gauge-card__reading-label">Water Temp</div>
-                <div className="gauge-card__reading-value">
-                  {formatNumber(current.water_temp_f, 1)}
-                  <span className="gauge-card__reading-unit">&deg;F</span>
+                <div className="gauge-card__reading-value" style={{ color: 'var(--wpr-ink-muted)', fontSize: '0.85rem' }}>
+                  Offline
                 </div>
               </div>
             )}
@@ -124,12 +158,30 @@ export default function GaugeCard({ gauge }) {
 
           <FloodStageBar gageHeight={current.gage_height_ft} stages={flood_stages} />
 
-          {history && history.length >= 2 && (
-            <div className="gauge-card__sparkline-wrap">
-              <div className="gauge-card__sparkline-label">7-day flow trend</div>
-              <div className="gauge-card__sparkline">
-                <Sparkline data={history} valueKey="streamflow_cfs" />
+          {history && history.length >= 2 && (() => {
+            const hasFlow = history.some((h) => h.streamflow_cfs != null);
+            const sparkKey = hasFlow ? 'streamflow_cfs' : 'gage_height_ft';
+            const sparkLabel = hasFlow ? '7-day flow trend' : '7-day gage height trend';
+            return (
+              <div className="gauge-card__sparkline-wrap">
+                <div className="gauge-card__sparkline-label">{sparkLabel}</div>
+                <div className="gauge-card__sparkline">
+                  <Sparkline data={history} valueKey={sparkKey} />
+                </div>
               </div>
+            );
+          })()}
+
+          {gauge.recreation && (
+            <div className="gauge-card__recreation">
+              {Object.entries(gauge.recreation).map(([activity, status]) => {
+                const conf = REC_STATUS[status] || REC_STATUS.caution;
+                return (
+                  <span key={activity} className={`gauge-card__rec-badge gauge-card__rec-badge--${conf.css}`}>
+                    {ACTIVITY_LABELS[activity] || activity}: {conf.label}
+                  </span>
+                );
+              })}
             </div>
           )}
 
