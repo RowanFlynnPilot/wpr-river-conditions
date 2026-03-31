@@ -53,18 +53,20 @@ export default function EventsCalendar({ events }) {
                   <span className={`events-list__category events-list__category--${cat.css}`}>
                     {cat.label}
                   </span>
-                  <span className="events-list__name">
-                    {event.url ? (
-                      <a href={event.url} target="_blank" rel="noopener noreferrer">
-                        {event.name}
-                      </a>
-                    ) : (
-                      event.name
-                    )}
-                  </span>
+                  <span className="events-list__name">{event.name}</span>
                 </div>
                 <div className="events-list__description">{event.description}</div>
                 <div className="events-list__location">{event.location}</div>
+                {event.url && (
+                  <a
+                    className="events-list__read-more"
+                    href={event.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read More Information Here &rarr;
+                  </a>
+                )}
               </div>
             </div>
           );

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31T15:25:54.543292+00:00",
+  "generated_at": "2026-03-31T15:32:44.344306+00:00",
   "region": "Central Wisconsin \u2014 Marathon County",
   "gauges": [
     {
@@ -26,7 +26,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:30:00.000-05:00",
+          "timestamp": "2026-03-24T10:35:00.000-05:00",
           "streamflow_cfs": 9800.0,
           "gage_height_ft": 17.78
         },
@@ -950,7 +950,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:30:00.000-05:00",
+          "timestamp": "2026-03-24T10:35:00.000-05:00",
           "gage_height_ft": 12.77
         },
         {
@@ -1697,7 +1697,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:30:00.000-05:00",
+          "timestamp": "2026-03-24T10:35:00.000-05:00",
           "streamflow_cfs": 1220.0,
           "gage_height_ft": 4.85
         },
@@ -2659,7 +2659,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:30:00.000-05:00",
+          "timestamp": "2026-03-24T10:45:00.000-05:00",
           "streamflow_cfs": 905.0,
           "gage_height_ft": 2.68
         },
@@ -3578,7 +3578,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-03-24T10:30:00.000-05:00",
+          "timestamp": "2026-03-24T10:35:00.000-05:00",
           "streamflow_cfs": 1160.0,
           "gage_height_ft": 6.6
         },
@@ -4483,7 +4483,7 @@
       "feet_below_max": -6.16,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T15:26:00.666881+00:00"
+      "last_updated": "2026-03-31T15:32:52.413077+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -4492,7 +4492,7 @@
       "feet_below_max": -6.75,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T15:26:00.666881+00:00"
+      "last_updated": "2026-03-31T15:32:52.413077+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -4501,7 +4501,7 @@
       "feet_below_max": -0.92,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T15:26:00.666881+00:00"
+      "last_updated": "2026-03-31T15:32:52.413077+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -4510,7 +4510,7 @@
       "feet_below_max": -1.37,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T15:26:00.666881+00:00"
+      "last_updated": "2026-03-31T15:32:52.413077+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -4519,7 +4519,7 @@
       "feet_below_max": -4.59,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-03-31T15:26:00.666881+00:00"
+      "last_updated": "2026-03-31T15:32:52.413077+00:00"
     },
     {
       "name": "Lake Wausau",
@@ -4534,8 +4534,8 @@
   "fishing_conditions": {
     "pressure_hpa": 1008.3,
     "pressure_trend": "steady",
-    "wind_speed_mph": 8.6,
-    "wind_direction_deg": 51,
+    "wind_speed_mph": 9.2,
+    "wind_direction_deg": 29,
     "wind_direction": "NE",
     "uv_index": 0.7,
     "sunrise": "6:38 AM",
@@ -4600,7 +4600,7 @@
   "weather_forecast": [
     {
       "date": "2026-03-31",
-      "high_f": 55,
+      "high_f": 56,
       "low_f": 35,
       "precip_pct": 20,
       "weather_code": 51
@@ -4678,15 +4678,7 @@
     {
       "date": "2026-06-06",
       "name": "Free Fishing Weekend",
-      "description": "No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
-      "location": "Statewide",
-      "category": "event",
-      "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend"
-    },
-    {
-      "date": "2026-06-07",
-      "name": "Free Fishing Weekend (Day 2)",
-      "description": "Second day of the free fishing weekend. Bring the kids \u2014 no license needed.",
+      "description": "June 6\u20137. No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
       "location": "Statewide",
       "category": "event",
       "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend"

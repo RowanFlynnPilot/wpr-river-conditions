@@ -313,15 +313,7 @@ LOCAL_EVENTS = [
     {
         "date": "2026-06-06",
         "name": "Free Fishing Weekend",
-        "description": "No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
-        "location": "Statewide",
-        "category": "event",
-        "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend",
-    },
-    {
-        "date": "2026-06-07",
-        "name": "Free Fishing Weekend (Day 2)",
-        "description": "Second day of the free fishing weekend. Bring the kids \u2014 no license needed.",
+        "description": "June 6\u20137. No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
         "location": "Statewide",
         "category": "event",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend",
