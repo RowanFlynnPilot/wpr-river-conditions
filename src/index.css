@@ -1264,6 +1264,25 @@ body {
   margin-top: 4px;
 }
 
+.events-list__read-more {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--wpr-teal);
+  text-decoration: none;
+  border: 1px solid var(--wpr-teal);
+  border-radius: 3px;
+  padding: 3px 10px;
+  margin-top: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.events-list__read-more:hover {
+  background: var(--wpr-teal);
+  color: white;
+}
+
 @media (max-width: 480px) {
   .events-list {
     margin: 0 var(--space-sm);
