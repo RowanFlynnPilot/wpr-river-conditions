@@ -730,6 +730,37 @@ body {
   background: white;
 }
 
+.fishing-panel__best-time {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--wpr-teal);
+  color: white;
+  flex-wrap: wrap;
+}
+
+.fishing-panel__best-time-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+.fishing-panel__best-time-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.fishing-panel__best-time-type {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
 .fishing-panel__grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1114,6 +1145,83 @@ body {
 
 .fishing-ref-card__link:hover {
   text-decoration: underline;
+}
+
+/* ==========================================================================
+   Conditions Summary & Seasonal Calendar
+   ========================================================================== */
+
+.conditions-summary {
+  margin: var(--space-md) var(--space-md) 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--wpr-rule);
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .conditions-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.conditions-summary__section {
+  background: white;
+  padding: var(--space-md) var(--space-lg);
+}
+
+.conditions-summary__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wpr-ink-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.conditions-summary__text {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--wpr-ink-light);
+  line-height: 1.5;
+}
+
+.conditions-summary__text p {
+  margin: 0 0 4px;
+}
+
+.conditions-summary__list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+}
+
+.conditions-summary__list li {
+  position: relative;
+  padding-left: 12px;
+  margin-bottom: 4px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--wpr-ink-light);
+  line-height: 1.4;
+}
+
+.conditions-summary__list li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  color: var(--wpr-teal);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .conditions-summary {
+    margin: var(--space-sm) var(--space-sm) 0;
+  }
 }
 
 /* ==========================================================================
