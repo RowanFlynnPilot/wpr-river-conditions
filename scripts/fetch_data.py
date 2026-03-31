@@ -274,6 +274,60 @@ FISHING_REFERENCE = {
     },
 }
 
+# Upcoming local events — manually updated as events are announced
+# To add an event: append a dict with date, name, description, location, url
+# To remove: delete the dict. Events with past dates are auto-filtered out.
+LOCAL_EVENTS = [
+    {
+        "date": "2026-04-04",
+        "name": "Inland Trout Harvest Opener",
+        "description": "NEW for 2026 \u2014 harvest season opens a full month earlier than prior years. Streams, springs, and spring ponds. Requires inland trout stamp.",
+        "location": "Statewide",
+        "category": "season",
+        "url": "https://wausaupilotandreview.com/2026/03/18/dnr-reminds-anglers-of-new-opening-day-for-inland-trout-harvest-season/",
+    },
+    {
+        "date": "2026-05-01",
+        "name": "Governor's Fishing Opener",
+        "description": "Annual tradition since 1966. Family Fishing Day on May 2 at Lake Hayward Beach with casting lessons, DNR Fishmobile, and giveaways.",
+        "location": "Nelson Lake, Hayward",
+        "category": "event",
+        "url": None,
+    },
+    {
+        "date": "2026-05-02",
+        "name": "General Inland Fishing Opener",
+        "description": "Walleye, bass (harvest), northern pike, and musky all open statewide. Musky opener now unified to May 2 (previously Memorial Day weekend for northern zone).",
+        "location": "Statewide",
+        "category": "season",
+        "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
+    },
+    {
+        "date": "2026-05-02",
+        "name": "Lake & Pond Trout Season Opens",
+        "description": "Trout season on inland lakes and ponds. The earlier April 4 opener applies only to streams and springs.",
+        "location": "Statewide",
+        "category": "season",
+        "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
+    },
+    {
+        "date": "2026-06-06",
+        "name": "Free Fishing Weekend",
+        "description": "No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
+        "location": "Statewide",
+        "category": "event",
+        "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend",
+    },
+    {
+        "date": "2026-06-07",
+        "name": "Free Fishing Weekend (Day 2)",
+        "description": "Second day of the free fishing weekend. Bring the kids \u2014 no license needed.",
+        "location": "Statewide",
+        "category": "event",
+        "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend",
+    },
+]
+
 # ---------------------------------------------------------------------------
 # API helpers
 # ---------------------------------------------------------------------------
@@ -1071,6 +1125,10 @@ def main():
     # Auto-generated conditions summary
     conditions_summary = compute_conditions_summary(gauges_data)
 
+    # Filter events to upcoming only (today and future)
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    upcoming_events = [e for e in LOCAL_EVENTS if e["date"] >= today_str]
+
     # Assemble output
     output = {
         "generated_at": now,
@@ -1081,6 +1139,7 @@ def main():
         "fishing_conditions": fishing_conditions,
         "weather_forecast": weather_forecast,
         "seasonal_activity": seasonal,
+        "upcoming_events": upcoming_events,
         "conditions_summary": conditions_summary,
         "community_links": COMMUNITY_LINKS,
         "sources": {
