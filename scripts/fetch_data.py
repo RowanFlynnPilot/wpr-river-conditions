@@ -1033,116 +1033,188 @@ def generate_daily_summary(
     HTML snippet. Sentence case headline, <=30 words. Body is 2-3 sentences.
     """
     today = datetime.now()
-    date_str = f"{today.strftime('%B')} {today.day}, {today.year}"  # e.g., "March 31, 2026"
-    day_of_week = today.strftime("%A")
+    date_str = f"{today.strftime('%B')} {today.day}, {today.year}"
 
-    # --- Build headline (sentence case, <=30 words) ---
-    # Key data points for headline
+    # --- Key data ---
     primary_gauge = next((g for g in gauges if g["id"] == "05398000"), None)
     primary_flow = primary_gauge["current"].get("streamflow_cfs") if primary_gauge else None
     primary_ht = primary_gauge["current"].get("gage_height_ft") if primary_gauge else None
 
-    # Fishing rating
     rating = fishing_conditions.get("day_rating") if fishing_conditions else None
     pressure_trend = fishing_conditions.get("pressure_trend") if fishing_conditions else None
+    pressure_hpa = fishing_conditions.get("pressure_hpa") if fishing_conditions else None
 
-    # Weather today
     today_wx = forecast[0] if forecast else None
     high_temp = today_wx["high_f"] if today_wx else None
 
-    # Flow direction
-    flow_direction = "stable"
-    if conditions_summary:
-        combined = " ".join(conditions_summary).lower()
-        if "rising" in combined:
-            flow_direction = "rising"
-        elif "dropping" in combined or "falling" in combined:
-            flow_direction = "falling"
+    def fmt_time(t):
+        """Convert '11:09' to '11:09 a.m.' AP style."""
+        h, m = int(t.split(":")[0]), int(t.split(":")[1])
+        ampm = "a.m." if h < 12 else "p.m."
+        hr = h % 12 or 12
+        return f"{hr}:{m:02d} {ampm}"
 
-    # Upcoming event within 3 days?
-    near_event = None
-    today_iso = today.strftime("%Y-%m-%d")
-    for evt in upcoming_events:
-        days_until = (datetime.strptime(evt["date"], "%Y-%m-%d") - today).days
-        if 0 <= days_until <= 3:
-            near_event = evt
-            break
-
-    # Compose headline
-    parts = []
-    if primary_flow:
-        parts.append(f"Wisconsin River at {int(primary_flow):,} cfs with {flow_direction} flows")
-    if rating:
-        rating_word = "poor" if rating <= 3 else "fair" if rating <= 5 else "good" if rating <= 7 else "excellent"
-        parts.append(f"{rating_word} fishing rated {rating}/10")
-
-    headline = "; ".join(parts) if parts else f"Central Wisconsin fishing conditions for {day_of_week}"
-
-    # Capitalize first letter only (sentence case)
-    headline = headline[0].upper() + headline[1:]
-
-    # --- Build body (2-3 AP-style sentences) ---
-    body_parts = []
-
-    # Sentence 1: conditions
-    if primary_flow and primary_ht:
-        body_parts.append(
-            f"The Wisconsin River at Rothschild is running at {int(primary_flow):,} cubic feet per second "
-            f"with a gage height of {primary_ht} feet."
-        )
-
-    # Sentence 2: flow trend + clarity
-    if conditions_summary:
-        # Use the first summary line, cleaned up
-        body_parts.append(conditions_summary[0])
-
-    # Sentence 3: fishing outlook
-    outlook_parts = []
-    if pressure_trend:
-        trend_text = {"falling": "dropping pressure favors feeding activity",
-                      "rising": "rising pressure may slow bite",
-                      "steady": "steady barometric pressure"}
-        outlook_parts.append(trend_text.get(pressure_trend, ""))
-    if high_temp:
-        outlook_parts.append(f"high of {high_temp}\u00b0F expected")
+    # Best fishing window
+    best_window = None
     if fishing_conditions and fishing_conditions.get("best_time"):
         bt = fishing_conditions["best_time"]
+        best_window = f"{fmt_time(bt['start'])}\u2013{fmt_time(bt['end'])}"
 
-        def fmt_time(t):
-            """Convert '11:09' to '11:09 a.m.' AP style."""
-            h, m = int(t.split(":")[0]), int(t.split(":")[1])
-            ampm = "a.m." if h < 12 else "p.m."
-            hr = h % 12 or 12
-            return f"{hr}:{m:02d} {ampm}"
+    # Rating word
+    rating_word = ""
+    if rating:
+        rating_word = "poor" if rating <= 3 else "fair" if rating <= 5 else "good" if rating <= 7 else "excellent"
 
-        outlook_parts.append(f"best fishing window {fmt_time(bt['start'])}\u2013{fmt_time(bt['end'])}")
+    # Pressure description
+    pressure_desc = {"falling": "falling", "rising": "rising", "steady": "steady"}.get(pressure_trend, "")
 
-    if outlook_parts:
-        outlook = ", ".join(p for p in outlook_parts if p)
-        outlook = outlook[0].upper() + outlook[1:]
-        # Avoid double period after abbreviations like "p.m."
-        if not outlook.endswith("."):
-            outlook += "."
-        body_parts.append(outlook)
+    # --- Headline: sentence case, <=30 words, conditions-focused ---
+    headline_parts = []
+    if rating_word and best_window:
+        headline_parts.append(f"{rating_word.capitalize()} fishing conditions with {pressure_desc} pressure, best fishing window {best_window}")
+    elif rating_word:
+        headline_parts.append(f"{rating_word.capitalize()} fishing conditions with {pressure_desc} barometric pressure near Wausau")
+    else:
+        headline_parts.append(f"Central Wisconsin fishing conditions for {today.strftime('%A')}")
 
-    # Optional: upcoming event callout
-    if near_event:
-        days = (datetime.strptime(near_event["date"], "%Y-%m-%d") - today).days
-        if days == 0:
-            body_parts.append(f"Today: {near_event['name']}.")
-        elif days == 1:
-            body_parts.append(f"Tomorrow: {near_event['name']}.")
+    headline = headline_parts[0]
+
+    # --- Body: natural AP-style prose ---
+    body_parts = []
+
+    # Gather sun/wind data
+    sunrise = fishing_conditions.get("sunrise") if fishing_conditions else None
+    sunset = fishing_conditions.get("sunset") if fishing_conditions else None
+    wind_speed = fishing_conditions.get("wind_speed_mph") if fishing_conditions else None
+    wind_dir = fishing_conditions.get("wind_direction") if fishing_conditions else None
+
+    # Wind description — use full cardinal names
+    cardinal_names = {
+        "N": "northerly", "NE": "northeasterly", "E": "easterly",
+        "SE": "southeasterly", "S": "southerly", "SW": "southwesterly",
+        "W": "westerly", "NW": "northwesterly",
+    }
+    wind_desc = ""
+    if wind_speed and wind_dir:
+        dir_name = cardinal_names.get(wind_dir, wind_dir.lower())
+        if wind_speed < 5:
+            wind_desc = f"a light {dir_name} breeze"
+        elif wind_speed < 15:
+            wind_desc = f"a {wind_speed} mph {dir_name} wind"
         else:
-            evt_date = datetime.strptime(near_event["date"], "%Y-%m-%d")
-            evt_fmt = f"{evt_date.strftime('%A')}, {evt_date.strftime('%B')} {evt_date.day}"
-            body_parts.append(f"Coming up {evt_fmt}: {near_event['name']}.")
+            wind_desc = f"gusty {wind_speed} mph {dir_name} winds"
+
+    # Pressure narrative
+    pressure_narrative = ""
+    if pressure_trend == "falling":
+        pressure_narrative = "a falling barometer that should get fish moving"
+    elif pressure_trend == "rising":
+        pressure_narrative = "rising barometric pressure that could slow the bite"
+    elif pressure_trend == "steady":
+        pressure_narrative = "steady barometric pressure"
+
+    # Sentence 1: Lead with the scene
+    if primary_flow and wind_desc:
+        body_parts.append(
+            f"Anglers heading out to the Wisconsin River will find flows running at "
+            f"{int(primary_flow):,} cfs with {wind_desc} and {pressure_narrative}."
+        )
+    elif primary_flow:
+        body_parts.append(
+            f"The Wisconsin River is running at {int(primary_flow):,} cfs "
+            f"with {pressure_narrative}."
+        )
+
+    # Convert sunrise/sunset to AP style (6:38 AM -> 6:38 a.m.)
+    def to_ap_time(t):
+        return t.replace(" AM", " a.m.").replace(" PM", " p.m.") if t else None
+
+    # Sentence 2: Weather + daylight
+    wx_parts = []
+    if high_temp:
+        wx_parts.append(f"a high near {high_temp}\u00b0F")
+    if sunrise and sunset:
+        wx_parts.append(f"daylight from {to_ap_time(sunrise)} to {to_ap_time(sunset)}")
+    if wx_parts:
+        sentence = f"Expect {' with '.join(wx_parts)}"
+        # Avoid double period after abbreviations like "p.m."
+        if not sentence.endswith("."):
+            sentence += "."
+        body_parts.append(sentence)
+
+    # --- Weekly outlook: score each forecast day and find the best ---
+    if forecast and len(forecast) >= 3:
+        best_day = None
+        best_score = -999
+
+        for i, fc_day in enumerate(forecast):
+            score = 0
+            temp = fc_day.get("high_f")
+            precip = fc_day.get("precip_pct", 0)
+            wx_code = fc_day.get("weather_code", 0)
+
+            # Warmer is better for most fishing (up to a point)
+            if temp:
+                if 55 <= temp <= 75:
+                    score += 3  # ideal range
+                elif 45 <= temp <= 55 or 75 <= temp <= 85:
+                    score += 1
+                elif temp < 35:
+                    score -= 2
+
+            # Low precipitation = better
+            if precip < 20:
+                score += 2
+            elif precip < 50:
+                score += 0
+            else:
+                score -= 1
+
+            # Clear/partly cloudy better than storms
+            if wx_code <= 3:
+                score += 2  # clear to overcast
+            elif wx_code >= 95:
+                score -= 2  # thunderstorm
+
+            # Slight preference for weekends (index 0=today)
+            fc_date = datetime.strptime(fc_day["date"], "%Y-%m-%d")
+            if fc_date.weekday() >= 5:  # Sat/Sun
+                score += 1
+
+            if score > best_score:
+                best_score = score
+                best_day = fc_day
+
+        if best_day:
+            bd = datetime.strptime(best_day["date"], "%Y-%m-%d")
+            bd_name = bd.strftime("%A")
+            bd_temp = best_day.get("high_f")
+            bd_precip = best_day.get("precip_pct", 0)
+
+            # Is it today?
+            if bd.date() == today.date():
+                outlook = f"Today looks like the best fishing day this week"
+            else:
+                outlook = f"Fishing conditions this week peak on {bd_name}"
+
+            # Why?
+            reasons = []
+            if bd_temp and bd_temp >= 55:
+                reasons.append(f"a high near {bd_temp}\u00b0F")
+            elif bd_temp:
+                reasons.append(f"a high of {bd_temp}\u00b0F")
+            if bd_precip < 15:
+                reasons.append("dry skies")
+            elif bd_precip < 40:
+                reasons.append("low chance of rain")
+
+            if reasons:
+                outlook += f", with {' and '.join(reasons)}"
+
+            outlook += " on area rivers and lakes."
+            body_parts.append(outlook)
 
     body = " ".join(body_parts)
-
-    # Seasonal note
-    seasonal_note = ""
-    if seasonal and seasonal.get("activity"):
-        seasonal_note = seasonal["activity"][0]
 
     # --- Format as HTML snippet ---
     widget_url = "https://rowanflynnpilot.github.io/wpr-river-conditions/"
@@ -1150,7 +1222,6 @@ def generate_daily_summary(
   <p class="wpr-fishing-summary__date">{date_str}</p>
   <h3 class="wpr-fishing-summary__headline">{headline}</h3>
   <p class="wpr-fishing-summary__body">{body}</p>
-  {f'<p class="wpr-fishing-summary__seasonal"><em>{seasonal_note}</em></p>' if seasonal_note else ''}
   <p class="wpr-fishing-summary__cta"><a href="{widget_url}">View full river conditions, fishing forecast and more \u2192</a></p>
   <p class="wpr-fishing-summary__credit"><small>Data from USGS, National Weather Service and Solunar.org. Updated every 30 minutes.</small></p>
 </div>"""
