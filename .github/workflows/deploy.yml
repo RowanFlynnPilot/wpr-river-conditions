@@ -45,12 +45,17 @@ jobs:
         run: |
           mkdir -p public/data
           cp src/data/river-data.json public/data/river-data.json
+          cp src/data/daily-summary.html public/data/daily-summary.html
+          cp src/data/daily-summary.json public/data/daily-summary.json
 
       - name: Build
         run: npm run build
 
       - name: Copy data to dist
-        run: cp src/data/river-data.json dist/data/river-data.json
+        run: |
+          cp src/data/river-data.json dist/data/river-data.json
+          cp src/data/daily-summary.html dist/data/daily-summary.html
+          cp src/data/daily-summary.json dist/data/daily-summary.json
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
