@@ -700,7 +700,7 @@ COMMUNITY_LINKS = {
     "fishing_report_form": "https://forms.gle/YOUR_FORM_ID",
     "photo_hashtag": "#WausauFishing",
     "social_url": "https://facebook.com/wausaupilotandreview",
-    "email": "news@wausaupilotandreview.com",
+    "email": "editor@wausaupilotandreview.com",
 }
 
 
