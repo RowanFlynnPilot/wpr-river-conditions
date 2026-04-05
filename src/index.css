@@ -262,6 +262,11 @@ body {
   .gauges-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* Span the last card full width if there's an odd count */
+  .gauges-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 
 .gauge-card {
@@ -595,6 +600,11 @@ body {
 @media (min-width: 640px) {
   .reservoirs-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  /* If there's an odd number of reservoirs, span the last card full width */
+  .reservoirs-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 
