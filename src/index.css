@@ -1572,17 +1572,21 @@ body {
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--space-md);
+  width: 100%;
 }
 
 .community-bar__link {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--wpr-teal);
   text-decoration: none;
-  padding: 4px 12px;
-  border: 1px solid var(--wpr-teal);
-  border-radius: 3px;
+  padding: 12px 24px;
+  border: 2px solid var(--wpr-teal);
+  border-radius: 4px;
+  flex: 1 1 0;
+  max-width: 280px;
+  text-align: center;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -1598,7 +1602,11 @@ body {
 
   .community-bar__links {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+  }
+
+  .community-bar__link {
+    max-width: 100%;
   }
 }
 
