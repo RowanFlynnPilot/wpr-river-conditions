@@ -118,10 +118,10 @@ export default function App() {
         </span>
       </div>
 
-      {/* Sponsor Strip */}
-      <div className="sponsor-strip">
+      {/* Sponsor Strip — uncomment when sponsor is confirmed */}
+      {/* <div className="sponsor-strip">
         Brought to you by <strong>Your Sponsor Here</strong> — Serving Central Wisconsin
-      </div>
+      </div> */}
 
       {/* Weather Forecast */}
       <WeatherForecast forecast={data.weather_forecast} />
