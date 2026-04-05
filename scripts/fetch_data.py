@@ -113,6 +113,17 @@ GAUGES = [
         "description": "Feeds the Eau Pleine Reservoir southwest of Wausau",
         "has_temp_sensor": False,
     },
+    {
+        "id": "05394500",
+        "nws_lid": None,
+        "name": "Prairie River near Merrill",
+        "short_name": "Prairie River",
+        "lat": 45.1894,
+        "lon": -89.7120,
+        "flood_stages": None,
+        "description": "Designated trout stream north of Wausau near Merrill",
+        "has_temp_sensor": False,
+    },
 ]
 
 # USGS parameter codes
@@ -246,6 +257,28 @@ FISHING_REFERENCE = {
         ],
         "access_points": [
             {"name": "Kelly Dam Landing", "directions": "Off Cty Rd Y near Kelly", "lat": 44.8583, "lng": -89.4417},
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
+    },
+    "05394500": {  # Prairie River near Merrill
+        "species": ["Brook Trout", "Brown Trout", "Rainbow Trout"],
+        "trout_class": "Class I (designated trout stream)",
+        "tips": {
+            "Brook Trout": "Small spinners (#0–#2 Mepps) or live worms in the upper reaches. Wade upstream quietly — brookies hold in cold, shaded pools and undercut banks.",
+            "Brown Trout": "Streamers and Rapala minnows through the deeper runs. Best early morning or after dark. Dry fly action in summer evenings with caddis and PMD patterns.",
+            "Rainbow Trout": "Drift nymphs (hare's ear, pheasant tail) through the riffles. Egg patterns effective in fall. Check DNR stocking reports for timing.",
+        },
+        "regulations": [
+            {"species": "Trout", "rule": 'Category 3: 3 daily bag, 8" min'},
+            {"species": "Note", "rule": "Inland trout stamp required"},
+        ],
+        "season_notes": [
+            "Early catch-and-release season opens first Sat in Jan",
+            "Harvest season opens first Sat in April (new for 2026)",
+            "Regular season first Sat in May",
+        ],
+        "access_points": [
+            {"name": "Prairie River Fishery Area", "directions": "Off Cty Rd K north of Merrill", "lat": 45.1894, "lng": -89.7120},
         ],
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
     },
