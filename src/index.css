@@ -269,6 +269,8 @@ body {
   padding: var(--space-lg);
   position: relative;
   transition: background 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .gauge-card:hover {
@@ -558,7 +560,8 @@ body {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--wpr-ink-muted);
-  margin-top: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
