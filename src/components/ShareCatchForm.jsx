@@ -4,7 +4,7 @@ import { trackEvent } from '../utils/analytics';
 // Web3Forms access key — safe to expose client-side (it's a routing key,
 // not a secret credential). Generate at https://web3forms.com/. Replace
 // the placeholder below with the actual key from the dashboard.
-const WEB3FORMS_KEY = 'REPLACE_ME_WITH_WEB3FORMS_ACCESS_KEY';
+const WEB3FORMS_KEY = 'cde5b31f-8574-4764-a486-d701ac823f1a';
 const SUBMIT_URL = 'https://api.web3forms.com/submit';
 const MAX_FILE_MB = 10;
 
