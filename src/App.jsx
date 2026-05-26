@@ -8,6 +8,7 @@ import WeatherForecast from './components/WeatherForecast';
 import CommunityBar from './components/CommunityBar';
 import ConditionsSummary from './components/ConditionsSummary';
 import EventsCalendar from './components/EventsCalendar';
+import SponsorStrip from './components/SponsorStrip';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -118,10 +119,9 @@ export default function App() {
         </span>
       </div>
 
-      {/* Sponsor Strip — uncomment when sponsor is confirmed */}
-      {/* <div className="sponsor-strip">
-        Brought to you by <strong>Your Sponsor Here</strong> — Serving Central Wisconsin
-      </div> */}
+      {/* Sponsor Strip — shows active sponsor when public/data/sponsor.json
+          has enabled:true; otherwise renders the "Reach out" CTA. */}
+      <SponsorStrip />
 
       {/* Weather Forecast */}
       <WeatherForecast forecast={data.weather_forecast} />

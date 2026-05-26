@@ -128,12 +128,37 @@ These files are critical and easy to lose during upload (especially hidden dotfi
 - **Sponsor strip**: Below chrome bar — edit text in `App.jsx` per advertiser
 
 ## Sponsorship Integration
-The sponsor strip lives in `src/App.jsx` — search for `sponsor-strip`. Update the text directly:
-```jsx
-<div className="sponsor-strip">
-  Brought to you by <strong>River's Edge Bait & Tackle</strong> — Serving Central Wisconsin
-</div>
+
+The sponsor strip is driven by `public/data/sponsor.json` and rendered by `src/components/SponsorStrip.jsx`. No code changes needed to swap sponsors — edit the JSON and redeploy.
+
+### To activate a sponsor
+Edit `public/data/sponsor.json`:
+```json
+{
+  "enabled": true,
+  "name": "River's Edge Bait & Tackle",
+  "tagline": "Serving Central Wisconsin",
+  "url": "https://example.com",
+  "logo_url": null
+}
 ```
+- `logo_url` is optional. If provided, the image renders inline at ~18px height.
+- The outbound link auto-gets `rel="noopener noreferrer sponsored"` for SEO compliance.
+- Sponsor clicks fire a `sponsor_click` analytics event (see Analytics below).
+
+### To deactivate / show the "Reach out" CTA
+Set `enabled: false` (the default). The strip then displays:
+> Interested in sponsoring this content? **Reach out →**
+
+The CTA opens a pre-filled mailto to `rowan.flynn@wausaupilotandreview.com` and fires a `sponsor_cta_click` analytics event — so you can show prospects the CTA's engagement numbers.
+
+## Analytics
+
+Custom events fire via `src/utils/analytics.js`. The helper is provider-agnostic — it dispatches to whichever analytics script is loaded in `index.html` (Cloudflare Web Analytics `window.cfAnalytics.event` and/or GA4 `window.gtag`), and silently no-ops if none is loaded. Events tracked today:
+- `sponsor_click` — props: `{ sponsor: name }`
+- `sponsor_cta_click`
+
+To wire up Cloudflare Web Analytics: add a site at dash.cloudflare.com → Web Analytics for `rowanflynnpilot.github.io/wpr-river-conditions/`, then paste the CF snippet into `index.html` before `</body>`.
 
 ## Phase 2 Roadmap
 - [ ] WVIC reservoir scraping via Playwright (pages at wvic.com render data via JS)
