@@ -1,7 +1,24 @@
 import React from 'react';
+import { trackEvent } from '../utils/analytics';
+
+const TIP_SUBJECT = 'Fishing report — Wausau area';
+const TIP_BODY = `Hi WPR editor,
+
+I'd like to share a fishing report or tip from the Wausau area.
+
+Where:
+What I caught (or saw):
+Lure / bait:
+Date / time:
+
+Thanks,`;
 
 export default function CommunityBar({ links }) {
   if (!links) return null;
+
+  const tipMailto = links.email
+    ? `mailto:${links.email}?subject=${encodeURIComponent(TIP_SUBJECT)}&body=${encodeURIComponent(TIP_BODY)}`
+    : null;
 
   return (
     <div className="community-bar">
@@ -13,8 +30,9 @@ export default function CommunityBar({ links }) {
             href={links.fishing_report_form}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackEvent('community_link_click', { kind: 'share_catch' })}
           >
-            {'\uD83C\uDFA3'} Share Your Catch
+            🎣 Share Your Catch
           </a>
         )}
         {links.social_url && (
@@ -23,16 +41,20 @@ export default function CommunityBar({ links }) {
             href={links.social_url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackEvent('community_link_click', { kind: 'social' })}
           >
-            {'\uD83D\uDCF7'} {links.photo_hashtag || 'Follow Us'}
+            📷 {links.photo_hashtag || 'Follow Us'}
           </a>
         )}
-        {links.email && (
+        {tipMailto && (
           <a
             className="community-bar__link"
-            href={`mailto:${links.email}?subject=Fishing Report`}
+            href={tipMailto}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent('community_link_click', { kind: 'send_tip' })}
           >
-            {'\uD83D\uDCE7'} Send a Tip
+            📧 Send a Tip
           </a>
         )}
       </div>

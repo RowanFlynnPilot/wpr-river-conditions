@@ -46,6 +46,8 @@ export default function SponsorStrip({ sponsor }) {
       <a
         className="sponsor-strip__cta-link"
         href={MAILTO}
+        target="_blank"
+        rel="noopener noreferrer"
         onClick={() => trackEvent('sponsor_cta_click')}
       >
         Reach out →
