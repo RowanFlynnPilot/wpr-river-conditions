@@ -1,5 +1,7 @@
 import React from 'react';
 import Sparkline from './Sparkline';
+import GaugeMap from './GaugeMap';
+import LureSuggestions from './LureSuggestions';
 
 function getTempStyle(tempF) {
   if (tempF < 40) return { color: '#78716c', label: 'Cold' };
@@ -201,6 +203,12 @@ export default function GaugeCard({ gauge }) {
               })}
             </div>
           )}
+
+          {gauge.current_lures && gauge.current_lures.length > 0 && (
+            <LureSuggestions lures={gauge.current_lures} />
+          )}
+
+          <GaugeMap gauge={gauge} />
 
           <div className="gauge-card__timestamp">
             <span>{formatTimestamp(current.timestamp)}</span>

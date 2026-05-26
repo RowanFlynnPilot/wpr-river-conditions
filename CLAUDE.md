@@ -82,8 +82,24 @@ wpr-river-conditions/
 │   │   └── logo-32.png            # WPR logo (32x32, for chrome bar)
 │   ├── components/
 │   │   ├── AlertBanner.jsx        # NWS flood alert display
+│   │   ├── CommunityBar.jsx
+│   │   ├── ConditionsSummary.jsx
+│   │   ├── EventsCalendar.jsx
+│   │   ├── FishingConditions.jsx
+│   │   ├── FishingReference.jsx
 │   │   ├── GaugeCard.jsx          # Individual gauge card with stage bar
-│   │   └── Sparkline.jsx          # 7-day trend mini chart
+│   │   ├── GaugeFilter.jsx        # All/Flooding/Fishing/Paddling chips
+│   │   ├── GaugeMap.jsx           # Lazy-loaded per-gauge access-point map
+│   │   ├── HeroStatus.jsx         # Big "All Clear / Flood Warning" headline
+│   │   ├── LureSuggestions.jsx    # "Right now, try" lure picks
+│   │   ├── OverviewMap.jsx        # Marathon County hero map with status pins
+│   │   ├── ReservoirCard.jsx
+│   │   ├── SkeletonPage.jsx       # Loading-state placeholders
+│   │   ├── Sparkline.jsx          # 7-day trend mini chart
+│   │   ├── SponsorStrip.jsx       # Active sponsor or "Reach out" CTA
+│   │   └── WeatherForecast.jsx
+│   ├── utils/
+│   │   └── analytics.js           # Provider-agnostic trackEvent helper
 │   ├── data/
 │   │   └── river-data.json        # Generated data (gitignored in prod)
 │   ├── App.jsx                    # Main widget component
@@ -152,11 +168,18 @@ Set `enabled: false` (the default). The strip then displays:
 
 The CTA opens a pre-filled mailto to `rowan.flynn@wausaupilotandreview.com` and fires a `sponsor_cta_click` analytics event — so you can show prospects the CTA's engagement numbers.
 
+### Optional: sponsor color takeover
+Add `"accent_color": "#hex"` to `sponsor.json`. The widget swaps its teal accent (chrome bar, filter chips, lure highlights, etc.) to the sponsor's brand color. Light/dark variants are auto-derived via `color-mix()`.
+
+### Rate card
+See [`docs/sponsor-rate-card.md`](docs/sponsor-rate-card.md) for the full sponsor pitch document: tiers, slot specs, suggested pricing, and an audience snapshot template to populate after 30 days of analytics.
+
 ## Analytics
 
 Custom events fire via `src/utils/analytics.js`. The helper is provider-agnostic — it dispatches to whichever analytics script is loaded in `index.html` (Cloudflare Web Analytics `window.cfAnalytics.event` and/or GA4 `window.gtag`), and silently no-ops if none is loaded. Events tracked today:
 - `sponsor_click` — props: `{ sponsor: name }`
 - `sponsor_cta_click`
+- `gauge_map_open` — props: `{ gauge: id }`
 
 To wire up Cloudflare Web Analytics: add a site at dash.cloudflare.com → Web Analytics for `rowanflynnpilot.github.io/wpr-river-conditions/`, then paste the CF snippet into `index.html` before `</body>`.
 

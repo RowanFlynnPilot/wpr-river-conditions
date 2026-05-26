@@ -810,6 +810,116 @@ RECREATION_THRESHOLDS = {
     },
 }
 
+# ---------------------------------------------------------------------------
+# Lure suggestions: species + month + water temp → 2-3 picks per gauge
+# ---------------------------------------------------------------------------
+
+LURE_DATABASE = {
+    "Walleye": [
+        {"lure": "Jig + minnow", "months": [3, 4, 5, 10, 11], "temp_range": [35, 55], "why": "Cold-water staple — slow presentation near current breaks"},
+        {"lure": "Shad Rap crankbait (size 5)", "months": [5, 6, 7, 8, 9], "temp_range": [55, 75], "why": "Cover water and find active fish on drop-offs"},
+        {"lure": "Jig + nightcrawler harness", "months": [6, 7, 8], "temp_range": [65, 80], "why": "Slow troll over sandbars in summer warmth"},
+        {"lure": "Glow jig (night fishing)", "months": [6, 7, 8, 9], "temp_range": [60, 80], "why": "After-dark peak below dam tailwaters"},
+    ],
+    "Smallmouth Bass": [
+        {"lure": "Tube jig (green pumpkin)", "months": [5, 6, 7, 8, 9, 10], "temp_range": [55, 80], "why": "Rocky-bank standby — drag it slowly"},
+        {"lure": "Crawfish crankbait", "months": [5, 6, 7, 8, 9], "temp_range": [60, 80], "why": "Match the forage along riprap and bridge pilings"},
+        {"lure": "Topwater popper (dawn/dusk)", "months": [6, 7, 8], "temp_range": [65, 80], "why": "Explosive strikes in low light when water is warm"},
+        {"lure": "Ned rig (3-inch)", "months": [4, 5, 9, 10], "temp_range": [50, 65], "why": "Finesse approach for pressured or cool-water bass"},
+    ],
+    "Musky": [
+        {"lure": "Size 9 bucktail (black/orange)", "months": [5, 6, 7], "temp_range": [55, 75], "why": "Cover early-season weed edges fast"},
+        {"lure": "Glide bait (slow retrieve)", "months": [9, 10, 11], "temp_range": [45, 65], "why": "Fall prime time — slower presentation triggers giants"},
+        {"lure": "Topwater (Pacemaker, Hawg Wobbler)", "months": [6, 7, 8], "temp_range": [65, 80], "why": "Calm summer mornings or evenings"},
+    ],
+    "Brook Trout": [
+        {"lure": "#0 Mepps spinner (gold)", "months": [4, 5, 6, 9, 10], "temp_range": [45, 65], "why": "Short casts in small streams — brookies hammer it"},
+        {"lure": "Live worm + split-shot", "months": [4, 5, 6, 7, 8, 9], "temp_range": [45, 70], "why": "Classic drift through undercut banks"},
+        {"lure": "Dry fly (Adams, Elk Hair Caddis)", "months": [5, 6, 7, 8], "temp_range": [55, 70], "why": "Match summer hatches on the water surface"},
+    ],
+    "Brown Trout": [
+        {"lure": "Woolly Bugger streamer (black)", "months": [4, 5, 9, 10, 11], "temp_range": [40, 60], "why": "Browns hunt big — strip through deep pools"},
+        {"lure": "#5 Rapala (black/gold)", "months": [4, 5, 6, 9, 10], "temp_range": [45, 65], "why": "After-dark prowler in summer pools"},
+        {"lure": "Dry fly (PMD, Caddis)", "months": [5, 6, 7, 8], "temp_range": [55, 68], "why": "Evening hatches on cool summer water"},
+    ],
+    "Rainbow Trout": [
+        {"lure": "Hare's ear nymph", "months": [4, 5, 6, 7, 8, 9, 10], "temp_range": [45, 68], "why": "Subsurface workhorse — drift through riffles"},
+        {"lure": "Egg pattern", "months": [9, 10, 11], "temp_range": [40, 55], "why": "Fall spawn — drift downstream of redds"},
+        {"lure": "Pheasant tail nymph", "months": [4, 5, 6, 9, 10], "temp_range": [45, 65], "why": "Mimic mayfly nymphs in pocket water"},
+    ],
+    "Northern Pike": [
+        {"lure": "Daredevle spoon (red/white)", "months": [4, 5, 9, 10, 11], "temp_range": [40, 60], "why": "Spring and fall pike crush a flashy spoon"},
+        {"lure": "Spinnerbait (white, 3/8 oz)", "months": [5, 6, 7, 8, 9], "temp_range": [55, 75], "why": "Cover weed edges — pike ambush from cover"},
+        {"lure": "Swimbait (4–6 inch)", "months": [6, 7, 8], "temp_range": [60, 75], "why": "Summer pike chase bigger meals in cooler depths"},
+    ],
+    "Panfish": [
+        {"lure": "Tungsten jig + waxworm", "months": [1, 2, 3, 4, 11, 12], "temp_range": [32, 55], "why": "Cold-water bluegill and crappie — ice or open water"},
+        {"lure": "Slip bobber + minnow", "months": [4, 5, 6, 9, 10], "temp_range": [45, 70], "why": "Crappie schools near brush in spring and fall"},
+        {"lure": "#0 inline spinner", "months": [5, 6, 7, 8], "temp_range": [60, 75], "why": "Aggressive bluegill on spawning beds"},
+    ],
+    "Largemouth Bass": [
+        {"lure": "Texas-rigged worm", "months": [5, 6, 7, 8, 9], "temp_range": [60, 80], "why": "Pitch into lily pads and laydowns"},
+        {"lure": "Spinnerbait", "months": [4, 5, 6, 9, 10], "temp_range": [55, 75], "why": "Search lure for active fish along weed edges"},
+        {"lure": "Topwater frog", "months": [6, 7, 8], "temp_range": [65, 80], "why": "Pad fields explode on a slow-walked frog"},
+    ],
+    "Channel Catfish": [
+        {"lure": "Cut bait on bottom rig", "months": [5, 6, 7, 8, 9, 10], "temp_range": [55, 80], "why": "Stinky bait in deep holes — especially after dark"},
+        {"lure": "Chicken liver", "months": [5, 6, 7, 8, 9], "temp_range": [60, 80], "why": "Classic catfish offering below dam tailwaters"},
+    ],
+    "Sturgeon": [
+        {"lure": "Catch-and-release viewing only", "months": [4, 5], "temp_range": [40, 60], "why": "Spawning run — watch from shore at Rothschild dam"},
+    ],
+}
+
+# Fallback monthly water temps for central Wisconsin (°F) when no sensor reading
+SEASONAL_WATER_TEMP_F = {
+    1: 33, 2: 33, 3: 36, 4: 45, 5: 58, 6: 68,
+    7: 74, 8: 73, 9: 65, 10: 53, 11: 42, 12: 35,
+}
+
+
+def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, month: int) -> list[dict]:
+    """
+    Pick up to 3 lure recommendations for this gauge given current
+    water temp (or seasonal fallback) and month. Returns one suggestion
+    per species, ordered by best fit.
+    """
+    fishing = gauge_record.get("fishing") or {}
+    species_list = fishing.get("species") or []
+    if not species_list:
+        return []
+
+    if current_temp_f is None:
+        current_temp_f = SEASONAL_WATER_TEMP_F.get(month, 50)
+
+    candidates = []
+    for species in species_list:
+        for entry in LURE_DATABASE.get(species, []):
+            in_season = month in entry["months"]
+            t_low, t_high = entry["temp_range"]
+            temp_ok = t_low <= current_temp_f <= t_high
+            score = (2 if in_season else 0) + (2 if temp_ok else 0)
+            if score == 0:
+                continue
+            candidates.append({
+                "species": species,
+                "lure": entry["lure"],
+                "why": entry["why"],
+                "score": score,
+            })
+
+    candidates.sort(key=lambda x: -x["score"])
+    seen, top = set(), []
+    for c in candidates:
+        if c["species"] in seen:
+            continue
+        seen.add(c["species"])
+        top.append({"species": c["species"], "lure": c["lure"], "why": c["why"]})
+        if len(top) >= 3:
+            break
+    return top
+
+
 # Community engagement links (static)
 COMMUNITY_LINKS = {
     "fishing_report_form": "https://forms.gle/YOUR_FORM_ID",
@@ -1317,7 +1427,7 @@ def main():
             elif gage_ht >= stages["action"]:
                 flood_status = "action"
 
-        gauges_data.append({
+        gauge_record = {
             "id": gauge["id"],
             "nws_lid": gauge.get("nws_lid"),
             "name": gauge["name"],
@@ -1336,7 +1446,13 @@ def main():
             "water_clarity": estimate_water_clarity(current.get("streamflow_cfs"), history),
             "usgs_url": f"https://waterdata.usgs.gov/monitoring-location/USGS-{gauge['id']}/",
             "nws_url": f"https://water.noaa.gov/gauges/{gauge['nws_lid'].lower()}" if gauge.get("nws_lid") else None,
-        })
+        }
+        gauge_record["current_lures"] = compute_lure_suggestions(
+            gauge_record,
+            current.get("water_temp_f"),
+            datetime.now().month,
+        )
+        gauges_data.append(gauge_record)
 
     # Fetch NWS alerts
     log.info("Fetching NWS flood alerts for Marathon County...")

@@ -1,9 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { trackEvent } from '../utils/analytics';
-
-const SPONSOR_URL = import.meta.env.DEV
-  ? new URL('../../public/data/sponsor.json', import.meta.url).href
-  : `${import.meta.env.BASE_URL}data/sponsor.json`;
 
 const INQUIRY_EMAIL = 'rowan.flynn@wausaupilotandreview.com';
 const INQUIRY_SUBJECT = 'Sponsorship inquiry: River Conditions widget';
@@ -15,18 +11,8 @@ Thanks,`;
 
 const MAILTO = `mailto:${INQUIRY_EMAIL}?subject=${encodeURIComponent(INQUIRY_SUBJECT)}&body=${encodeURIComponent(INQUIRY_BODY)}`;
 
-export default function SponsorStrip() {
-  const [sponsor, setSponsor] = useState(null);
-
-  useEffect(() => {
-    fetch(SPONSOR_URL)
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setSponsor)
-      .catch(() => setSponsor(null));
-  }, []);
-
-  const hasActiveSponsor =
-    sponsor?.enabled && sponsor.name && sponsor.url;
+export default function SponsorStrip({ sponsor }) {
+  const hasActiveSponsor = sponsor?.enabled && sponsor.name && sponsor.url;
 
   if (hasActiveSponsor) {
     return (
