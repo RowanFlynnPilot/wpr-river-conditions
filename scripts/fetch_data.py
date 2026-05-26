@@ -878,62 +878,150 @@ def deg_to_cardinal(deg: float) -> str:
     return CARDINAL_DIRS[idx]
 
 
-def fetch_weather_conditions() -> dict:
-    """Fetch barometric pressure and wind from Open-Meteo (no API key)."""
+def _nws_get(url: str) -> dict | None:
+    """NWS API requires User-Agent + accepts the geo+json content type."""
+    headers = {
+        "User-Agent": "WPR-RiverConditions/1.0 (wausaupilotandreview.com)",
+        "Accept": "application/geo+json",
+    }
+    req = Request(url, headers=headers)
+    try:
+        with urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except (URLError, HTTPError, json.JSONDecodeError) as e:
+        log.warning(f"NWS fetch failed for {url}: {e}")
+        return None
+
+
+def fetch_open_meteo_uv() -> float | None:
+    """Best-effort UV index from Open-Meteo. Returns None on failure."""
     url = (
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={WAUSAU_LAT}&longitude={WAUSAU_LON}"
-        f"&hourly=pressure_msl,wind_speed_10m,wind_direction_10m,uv_index"
-        f"&temperature_unit=fahrenheit&wind_speed_unit=mph"
-        f"&timezone=America/Chicago&forecast_days=1&past_days=1"
+        f"&hourly=uv_index&timezone=America/Chicago&forecast_days=1"
     )
     data = fetch_json(url)
     if not data:
-        return {}
-
+        return None
     try:
         hourly = data["hourly"]
         times = hourly["time"]
-        pressures = hourly["pressure_msl"]
-        winds = hourly["wind_speed_10m"]
-        wind_dirs = hourly["wind_direction_10m"]
-
-        # Find the most recent hour with data
+        uvs = hourly.get("uv_index", [])
         now_str = datetime.now().strftime("%Y-%m-%dT%H:00")
         idx = None
         for i, t in enumerate(times):
             if t <= now_str:
                 idx = i
+        if idx is not None and 0 <= idx < len(uvs) and uvs[idx] is not None:
+            return round(uvs[idx], 1)
+    except (KeyError, IndexError, TypeError):
+        pass
+    return None
 
-        if idx is None:
-            return {}
 
-        pressure = pressures[idx]
-        wind_speed = winds[idx]
-        wind_dir_deg = wind_dirs[idx]
-        uv_values = hourly.get("uv_index", [])
-        uv_index = uv_values[idx] if idx < len(uv_values) else None
+def fetch_weather_conditions() -> dict:
+    """
+    Fetch current observed weather from NWS (api.weather.gov). The .gov
+    backbone is the most reliable free source available — we already
+    use it for flood data, so this consolidates dependencies.
 
-        # Calculate trend (compare to 3 hours ago)
-        trend = "steady"
-        if idx >= 3 and pressures[idx - 3] is not None and pressure is not None:
-            diff = pressure - pressures[idx - 3]
-            if diff > 1:
-                trend = "rising"
-            elif diff < -1:
-                trend = "falling"
-
-        return {
-            "pressure_hpa": round(pressure, 1) if pressure else None,
-            "pressure_trend": trend,
-            "wind_speed_mph": round(wind_speed, 1) if wind_speed else None,
-            "wind_direction_deg": round(wind_dir_deg) if wind_dir_deg else None,
-            "wind_direction": deg_to_cardinal(wind_dir_deg) if wind_dir_deg else None,
-            "uv_index": round(uv_index, 1) if uv_index is not None else None,
-        }
-    except (KeyError, IndexError, TypeError) as e:
-        log.warning(f"Error parsing Open-Meteo data: {e}")
+    Returns: pressure, pressure trend (computed from recent obs history),
+    wind speed/direction. UV is attempted via Open-Meteo as an optional
+    enrichment; absence does not fail the function.
+    """
+    # 1. Resolve gridpoint → list of nearby observation stations
+    pt = _nws_get(f"https://api.weather.gov/points/{WAUSAU_LAT},{WAUSAU_LON}")
+    if not pt:
         return {}
+    stations_url = (pt.get("properties") or {}).get("observationStations")
+    if not stations_url:
+        return {}
+
+    stations = _nws_get(stations_url)
+    if not stations:
+        return {}
+
+    candidates = [
+        s["properties"]["stationIdentifier"]
+        for s in stations.get("features", [])[:3]
+        if (s.get("properties") or {}).get("stationIdentifier")
+    ]
+
+    # 2. Try each station in order until one returns usable observations.
+    #    Pulling ~12 records gives us a window for the 3-hour pressure trend.
+    result = {}
+    for stid in candidates:
+        obs_list = _nws_get(
+            f"https://api.weather.gov/stations/{stid}/observations?limit=12"
+        )
+        if not obs_list or not obs_list.get("features"):
+            continue
+
+        # Find latest observation with non-null pressure + wind values
+        latest = None
+        for f in obs_list["features"]:
+            p = f.get("properties") or {}
+            bp = (p.get("barometricPressure") or {}).get("value")
+            ws = (p.get("windSpeed") or {}).get("value")
+            if bp is not None and ws is not None:
+                latest = p
+                break
+        if not latest:
+            continue
+
+        bp_pa = (latest.get("barometricPressure") or {}).get("value")
+        # Pa → hPa (mb)
+        pressure_hpa = round(bp_pa / 100, 1) if bp_pa else None
+
+        wind_kmh = (latest.get("windSpeed") or {}).get("value")
+        wind_mph = round(wind_kmh * 0.621371, 1) if wind_kmh is not None else None
+
+        wind_dir_deg = (latest.get("windDirection") or {}).get("value")
+        wind_dir = deg_to_cardinal(wind_dir_deg) if wind_dir_deg is not None else None
+
+        # 3. Pressure trend: compare to obs ~3 hours older.
+        trend = "steady"
+        try:
+            latest_ts = datetime.fromisoformat(
+                latest["timestamp"].replace("Z", "+00:00")
+            )
+            threshold = latest_ts - timedelta(hours=3)
+            older_bp_hpa = None
+            for f in obs_list["features"]:
+                p = f.get("properties") or {}
+                ts_str = p.get("timestamp")
+                bp = (p.get("barometricPressure") or {}).get("value")
+                if not ts_str or bp is None:
+                    continue
+                ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                if ts <= threshold:
+                    older_bp_hpa = bp / 100
+                    break
+            if older_bp_hpa is not None and pressure_hpa is not None:
+                diff = pressure_hpa - older_bp_hpa
+                if diff > 1.0:
+                    trend = "rising"
+                elif diff < -1.0:
+                    trend = "falling"
+        except (KeyError, ValueError, TypeError):
+            pass
+
+        result = {
+            "pressure_hpa": pressure_hpa,
+            "pressure_trend": trend,
+            "wind_speed_mph": wind_mph,
+            "wind_direction_deg": round(wind_dir_deg) if wind_dir_deg is not None else None,
+            "wind_direction": wind_dir,
+            "observation_station": stid,
+        }
+        break
+
+    # 4. Best-effort UV from Open-Meteo (optional; NWS doesn't publish UV).
+    uv = fetch_open_meteo_uv()
+    if uv is not None:
+        result["uv_index"] = uv
+
+    return result
 
 
 def fetch_sun_times() -> dict:
@@ -1102,33 +1190,106 @@ def fetch_solunar() -> dict:
         return {}
 
 
+def _nws_icon_to_code(icon_url: str) -> int:
+    """
+    Map an NWS icon URL like ".../icons/land/day/tsra_hi,30?size=medium"
+    to a numeric weather code compatible with the frontend's existing
+    WMO-style code mapping (used by Open-Meteo previously).
+    """
+    if not icon_url:
+        return 3
+    try:
+        # Extract the condition slug — strip path, query, and optional %-suffix
+        cond = icon_url.split("/icons/land/")[1].split("/")[1]
+        cond = cond.split("?")[0].split(",")[0]
+    except (IndexError, AttributeError):
+        return 3
+
+    MAPPING = {
+        # Sky cover
+        "skc": 0, "few": 1, "sct": 2, "bkn": 3, "ovc": 3,
+        "wind_skc": 0, "wind_few": 1, "wind_sct": 2, "wind_bkn": 3, "wind_ovc": 3,
+        # Precip
+        "rain": 63, "rain_showers": 80, "rain_showers_hi": 80,
+        "snow": 73, "rain_snow": 67, "rain_sleet": 67, "snow_sleet": 67,
+        "fzra": 67, "rain_fzra": 67, "snow_fzra": 67, "sleet": 67,
+        "blizzard": 73,
+        # Storms
+        "tsra": 95, "tsra_sct": 95, "tsra_hi": 95,
+        "tornado": 95, "hurricane": 95, "tropical_storm": 95,
+        # Visibility
+        "dust": 45, "smoke": 45, "haze": 45, "fog": 45,
+        # Misc
+        "hot": 0, "cold": 0,
+    }
+    return MAPPING.get(cond, 3)
+
+
 def fetch_weather_forecast() -> list[dict]:
-    """Fetch 5-day weather forecast from Open-Meteo (no API key)."""
-    url = (
-        f"https://api.open-meteo.com/v1/forecast"
-        f"?latitude={WAUSAU_LAT}&longitude={WAUSAU_LON}"
-        f"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code"
-        f"&temperature_unit=fahrenheit&timezone=America/Chicago&forecast_days=5"
-    )
-    data = fetch_json(url)
-    if not data:
+    """
+    5-day forecast from NWS api.weather.gov. NWS returns day/night
+    period pairs which we collapse into one row per calendar day with
+    high (daytime temp), low (nighttime temp), max precip probability,
+    and a weather code derived from the daytime icon.
+    """
+    pt = _nws_get(f"https://api.weather.gov/points/{WAUSAU_LAT},{WAUSAU_LON}")
+    if not pt:
         return []
 
-    try:
-        daily = data["daily"]
-        forecast = []
-        for i in range(len(daily["time"])):
-            forecast.append({
-                "date": daily["time"][i],
-                "high_f": round(daily["temperature_2m_max"][i]) if daily["temperature_2m_max"][i] is not None else None,
-                "low_f": round(daily["temperature_2m_min"][i]) if daily["temperature_2m_min"][i] is not None else None,
-                "precip_pct": daily["precipitation_probability_max"][i],
-                "weather_code": daily["weather_code"][i],
-            })
-        return forecast
-    except (KeyError, IndexError, TypeError) as e:
-        log.warning(f"Error parsing Open-Meteo forecast: {e}")
+    forecast_url = (pt.get("properties") or {}).get("forecast")
+    if not forecast_url:
         return []
+
+    fc = _nws_get(forecast_url)
+    if not fc:
+        return []
+
+    periods = (fc.get("properties") or {}).get("periods") or []
+    if not periods:
+        return []
+
+    # Group by calendar date
+    by_date: dict[str, dict] = {}
+    for p in periods:
+        start = p.get("startTime", "")[:10]
+        if not start:
+            continue
+
+        if start not in by_date:
+            by_date[start] = {
+                "date": start,
+                "high_f": None,
+                "low_f": None,
+                "precip_pct": 0,
+                "weather_code": None,
+            }
+        bucket = by_date[start]
+
+        temp = p.get("temperature")
+        precip_obj = p.get("probabilityOfPrecipitation") or {}
+        precip = precip_obj.get("value") or 0
+        is_day = p.get("isDaytime", True)
+        icon = p.get("icon") or ""
+
+        if is_day:
+            bucket["high_f"] = temp
+            bucket["weather_code"] = _nws_icon_to_code(icon)
+        else:
+            bucket["low_f"] = temp
+            # Use night icon only if no daytime code was seen (first day after dark)
+            if bucket["weather_code"] is None:
+                bucket["weather_code"] = _nws_icon_to_code(icon)
+
+        if precip is not None:
+            bucket["precip_pct"] = max(bucket["precip_pct"] or 0, precip)
+
+    # Sort by date, take first 5
+    days = sorted(by_date.values(), key=lambda d: d["date"])[:5]
+    # Ensure weather_code is never None for the renderer
+    for d in days:
+        if d["weather_code"] is None:
+            d["weather_code"] = 3
+    return days
 
 
 # ---------------------------------------------------------------------------
