@@ -974,36 +974,131 @@ def fetch_sun_times() -> dict:
         return {}
 
 
+def _parse_usno_time(s: str) -> str | None:
+    """USNO returns times like '17:12  DT' or '22:43  ST'. Return 'HH:MM'."""
+    if not s:
+        return None
+    return s.strip().split()[0]
+
+
+def _hhmm_to_min(s: str) -> int | None:
+    if not s:
+        return None
+    try:
+        h, m = s.split(":")
+        return int(h) * 60 + int(m)
+    except (ValueError, AttributeError):
+        return None
+
+
+def _min_to_hhmm(mins: int) -> str:
+    mins = mins % 1440
+    return f"{mins // 60:02d}:{mins % 60:02d}"
+
+
 def fetch_solunar() -> dict:
-    """Fetch solunar fishing data (moon phase, feeding periods, rating)."""
-    date_str = datetime.now().strftime("%Y%m%d")
-    # Determine UTC offset for Central Time
-    month = datetime.now().month
-    offset = -5 if 3 <= month <= 10 else -6
-    url = f"https://api.solunar.org/solunar/{WAUSAU_LAT},{WAUSAU_LON},{date_str},{offset}"
+    """
+    Build solunar fishing data from USNO Naval Observatory.
+
+    USNO supplies: sunrise/sunset, moonrise/moonset, moon upper transit,
+    current moon phase name, fraction illuminated.
+
+    From those we derive:
+      - major feeding periods (~2 hr each, centered on moon upper + lower transit)
+      - minor feeding periods (~1 hr each, centered on moonrise + moonset)
+      - day rating (1-10, based on moon-phase strength — strongest at new/full)
+
+    The legacy solunar.org API used to provide these directly but has
+    been offline; this computes them locally so the widget keeps working.
+    """
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    # Central Time offset (CDT vs CST by month heuristic)
+    offset = -5 if 3 <= now.month <= 10 else -6
+    is_dst = "true" if 3 <= now.month <= 10 else "false"
+
+    url = (
+        f"https://aa.usno.navy.mil/api/rstt/oneday"
+        f"?date={date_str}&coords={WAUSAU_LAT},{WAUSAU_LON}"
+        f"&tz={offset}&dst={is_dst}"
+    )
     data = fetch_json(url)
     if not data:
         return {}
 
     try:
+        props = (data.get("properties") or {}).get("data") or {}
+        moondata = props.get("moondata") or []
+        sundata = props.get("sundata") or []
+        moon_phase = props.get("curphase")
+        fracillum = props.get("fracillum") or "0%"
+
+        # Parse fracillum "81%" → 81
+        try:
+            fpct = float(fracillum.rstrip("%"))
+        except ValueError:
+            fpct = 50.0
+
+        # Day rating: stronger near new (0%) and full (100%) moon
+        # Distance from either extreme determines strength
+        dist = min(fpct, 100 - fpct)  # 0 (full/new) to 50 (quarter)
+        if dist < 5:
+            rating = 10
+        elif dist < 12:
+            rating = 8
+        elif dist < 22:
+            rating = 7
+        elif dist < 35:
+            rating = 5
+        else:
+            rating = 4
+
+        # Extract event times by phenomenon
+        moon_events = {e["phen"]: _parse_usno_time(e.get("time", "")) for e in moondata}
+        moonrise = moon_events.get("Rise")
+        moonset = moon_events.get("Set")
+        upper_transit = moon_events.get("Upper Transit")
+        lower_transit = moon_events.get("Lower Transit")
+
+        # Compute lower transit if missing (12h offset from upper)
+        if upper_transit and not lower_transit:
+            u_min = _hhmm_to_min(upper_transit)
+            if u_min is not None:
+                lower_transit = _min_to_hhmm(u_min + 720)
+
+        # Build period helpers
+        def period_around(time_str, half_window_min):
+            mins = _hhmm_to_min(time_str)
+            if mins is None:
+                return None
+            return {
+                "start": _min_to_hhmm(mins - half_window_min),
+                "end": _min_to_hhmm(mins + half_window_min),
+            }
+
+        # Major: 2-hr windows around upper + lower transit
         major_periods = []
+        for t in [upper_transit, lower_transit]:
+            p = period_around(t, 60)
+            if p:
+                major_periods.append(p)
+
+        # Minor: 1-hr windows around moonrise + moonset
         minor_periods = []
-        for prefix, dest in [("major", major_periods), ("minor", minor_periods)]:
-            for n in [1, 2]:
-                start = data.get(f"{prefix}{n}Start")
-                stop = data.get(f"{prefix}{n}Stop")
-                if start and stop:
-                    dest.append({"start": start, "end": stop})
+        for t in [moonrise, moonset]:
+            p = period_around(t, 30)
+            if p:
+                minor_periods.append(p)
 
         return {
-            "moon_phase": data.get("moonPhase"),
-            "day_rating": data.get("dayRating"),
+            "moon_phase": moon_phase,
+            "moon_illumination_pct": round(fpct),
+            "day_rating": rating,
             "major_periods": major_periods,
             "minor_periods": minor_periods,
-            "hourly_ratings": data.get("hourlyRating"),
         }
     except (KeyError, TypeError) as e:
-        log.warning(f"Error parsing solunar data: {e}")
+        log.warning(f"Error parsing USNO data: {e}")
         return {}
 
 
