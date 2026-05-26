@@ -287,25 +287,12 @@ body {
    Gauge Cards
    ========================================================================== */
 
+/* CSS columns give masonry-like packing — each card keeps its natural
+   height and flows into the next available slot without gray gaps. */
 .gauges-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1px;
-  background: var(--wpr-rule);
+  columns: 320px;
+  column-gap: var(--space-md);
   margin: 0 var(--space-md);
-  border: 1px solid var(--wpr-rule);
-  border-top: none;
-}
-
-@media (min-width: 640px) {
-  .gauges-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* Span the last card full width if there's an odd count */
-  .gauges-grid > :last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
 }
 
 .gauge-card {
@@ -313,8 +300,15 @@ body {
   padding: var(--space-lg);
   position: relative;
   transition: background 0.2s ease;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  width: 100%;
+  margin-bottom: var(--space-md);
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  /* Don't split a card across columns */
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .gauge-card:hover {
@@ -2128,3 +2122,330 @@ body {
 .alert-banner--moderate { background: var(--status-minor-bg);    border-color: var(--status-minor); }
 .alert-banner--severe   { background: var(--status-moderate-bg); border-color: var(--status-moderate); }
 .alert-banner--extreme  { background: var(--status-major-bg);    border-color: var(--status-major); }
+
+/* ==========================================================================
+   Community Bar — button variant (matches anchor styling)
+   ========================================================================== */
+
+.community-bar__link--button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--wpr-teal);
+  /* Inherits all other community-bar__link styles */
+}
+
+/* ==========================================================================
+   Email CTA inline panel
+   ========================================================================== */
+
+.email-cta {
+  display: inline-block;
+  margin: var(--space-xs) auto;
+  padding: var(--space-sm) var(--space-md);
+  background: white;
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  text-align: left;
+  max-width: 480px;
+  font-family: var(--font-body);
+}
+
+.email-cta__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.email-cta__label {
+  font-weight: 600;
+  color: var(--wpr-ink-light);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.email-cta__address {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--wpr-ink);
+  background: var(--wpr-cream);
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius);
+  user-select: all;
+  word-break: break-all;
+}
+
+.email-cta__btn {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  line-height: 1.2;
+}
+
+.email-cta__btn--copy {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.email-cta__btn--copy:hover {
+  background: var(--accent-dark);
+}
+
+.email-cta__btn--open {
+  background: white;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.email-cta__btn--open:hover {
+  background: var(--accent-light);
+}
+
+.email-cta__btn--close {
+  background: transparent;
+  color: var(--wpr-ink-muted);
+  border-color: var(--wpr-rule);
+}
+
+.email-cta__btn--close:hover {
+  background: var(--wpr-cream-dark);
+  color: var(--wpr-ink);
+}
+
+.email-cta__actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: var(--space-sm);
+}
+
+.email-cta__hint {
+  margin-top: var(--space-sm);
+  font-size: 0.75rem;
+  color: var(--wpr-ink-muted);
+  line-height: 1.4;
+}
+
+.email-cta__hint em {
+  font-style: normal;
+  color: var(--wpr-ink-light);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Share Your Catch Form
+   ========================================================================== */
+
+.catch-form {
+  margin: var(--space-md) auto 0;
+  max-width: 640px;
+  padding: var(--space-lg);
+  background: var(--wpr-cream);
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius-lg);
+  text-align: left;
+}
+
+.catch-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.catch-form__title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--wpr-ink);
+  margin: 0;
+}
+
+.catch-form__close-x {
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--wpr-ink-muted);
+  cursor: pointer;
+  padding: 0 0.4rem;
+  line-height: 1;
+}
+
+.catch-form__close-x:hover {
+  color: var(--wpr-ink);
+}
+
+.catch-form__intro {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--wpr-ink-light);
+  margin: 0 0 var(--space-md);
+}
+
+.catch-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.catch-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.catch-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.catch-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.catch-form__label {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wpr-ink-light);
+}
+
+.catch-form__label em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--wpr-ink-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.catch-form__field input[type="text"],
+.catch-form__field input[type="email"],
+.catch-form__field input[type="date"],
+.catch-form__field textarea,
+.catch-form__field input[type="file"] {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  background: white;
+  color: var(--wpr-ink);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.catch-form__field input:focus,
+.catch-form__field textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.catch-form__field textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.catch-form__actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.catch-form__submit {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.catch-form__submit:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.catch-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.catch-form__cancel {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.65rem 1.4rem;
+  background: transparent;
+  color: var(--wpr-ink-light);
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.catch-form__cancel:hover {
+  background: var(--wpr-cream-dark);
+}
+
+.catch-form__close {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.55rem 1.2rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-top: var(--space-sm);
+}
+
+.catch-form__error {
+  margin-top: var(--space-sm);
+  padding: 0.6rem 0.85rem;
+  background: var(--status-moderate-bg);
+  border-left: 3px solid var(--status-moderate);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--status-moderate);
+}
+
+.catch-form--success {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.catch-form--success .catch-form__title {
+  color: var(--status-normal);
+  margin-bottom: var(--space-sm);
+}
+
+.catch-form__body {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--wpr-ink-light);
+  margin: 0 auto;
+  max-width: 380px;
+}
+
+@media (max-width: 600px) {
+  .catch-form__grid {
+    grid-template-columns: 1fr;
+  }
+  .catch-form__field--wide {
+    grid-column: auto;
+  }
+}

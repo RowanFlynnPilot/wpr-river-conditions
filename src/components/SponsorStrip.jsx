@@ -1,5 +1,6 @@
 import React from 'react';
 import { trackEvent } from '../utils/analytics';
+import EmailCTA from './EmailCTA';
 
 const INQUIRY_EMAIL = 'rowan.flynn@wausaupilotandreview.com';
 const INQUIRY_SUBJECT = 'Sponsorship inquiry: River Conditions widget';
@@ -8,8 +9,6 @@ const INQUIRY_BODY = `Hi Rowan,
 I'd like to learn more about sponsoring the river conditions widget on Wausau Pilot & Review.
 
 Thanks,`;
-
-const MAILTO = `mailto:${INQUIRY_EMAIL}?subject=${encodeURIComponent(INQUIRY_SUBJECT)}&body=${encodeURIComponent(INQUIRY_BODY)}`;
 
 export default function SponsorStrip({ sponsor }) {
   const hasActiveSponsor = sponsor?.enabled && sponsor.name && sponsor.url;
@@ -43,15 +42,14 @@ export default function SponsorStrip({ sponsor }) {
   return (
     <div className="sponsor-strip sponsor-strip--cta">
       Interested in sponsoring this content?{' '}
-      <a
-        className="sponsor-strip__cta-link"
-        href={MAILTO}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => trackEvent('sponsor_cta_click')}
-      >
-        Reach out →
-      </a>
+      <EmailCTA
+        triggerLabel="Reach out →"
+        triggerClassName="sponsor-strip__cta-link"
+        email={INQUIRY_EMAIL}
+        subject={INQUIRY_SUBJECT}
+        body={INQUIRY_BODY}
+        analyticsEvent="sponsor_cta_click"
+      />
     </div>
   );
 }
