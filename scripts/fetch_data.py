@@ -535,7 +535,7 @@ def fetch_json(url: str, timeout: int = 30) -> dict | list | None:
     try:
         with urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
-    except (URLError, HTTPError, json.JSONDecodeError) as e:
+    except (URLError, HTTPError, json.JSONDecodeError, TimeoutError, OSError) as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
@@ -549,7 +549,7 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
     try:
         with urlopen(req, timeout=timeout) as resp:
             return resp.read().decode("utf-8")
-    except (URLError, HTTPError) as e:
+    except (URLError, HTTPError, TimeoutError, OSError) as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
@@ -888,8 +888,13 @@ def _nws_get(url: str) -> dict | None:
     try:
         with urlopen(req, timeout=30) as resp:
             return json.loads(resp.read().decode("utf-8"))
-    except (URLError, HTTPError, json.JSONDecodeError) as e:
+    except (URLError, HTTPError, json.JSONDecodeError, TimeoutError, OSError) as e:
         log.warning(f"NWS fetch failed for {url}: {e}")
+        return None
+    except Exception as e:
+        # Last-ditch safety net so a transient network blip never crashes the
+        # whole scraper run on GitHub Actions.
+        log.warning(f"NWS fetch unexpected error for {url}: {type(e).__name__}: {e}")
         return None
 
 
