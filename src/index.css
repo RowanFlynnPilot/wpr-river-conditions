@@ -2062,3 +2062,69 @@ body {
   font-size: 0.8rem;
   font-style: italic;
 }
+
+/* ==========================================================================
+   NWS Forecast Crest (on gauge cards during flood watches)
+   ========================================================================== */
+
+.gauge-card__forecast {
+  margin-top: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--status-action-bg);
+  border-left: 3px solid var(--status-action);
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+
+.gauge-card__forecast-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--status-action);
+}
+
+.gauge-card__forecast-value {
+  font-weight: 600;
+  color: var(--wpr-ink);
+  font-family: var(--font-mono);
+}
+
+.gauge-card__forecast-time {
+  color: var(--wpr-ink-muted);
+  font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   Observed Precipitation (on gauge cards)
+   ========================================================================== */
+
+.gauge-card__precip {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--wpr-ink-muted);
+  margin-top: var(--space-xs);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.gauge-card__precip-value {
+  font-family: var(--font-mono);
+  color: var(--wpr-ink);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Alert severity colors (when NWS alerts include non-flood types)
+   ========================================================================== */
+
+.alert-banner--minor    { background: var(--status-action-bg);   border-color: var(--status-action); }
+.alert-banner--moderate { background: var(--status-minor-bg);    border-color: var(--status-minor); }
+.alert-banner--severe   { background: var(--status-moderate-bg); border-color: var(--status-moderate); }
+.alert-banner--extreme  { background: var(--status-major-bg);    border-color: var(--status-major); }

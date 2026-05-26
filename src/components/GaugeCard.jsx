@@ -39,6 +39,20 @@ const STATUS_CONFIG = {
   major:    { label: 'Major Flood', css: 'major' },
 };
 
+function formatCrestTime(isoStr) {
+  if (!isoStr) return '';
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleString('en-US', {
+      weekday: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  } catch {
+    return '';
+  }
+}
+
 function formatTimestamp(isoStr) {
   if (!isoStr) return 'No data';
   try {
@@ -166,7 +180,31 @@ export default function GaugeCard({ gauge }) {
             )}
           </div>
 
+          {current.precip_24h_in != null && current.precip_24h_in > 0 && (
+            <div className="gauge-card__precip">
+              💧 Last 24h precip:{' '}
+              <span className="gauge-card__precip-value">
+                {formatNumber(current.precip_24h_in, 2)} in
+              </span>
+            </div>
+          )}
+
           <FloodStageBar gageHeight={current.gage_height_ft} stages={flood_stages} />
+
+          {gauge.nws_forecast && (
+            <div className="gauge-card__forecast">
+              <span className="gauge-card__forecast-label">NWS Forecast</span>
+              <span className="gauge-card__forecast-value">
+                Crest {formatNumber(gauge.nws_forecast.peak_stage, 1)}{' '}
+                {gauge.nws_forecast.units || 'ft'}
+              </span>
+              {gauge.nws_forecast.peak_time && (
+                <span className="gauge-card__forecast-time">
+                  {formatCrestTime(gauge.nws_forecast.peak_time)}
+                </span>
+              )}
+            </div>
+          )}
 
           {history && history.length >= 2 && (() => {
             const hasFlow = history.some((h) => h.streamflow_cfs != null);

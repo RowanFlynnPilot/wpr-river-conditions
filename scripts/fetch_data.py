@@ -124,12 +124,68 @@ GAUGES = [
         "description": "Designated trout stream north of Wausau near Merrill",
         "has_temp_sensor": False,
     },
+    {
+        "id": "05395000",
+        "nws_lid": "RRLW3",
+        "name": "Wisconsin River at Merrill",
+        "short_name": "WI River — Merrill",
+        "lat": 45.1781,
+        "lon": -89.6811,
+        "flood_stages": {"action": 10.0, "minor": 11.0, "moderate": 13.5, "major": 15.0},
+        "description": "Main stem upstream of Wausau — early warning for downstream gauges",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "05400760",
+        "nws_lid": "WIRW3",
+        "name": "Wisconsin River at Wisconsin Rapids",
+        "short_name": "WI River — Wisconsin Rapids",
+        "lat": 44.3922,
+        "lon": -89.8269,
+        "flood_stages": {"action": 10.0, "minor": 12.0, "moderate": 13.5, "major": 14.5},
+        "description": "Main stem downstream of Wausau — largest city in the chain",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "04074950",
+        "nws_lid": "LGLW3",
+        "name": "Wolf River at Langlade",
+        "short_name": "Wolf River — Langlade",
+        "lat": 45.1900,
+        "lon": -88.7333,
+        "flood_stages": {"action": 9.5, "minor": 11.5, "moderate": 12.5, "major": 14.0},
+        "description": "Iconic Class I trout & whitewater destination northeast of Wausau",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "05400625",
+        "nws_lid": None,
+        "name": "Little Plover River near Plover",
+        "short_name": "Little Plover River",
+        "lat": 44.4708,
+        "lon": -89.5082,
+        "flood_stages": None,
+        "description": "Groundwater-fed trout stream near Stevens Point",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "04080798",
+        "nws_lid": None,
+        "name": "Tomorrow River near Nelsonville",
+        "short_name": "Tomorrow River",
+        "lat": 44.5240,
+        "lon": -89.3380,
+        "flood_stages": None,
+        "description": "Class I trout stream destination near Stevens Point",
+        "has_temp_sensor": False,
+    },
 ]
 
 # USGS parameter codes
 PARAM_GAGE_HEIGHT = "00065"   # ft
 PARAM_STREAMFLOW = "00060"    # cfs (cubic feet per second)
 PARAM_WATER_TEMP = "00010"    # °C
+PARAM_PRECIP = "00045"        # inches (incremental precipitation)
 
 # NWS alert zones for Marathon County
 NWS_ZONE = "WIC073"  # Marathon County zone code
@@ -282,6 +338,118 @@ FISHING_REFERENCE = {
         ],
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
     },
+    "05395000": {  # WI River at Merrill
+        "species": ["Walleye", "Smallmouth Bass", "Musky", "Channel Catfish"],
+        "trout_class": None,
+        "tips": {
+            "Walleye": "Jigs tipped with minnows in the deeper pools below the Merrill dam. Spring is prime — fish stage here pre-spawn.",
+            "Smallmouth Bass": "Tube jigs and ned rigs along the rocky banks above and below the dam.",
+            "Musky": "Bucktails and large crankbaits along weed edges in the wider stretches downstream.",
+            "Channel Catfish": "Cut bait or nightcrawlers fished on bottom rigs after dark, especially in summer.",
+        },
+        "regulations": [
+            {"species": "Walleye", "rule": '15" min, 5 daily bag'},
+            {"species": "Musky", "rule": '50" min, 1 daily'},
+            {"species": "Bass", "rule": '14" min, 5 daily'},
+        ],
+        "season_notes": [
+            "Walleye/Sauger open first Sat in May",
+            "Catch-and-release bass season Mar–Jun",
+        ],
+        "access_points": [
+            {"name": "Merrill Riverside Park", "directions": "East Main St in downtown Merrill", "lat": 45.1810, "lng": -89.6840},
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
+    },
+    "05400760": {  # WI River at Wisconsin Rapids
+        "species": ["Walleye", "Smallmouth Bass", "Musky", "Channel Catfish", "White Bass"],
+        "trout_class": None,
+        "tips": {
+            "Walleye": "Jig and minnow combos in the deep holes near the Wisconsin Rapids dam. Spring walleye run draws anglers from across the state.",
+            "Smallmouth Bass": "Tubes and crawfish-pattern crankbaits along the rocky banks — strong smallmouth population.",
+            "Musky": "Trolling large crankbaits through the deeper pools and along current breaks downstream of the dam.",
+            "Channel Catfish": "Cut bait or chicken liver in the deeper pools below the dam at night.",
+            "White Bass": "Small spoons and inline spinners during the spring run — schools of fish stack up below the dam.",
+        },
+        "regulations": [
+            {"species": "Walleye", "rule": '15" min, 5 daily bag'},
+            {"species": "Musky", "rule": '50" min, 1 daily'},
+            {"species": "Bass", "rule": '14" min, 5 daily'},
+        ],
+        "season_notes": [
+            "Walleye/Sauger open first Sat in May",
+            "White bass run typically peaks late April–May",
+        ],
+        "access_points": [
+            {"name": "Wisconsin Rapids Boat Landing", "directions": "Riverview Expressway near downtown", "lat": 44.3895, "lng": -89.8175},
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
+    },
+    "04074950": {  # Wolf River at Langlade
+        "species": ["Brown Trout", "Brook Trout", "Smallmouth Bass", "Walleye"],
+        "trout_class": "Class I (designated trout stream)",
+        "tips": {
+            "Brown Trout": "Streamers and Rapala minnows through the deeper runs and pocket water. Best in early morning or evening.",
+            "Brook Trout": "Small spinners and dry flies in the upper reaches and feeder streams. The Wolf has a strong native population.",
+            "Smallmouth Bass": "Tube jigs and topwater poppers in the slower stretches and pools downstream of the rapids.",
+            "Walleye": "Found in the deeper runs and below the rapids — jig and minnow combos work well.",
+        },
+        "regulations": [
+            {"species": "Trout", "rule": "Category 3 in most reaches; check DNR maps for special regs"},
+            {"species": "Bass", "rule": '14" min, 5 daily'},
+            {"species": "Walleye", "rule": '15" min, 5 daily bag'},
+        ],
+        "season_notes": [
+            "Early catch-and-release trout opens first Sat in Jan",
+            "Famous whitewater paddling section — exercise caution at high flows",
+        ],
+        "access_points": [
+            {"name": "Langlade Boat Landing", "directions": "Off Hwy 55 in Langlade", "lat": 45.1900, "lng": -88.7333},
+            {"name": "Wolf River State Wildlife Area", "directions": "Multiple access points along Hwy 55", "lat": 45.1750, "lng": -88.7400},
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Lands/WolfRiver",
+    },
+    "05400625": {  # Little Plover River near Plover
+        "species": ["Brook Trout", "Brown Trout"],
+        "trout_class": "Class II",
+        "tips": {
+            "Brook Trout": "Ultra-light gear with small spinners or live worms. Sensitive groundwater-fed stream — wade quietly and limit your impact.",
+            "Brown Trout": "Drift small nymphs through the deeper holes. Browns hold tight to undercut banks and woody cover.",
+        },
+        "regulations": [
+            {"species": "Trout", "rule": 'Category 3: 3 daily bag, 8" min'},
+        ],
+        "season_notes": [
+            "Early catch-and-release trout opens first Sat in Jan",
+            "Regular season first Sat in May",
+            "Famously sensitive to drought — flows can drop dramatically in summer",
+        ],
+        "access_points": [
+            {"name": "Springville Pond Access", "directions": "Off Cty Rd HH in Plover", "lat": 44.4708, "lng": -89.5082},
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
+    },
+    "04080798": {  # Tomorrow River near Nelsonville
+        "species": ["Brown Trout", "Brook Trout"],
+        "trout_class": "Class I (designated trout stream)",
+        "tips": {
+            "Brown Trout": "One of central Wisconsin's premier brown trout streams. Drift hopper-dropper rigs through the riffles, or fish streamers in the deeper runs at dawn and dusk.",
+            "Brook Trout": "Small Mepps spinners or dry flies in the upper reaches. Native population — handle with care if releasing.",
+        },
+        "regulations": [
+            {"species": "Trout", "rule": 'Category 3: 3 daily bag, 8" min'},
+            {"species": "Note", "rule": "Some sections have artificial-lure-only and special length regs — check DNR maps"},
+        ],
+        "season_notes": [
+            "Early catch-and-release trout opens first Sat in Jan",
+            "Regular season first Sat in May",
+            "Best fishing typically May through early July before water warms",
+        ],
+        "access_points": [
+            {"name": "Tomorrow River State Trail Access", "directions": "Off Cty Rd A near Nelsonville", "lat": 44.5240, "lng": -89.3380},
+        ],
+        "dnr_url": "https://dnr.wisconsin.gov/topic/Lands/FisheriesAreas",
+    },
     "05399500": {  # Big Eau Pleine at Stratford
         "species": ["Walleye", "Northern Pike", "Panfish", "Largemouth Bass"],
         "trout_class": None,
@@ -397,10 +565,11 @@ def fetch_usgs_current(gauge_id: str) -> dict:
     Returns: {gage_height_ft, streamflow_cfs, water_temp_f, timestamp}
     """
     site = gauge_id
-    params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW},{PARAM_WATER_TEMP}"
+    params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW},{PARAM_WATER_TEMP},{PARAM_PRECIP}"
+    # period=P1D so precip can be summed over the past 24h
     url = (
         f"https://waterservices.usgs.gov/nwis/iv/"
-        f"?format=json&sites={site}&parameterCd={params}&siteStatus=all"
+        f"?format=json&sites={site}&parameterCd={params}&period=P1D&siteStatus=all"
     )
     data = fetch_json(url)
     if not data:
@@ -414,22 +583,41 @@ def fetch_usgs_current(gauge_id: str) -> dict:
             values = ts["values"][0]["value"]
             if not values:
                 continue
+
+            # Precip is incremental — sum the last 24h to get a rolling total
+            if var_code == PARAM_PRECIP:
+                total = 0.0
+                has_data = False
+                for v in values:
+                    raw = v.get("value", "")
+                    if raw == "":
+                        continue
+                    try:
+                        x = float(raw)
+                    except ValueError:
+                        continue
+                    if x < 0:  # USGS sentinel for missing
+                        continue
+                    total += x
+                    has_data = True
+                if has_data:
+                    result["precip_24h_in"] = round(total, 2)
+                continue
+
+            # For all other params, take the latest reading
             latest = values[-1]
             val = float(latest["value"]) if latest["value"] != "" else None
-
             if val is not None and val < 0:
-                val = None  # USGS uses negative values for missing data sometimes
+                val = None
 
             if var_code == PARAM_GAGE_HEIGHT:
                 result["gage_height_ft"] = round(val, 2) if val else None
             elif var_code == PARAM_STREAMFLOW:
                 result["streamflow_cfs"] = round(val, 1) if val else None
             elif var_code == PARAM_WATER_TEMP:
-                # Convert °C to °F for the audience
                 result["water_temp_f"] = round(val * 9 / 5 + 32, 1) if val else None
                 result["water_temp_c"] = round(val, 1) if val else None
 
-            # Use the most recent timestamp from any parameter
             ts_str = latest.get("dateTime")
             if ts_str and (result["timestamp"] is None or ts_str > result["timestamp"]):
                 result["timestamp"] = ts_str
@@ -489,31 +677,48 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
 
 def fetch_nws_alerts() -> list[dict]:
     """
-    Fetch active flood-related alerts from the NWS API for Marathon County.
-    Returns: [{event, headline, severity, description, onset, expires, url}, ...]
+    Fetch active outdoor-relevant alerts from the NWS API for Marathon County.
+    Includes flood, severe weather, fire weather, winter, and wind events —
+    anything an outdoor or floodplain audience would want to know about.
+    Returns: [{event, category, headline, severity, description, onset, expires, url}, ...]
     """
     url = f"https://api.weather.gov/alerts/active?zone={NWS_ZONE}"
     data = fetch_json(url)
     if not data:
         return []
 
-    flood_keywords = {"flood", "flash flood", "river", "hydrologic"}
+    # Map keywords → category for frontend styling
+    CATEGORY_RULES = [
+        ("flood", ["flood", "flash flood", "river", "hydrologic"]),
+        ("severe", ["tornado", "severe thunderstorm", "severe weather"]),
+        ("winter", ["winter storm", "blizzard", "ice storm", "winter weather", "freeze", "frost"]),
+        ("fire", ["red flag", "fire weather"]),
+        ("wind", ["wind", "gale"]),
+        ("heat", ["heat", "excessive heat"]),
+    ]
+
+    def categorize(event_lower: str) -> str | None:
+        for category, kws in CATEGORY_RULES:
+            if any(kw in event_lower for kw in kws):
+                return category
+        return None
+
     alerts = []
     try:
         for feature in data.get("features", []):
             props = feature.get("properties", {})
             event = (props.get("event") or "").lower()
-
-            # Filter to flood-related alerts only
-            if not any(kw in event for kw in flood_keywords):
+            category = categorize(event)
+            if category is None:
                 continue
 
             alerts.append({
                 "event": props.get("event"),
+                "category": category,
                 "headline": props.get("headline"),
                 "severity": props.get("severity"),
                 "urgency": props.get("urgency"),
-                "description": props.get("description", "")[:500],  # Truncate
+                "description": props.get("description", "")[:500],
                 "onset": props.get("onset"),
                 "expires": props.get("expires"),
                 "url": props.get("@id"),
@@ -552,6 +757,47 @@ def fetch_nws_flood_category(nws_lid: str) -> dict:
     except (KeyError, TypeError) as e:
         log.warning(f"Error parsing NWS NWPS data for {nws_lid}: {e}")
         return {}
+
+
+def fetch_nws_forecast(nws_lid: str) -> dict | None:
+    """
+    Fetch the NWS forecast hydrograph for a gauge. NWS only publishes
+    forecasts when flooding is active or imminent — most days this
+    returns an empty array, which we render as None.
+
+    Returns: {peak_stage, peak_time, issued_time, units, points} or None
+    """
+    if not nws_lid:
+        return None
+
+    url = f"https://api.water.noaa.gov/nwps/v1/gauges/{nws_lid}/stageflow/forecast"
+    data = fetch_json(url)
+    if not data:
+        return None
+
+    points = data.get("data") or []
+    if not points:
+        return None
+
+    # Find the peak stage in the forecast
+    try:
+        valid_points = [p for p in points if p.get("primary") is not None]
+        if not valid_points:
+            return None
+        peak = max(valid_points, key=lambda p: p["primary"])
+        return {
+            "peak_stage": round(float(peak["primary"]), 2),
+            "peak_time": peak.get("validTime"),
+            "issued_time": data.get("issuedTime"),
+            "units": data.get("primaryUnits") or "ft",
+            "points": [
+                {"time": p.get("validTime"), "stage": p.get("primary")}
+                for p in valid_points
+            ],
+        }
+    except (KeyError, TypeError, ValueError) as e:
+        log.warning(f"Error parsing NWS forecast for {nws_lid}: {e}")
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -868,6 +1114,10 @@ LURE_DATABASE = {
     ],
     "Sturgeon": [
         {"lure": "Catch-and-release viewing only", "months": [4, 5], "temp_range": [40, 60], "why": "Spawning run — watch from shore at Rothschild dam"},
+    ],
+    "White Bass": [
+        {"lure": "Small spoon (white/chrome)", "months": [4, 5, 6], "temp_range": [50, 65], "why": "Spring run below dams — schools push baitfish to the surface"},
+        {"lure": "Inline spinner (#2 silver)", "months": [4, 5, 6, 7], "temp_range": [50, 70], "why": "Cast into current breaks where schools stage"},
     ],
 }
 
@@ -1406,11 +1656,15 @@ def main():
         current = fetch_usgs_current(gauge["id"])
         history = fetch_usgs_history(gauge["id"], days=7)
 
-        # Fetch NWS flood category if available
+        # Fetch NWS flood category + forecast crest if available
         nws_data = {}
+        nws_forecast = None
         if gauge.get("nws_lid"):
             log.info(f"  Fetching NWS NWPS data for {gauge['nws_lid']}...")
             nws_data = fetch_nws_flood_category(gauge["nws_lid"])
+            nws_forecast = fetch_nws_forecast(gauge["nws_lid"])
+            if nws_forecast:
+                log.info(f"    Forecast: peak {nws_forecast['peak_stage']} {nws_forecast['units']} at {nws_forecast['peak_time']}")
 
         # Determine flood status using NWS thresholds
         flood_status = "normal"
@@ -1439,6 +1693,7 @@ def main():
             "flood_status": flood_status,
             "has_temp_sensor": gauge.get("has_temp_sensor", False),
             "nws_flood_category": nws_data.get("nws_flood_category"),
+            "nws_forecast": nws_forecast,
             "current": current,
             "history": history,
             "fishing": FISHING_REFERENCE.get(gauge["id"]),
