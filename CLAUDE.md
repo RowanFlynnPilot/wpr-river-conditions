@@ -176,18 +176,68 @@ See [`docs/sponsor-rate-card.md`](docs/sponsor-rate-card.md) for the full sponso
 
 ## Analytics
 
-Custom events fire via `src/utils/analytics.js`. The helper is provider-agnostic — it dispatches to whichever analytics script is loaded in `index.html` (Cloudflare Web Analytics `window.cfAnalytics.event` and/or GA4 `window.gtag`), and silently no-ops if none is loaded. Events tracked today:
-- `sponsor_click` — props: `{ sponsor: name }`
-- `sponsor_cta_click`
-- `gauge_map_open` — props: `{ gauge: id }`
+Two providers run in parallel:
 
-To wire up Cloudflare Web Analytics: add a site at dash.cloudflare.com → Web Analytics for `rowanflynnpilot.github.io/wpr-river-conditions/`, then paste the CF snippet into `index.html` before `</body>`.
+- **Pageviews** — Cloudflare Web Analytics beacon (live in `index.html`, bottom of `<body>`). Privacy-friendly, no cookies. Dashboard: dash.cloudflare.com → Web Analytics.
+- **Custom events + pageviews** — Google Analytics 4 (`gtag`), loaded by the inline snippet at the top of `<head>` in `index.html`. **You must paste your GA4 Measurement ID** (`G-XXXXXXXXXX`) into the `GA4_ID` variable in that snippet — until you do, GA4 stays disabled and only Cloudflare pageviews are collected. The snippet auto-skips `localhost`/`127.0.0.1`, so dev and preview sessions don't pollute the data.
+
+Custom events fire via `src/utils/analytics.js`. The helper is provider-agnostic — it dispatches to whichever analytics script is loaded in `index.html` (Cloudflare `window.cfAnalytics.event` and/or GA4 `window.gtag`) and silently no-ops if none is loaded, so it never breaks the UI. Events tracked today:
+- `sponsor_click` — props: `{ sponsor: name }` — active-sponsor strip clicked
+- `sponsor_cta_click` — "Reach out →" sponsorship-inquiry CTA clicked
+- `gauge_map_open` — props: `{ gauge: id }` — per-gauge access-point map expanded
+- `gauge_filter` — props: `{ filter: key }` — All/Flooding/Fishing/Paddling chip clicked
+- `community_link_click` — props: `{ kind }` — Share-a-Catch or social link clicked
+- `catch_submitted` — Share Your Catch form submitted
+- `flood_alert_signup` — flood-alert email signup completed
+
+**Setting up GA4** (one-time): analytics.google.com → Admin → Create property → add a **Web** data stream for `https://rowanflynnpilot.github.io/wpr-river-conditions/` → copy the Measurement ID → paste it into `index.html`. The custom events above appear under Reports → Engagement → Events within ~24h (or instantly in Realtime / DebugView).
+
+## SEO & Discoverability
+
+The widget is a React SPA, so Vite ships an empty `<div id="root">`. Crawlers that don't execute JS would otherwise see no content. To fix that without hurting UX:
+
+- **`scripts/inject-seo.mjs`** runs as an npm `postbuild` hook (fires automatically on `npm run build`, including in CI). After Vite builds, it rewrites `dist/index.html`:
+  1. Bakes a **content snapshot** into `#root` — an `<h1>`, current flood status, the daily fishing headline/body, and a gauge-readings table — built from `src/data/river-data.json` + `daily-summary.json`. React's `createRoot().render()` clears `#root` on mount, so users still get the full interactive widget; the snapshot is visually hidden (`clip`) and `aria-hidden`, purely for crawlers / no-JS / faster indexing.
+  2. Rewrites the `data-seo="dynamic"` meta/OG/Twitter tags in `index.html` with the live flood status + readings.
+  3. Injects **JSON-LD** (`Organization` + `Dataset` + the daily report as `NewsArticle`).
+  4. Writes **`dist/sitemap.xml`** with today's `lastmod`.
+  It degrades gracefully — if the data files are missing it leaves the build untouched rather than failing.
+- **`public/robots.txt`** allows all crawlers and points to the sitemap.
+- **TODO**: add a 1200×630 social card at `public/og-image.png` and uncomment the `og:image`/`twitter:image` tags in `index.html` for rich link previews.
+
+> **Important caveat — the iframe ceiling.** All of the above makes the *GitHub Pages page itself* indexable and shareable. But because the widget is embedded on `wausaupilotandreview.com` via an `<iframe>`, none of this content counts toward the *WordPress page's* SEO — iframes are indexed as separate documents. The fix is the WordPress auto-publisher below, which puts the same information on the WPR domain as real server-rendered HTML.
+
+### WordPress auto-publisher (`scripts/publish_to_wordpress.py`)
+
+Publishes a crawlable **"Central Wisconsin River Levels & Fishing Report"** article to `wausaupilotandreview.com` so the WPR domain (not just the github.io iframe) can rank for river/fishing/flood queries. Runs as a step in `deploy.yml` after the data fetch.
+
+- **Upserts a single evergreen post by slug** (`central-wisconsin-river-fishing-report`) — one stable URL that's refreshed in place, not a flood of daily posts.
+- **Only writes when conditions change** — a content signature (`<!-- wpr-sig:… -->`) is embedded in the post; if the new signature matches the live post, the run is a no-op. `--force` overrides.
+- **Embeds the live widget** below the text so readers still get the interactive version.
+- **Stdlib only** (urllib), matching `fetch_data.py`. Writes a local preview to `src/data/wp-report.html` (gitignored) on every run.
+- `python scripts/publish_to_wordpress.py --dry-run` builds + previews with no network calls.
+
+**One-time setup (no plugin needed — Application Passwords are WP core ≥5.6):**
+1. In WordPress: **Users → Profile → Application Passwords** → add one named e.g. "River widget" → copy the generated password.
+2. In GitHub: **Settings → Secrets and variables → Actions** → add repo secrets:
+   - `WP_URL` = `https://wausaupilotandreview.com`
+   - `WP_USER` = your WordPress username
+   - `WP_APP_PASSWORD` = the application password (spaces are fine; they're stripped)
+   - *(optional)* `WP_POST_STATUS` = `draft` for a safe first run, then switch to `publish`
+   - *(optional)* `WP_CATEGORY_ID` = numeric category ID to file the post under
+3. Trigger the Action (push or "Run workflow"). The post is created on the first run, updated thereafter. Until the secrets exist, the publish step logs a notice and no-ops.
+
+## Engagement Features
+
+- **"Today vs. normal" flow comparison** — `fetch_usgs_normal_flow()` in `fetch_data.py` pulls the USGS daily statistics service (period-of-record percentiles per calendar day) and compares the current streamflow to the long-term normal, classed by the USGS WaterWatch percentile convention (much below / below / normal / above / much above). Flow-based (00060), since gage-height stats are unreliable across datum revisions. Surfaced per gauge in `GaugeCard.jsx` (`gauge.normal_flow`).
+- **Flood-alert email signup** — `FloodAlertSignup.jsx` (rendered under the overview map in `App.jsx`) captures emails via Web3Forms (same routing key as the catch-report form; lands in the WPR inbox). Fires the `flood_alert_signup` analytics event.
+  - **Note — sending is not yet automated.** Signups currently arrive as individual emails to the WPR inbox; there's no list store or broadcast send. Next step for true automation: collect into an email service (or a stored list) and have the GitHub Action send when a gauge crosses a threshold (the workflow already computes `flood_status`).
 
 ## Phase 2 Roadmap
 - [ ] WVIC reservoir scraping via Playwright (pages at wvic.com render data via JS)
 - [ ] Water temperature data (seasonal — not all gauges report year-round)
 - [ ] Boat launch status / DNR fishing links
-- [ ] Historical comparison ("Today vs. average for this date")
-- [ ] Email/SMS flood alert signup integration
+- [x] Historical comparison ("Today vs. average for this date") — done (flow-based, see Engagement Features)
+- [ ] Automated flood-alert *sending* (signup capture is done; see Engagement Features)
 - [ ] Migrate to new USGS OGC API (`api.waterdata.usgs.gov`) before 2027 decommission
 - [ ] Add WI River below Wausau Dam gauge (WUUW3) — uses elevation datum, needs conversion logic
