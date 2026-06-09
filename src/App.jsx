@@ -11,8 +11,10 @@ import EventsCalendar from './components/EventsCalendar';
 import SponsorStrip from './components/SponsorStrip';
 import HeroStatus from './components/HeroStatus';
 import OverviewMap from './components/OverviewMap';
+import FloodAlertSignup from './components/FloodAlertSignup';
 import SkeletonPage from './components/SkeletonPage';
 import GaugeFilter, { FILTER_PREDICATES } from './components/GaugeFilter';
+import { trackEvent } from './utils/analytics';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -132,6 +134,11 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
+  const handleFilterChange = (key) => {
+    setFilter(key);
+    trackEvent('gauge_filter', { filter: key });
+  };
+
   return (
     <div className="widget-container" style={wrapperStyle}>
       {/* Chrome Bar */}
@@ -164,6 +171,9 @@ export default function App() {
       {/* Overview map with one pin per gauge, color-coded by status */}
       <OverviewMap gauges={data.gauges} onGaugeClick={handleGaugePinClick} />
 
+      {/* Flood-alert email signup (Web3Forms) */}
+      <FloodAlertSignup />
+
       {/* 5-day weather forecast */}
       <WeatherForecast forecast={data.weather_forecast} />
 
@@ -181,7 +191,7 @@ export default function App() {
         </span>
       </div>
 
-      <GaugeFilter gauges={sortedGauges} active={filter} onChange={setFilter} />
+      <GaugeFilter gauges={sortedGauges} active={filter} onChange={handleFilterChange} />
 
       <div className="gauges-grid">
         {filteredGauges.map((gauge) => (

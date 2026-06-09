@@ -672,6 +672,96 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# USGS: "Today vs. normal" flow comparison (daily statistics service)
+# ---------------------------------------------------------------------------
+
+# Percentile buckets follow the USGS WaterWatch convention.
+def _flow_class(flow: float, p10, p25, p75, p90) -> str:
+    if p90 is not None and flow > p90:
+        return "much_above"
+    if p75 is not None and flow > p75:
+        return "above"
+    if p10 is not None and flow < p10:
+        return "much_below"
+    if p25 is not None and flow < p25:
+        return "below"
+    return "normal"
+
+
+def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
+    """
+    Compare current streamflow to the long-term normal for today's calendar day,
+    using the USGS daily statistics service (period-of-record percentiles per
+    month/day). Comparison is flow-based (00060) because gage-height stats are
+    unreliable across datum revisions.
+
+    Returns {median_cfs, class, pct_of_median, years, count} or None.
+    """
+    if current_flow is None:
+        return None
+
+    url = (
+        f"https://waterservices.usgs.gov/nwis/stat/"
+        f"?sites={gauge_id}&statReportType=daily&statTypeCd=all"
+        f"&parameterCd={PARAM_STREAMFLOW}&format=rdb"
+    )
+    text = fetch_text(url)
+    if not text:
+        return None
+
+    today = datetime.now()
+    header = None
+    target = None
+    for line in text.splitlines():
+        if line.startswith("#") or not line.strip():
+            continue
+        cols = line.split("\t")
+        if header is None:
+            header = cols
+            continue
+        # The line right after the header is an RDB format spec ("5s", "12n"…) — skip it.
+        if re.match(r"^\d+[sn]$", cols[0]):
+            continue
+        idx = {name: i for i, name in enumerate(header)}
+        try:
+            if (int(cols[idx["month_nu"]]) == today.month
+                    and int(cols[idx["day_nu"]]) == today.day):
+                target = (cols, idx)
+                break
+        except (KeyError, ValueError, IndexError):
+            continue
+
+    if not target:
+        return None
+
+    cols, idx = target
+
+    def col(name):
+        try:
+            raw = cols[idx[name]].strip()
+            return float(raw) if raw not in ("", None) else None
+        except (KeyError, ValueError, IndexError):
+            return None
+
+    p10, p25, p50, p75, p90 = (col("p10_va"), col("p25_va"),
+                               col("p50_va"), col("p75_va"), col("p90_va"))
+    if p50 is None:
+        return None
+
+    begin_yr = cols[idx["begin_yr"]] if "begin_yr" in idx else None
+    end_yr = cols[idx["end_yr"]] if "end_yr" in idx else None
+    count = col("count_nu")
+
+    return {
+        "median_cfs": round(p50),
+        "class": _flow_class(current_flow, p10, p25, p75, p90),
+        "pct_of_median": round(current_flow / p50 * 100) if p50 else None,
+        "years": f"{begin_yr}–{end_yr}" if begin_yr and end_yr else None,
+        "count": int(count) if count else None,
+    }
+
+
+# ---------------------------------------------------------------------------
 # NWS: Flood alerts for Marathon County
 # ---------------------------------------------------------------------------
 
@@ -1916,6 +2006,9 @@ def main():
         log.info(f"Fetching USGS data for {gauge['name']} ({gauge['id']})...")
         current = fetch_usgs_current(gauge["id"])
         history = fetch_usgs_history(gauge["id"], days=7)
+        normal_flow = fetch_usgs_normal_flow(gauge["id"], current.get("streamflow_cfs"))
+        if normal_flow:
+            log.info(f"  Flow vs normal: {normal_flow['pct_of_median']}% of median ({normal_flow['class']})")
 
         # Fetch NWS flood category + forecast crest if available
         nws_data = {}
@@ -1957,6 +2050,7 @@ def main():
             "nws_forecast": nws_forecast,
             "current": current,
             "history": history,
+            "normal_flow": normal_flow,
             "fishing": FISHING_REFERENCE.get(gauge["id"]),
             "recreation": compute_recreation_status(gauge["id"], current.get("streamflow_cfs")),
             "water_clarity": estimate_water_clarity(current.get("streamflow_cfs"), history),

@@ -2114,6 +2114,158 @@ body {
   font-weight: 600;
 }
 
+/* "Today vs. normal" flow comparison */
+.gauge-card__vs-normal {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--wpr-ink-muted);
+}
+.gauge-card__vs-normal strong {
+  font-family: var(--font-mono);
+  color: var(--wpr-ink);
+}
+.vs-normal__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--wpr-ink-muted);
+}
+.vs-normal--much-below .vs-normal__dot { background: #b45309; }
+.vs-normal--below .vs-normal__dot      { background: #d97706; }
+.vs-normal--normal .vs-normal__dot     { background: var(--wpr-teal); }
+.vs-normal--above .vs-normal__dot      { background: #2563eb; }
+.vs-normal--much-above .vs-normal__dot { background: #1d4ed8; }
+
+/* ==========================================================================
+   Flood-alert email signup
+   ========================================================================== */
+
+.flood-signup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: var(--space-md) var(--space-md) 0;
+  padding: var(--space-md);
+  background: var(--accent-light, var(--wpr-teal-light));
+  border: 1px solid color-mix(in srgb, var(--accent, var(--wpr-teal)), transparent 70%);
+  border-radius: var(--radius-lg);
+}
+
+.flood-signup__pitch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.flood-signup__icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.flood-signup__title {
+  font-family: var(--font-heading, var(--font-body));
+  font-weight: 700;
+  color: var(--wpr-ink);
+}
+
+.flood-signup__sub {
+  font-size: 0.82rem;
+  color: var(--wpr-ink-muted);
+}
+
+.flood-signup__controls {
+  display: flex;
+  gap: var(--space-sm);
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.flood-signup__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--wpr-ink), transparent 80%);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--wpr-ink);
+}
+
+.flood-signup__input:focus {
+  outline: 2px solid var(--accent, var(--wpr-teal));
+  outline-offset: 1px;
+}
+
+.flood-signup__submit {
+  flex: none;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  background: var(--accent, var(--wpr-teal));
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.flood-signup__submit:hover { background: var(--accent-dark, var(--wpr-teal-dark)); }
+.flood-signup__submit:disabled { opacity: 0.6; cursor: default; }
+
+.flood-signup--success {
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--wpr-ink);
+}
+
+.flood-signup__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent, var(--wpr-teal));
+  color: #fff;
+  font-weight: 700;
+}
+
+.flood-signup__error {
+  flex-basis: 100%;
+  font-size: 0.82rem;
+  color: var(--status-major, #b91c1c);
+}
+
+/* Honeypot + screen-reader-only helpers */
+.flood-signup__honeypot {
+  position: absolute !important;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.flood-signup__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 /* ==========================================================================
    Alert severity colors (when NWS alerts include non-flood types)
    ========================================================================== */
