@@ -1,5 +1,7 @@
 node_modules/
 dist/
+__pycache__/
 src/data/river-data.json
+src/data/wp-report.html
 .DS_Store
 *.log
