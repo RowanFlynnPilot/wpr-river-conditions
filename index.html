@@ -4,6 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>River & Lake Conditions — Wausau Pilot & Review</title>
+
+    <!-- SEO. The `data-seo="dynamic"` tags get their content rewritten at build
+         time by scripts/inject-seo.mjs with the current conditions. -->
+    <meta name="description" data-seo="dynamic" content="Live river levels, flood status, and the daily fishing forecast for the Wisconsin River and central Wisconsin streams across Marathon County. USGS gauge data and NWS flood thresholds, updated every 30 minutes." />
+    <link rel="canonical" href="https://rowanflynnpilot.github.io/wpr-river-conditions/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Wausau Pilot & Review" />
+    <meta name="theme-color" content="#0d7377" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wausau Pilot & Review" />
+    <meta property="og:title" data-seo="dynamic" content="River & Lake Conditions — Wausau Pilot & Review" />
+    <meta property="og:description" data-seo="dynamic" content="Live river levels, flood status, and the daily fishing forecast for central Wisconsin. Updated every 30 minutes." />
+    <meta property="og:url" content="https://rowanflynnpilot.github.io/wpr-river-conditions/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="https://rowanflynnpilot.github.io/wpr-river-conditions/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Wausau Area River & Lake Conditions — Wausau Pilot & Review" />
+    <meta name="twitter:image" content="https://rowanflynnpilot.github.io/wpr-river-conditions/og-image.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" data-seo="dynamic" content="River & Lake Conditions — Wausau Pilot & Review" />
+    <meta name="twitter:description" data-seo="dynamic" content="Live river levels, flood status, and the daily fishing forecast for central Wisconsin." />
+
+    <!-- JSON-LD structured data — injected at build by scripts/inject-seo.mjs -->
+    <!-- SEO:JSONLD -->
+
+    <!-- Google Analytics 4 — captures pageviews AND the custom events fired by
+         src/utils/analytics.js (sponsor_click, gauge_map_open, gauge_filter, etc.).
+         Skips localhost/127.0.0.1 so dev & preview sessions don't pollute the data. -->
+    <script>
+      (function () {
+        var GA4_ID = 'G-XXXXXXXXXX'; // ← PASTE YOUR GA4 MEASUREMENT ID HERE
+        var h = location.hostname;
+        if (!GA4_ID || GA4_ID === 'G-XXXXXXXXXX' || h === 'localhost' || h === '127.0.0.1') return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', GA4_ID);
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,7 +61,7 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!-- SEO:PRERENDER --></div>
     <script type="module" src="/src/main.jsx"></script>
     <!-- Cloudflare Web Analytics -->
     <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "bf2a64bffc704ba3955e187571628430"}'></script>

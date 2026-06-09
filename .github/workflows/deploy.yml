@@ -41,6 +41,17 @@ jobs:
       - name: Fetch river data
         run: python3 scripts/fetch_data.py
 
+      - name: Publish report to WordPress
+        # No-ops gracefully if the WP_* secrets aren't configured.
+        env:
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+          WP_POST_SLUG: ${{ secrets.WP_POST_SLUG }}
+          WP_POST_STATUS: ${{ secrets.WP_POST_STATUS }}
+          WP_CATEGORY_ID: ${{ secrets.WP_CATEGORY_ID }}
+        run: python3 scripts/publish_to_wordpress.py
+
       - name: Copy data to public dir for build
         run: |
           mkdir -p public/data
