@@ -84,11 +84,11 @@ const action = gauges.filter((g) => g.flood_status === 'action');
 
 let statusSentence;
 if (flooding.length) {
-  statusSentence = `${flooding.map((g) => g.short_name || g.name).join(', ')} at flood stage in Marathon County.`;
+  statusSentence = `${flooding.map((g) => g.short_name || g.name).join(', ')} at flood stage in central Wisconsin.`;
 } else if (action.length) {
-  statusSentence = `${action.map((g) => g.short_name || g.name).join(', ')} above action stage in Marathon County.`;
+  statusSentence = `${action.map((g) => g.short_name || g.name).join(', ')} above action stage in central Wisconsin.`;
 } else {
-  statusSentence = 'River levels are normal across Marathon County.';
+  statusSentence = 'River levels are normal across central Wisconsin.';
 }
 
 // --- Primary gauge (Rothschild) readings for the description ---
@@ -159,7 +159,7 @@ const gaugeRows = reporting
 
 const prerender = `
   <div id="seo-snapshot" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-    <h1>Wausau Area River, Lake &amp; Fishing Conditions — Marathon County, Wisconsin</h1>
+    <h1>Wausau Area River, Lake &amp; Fishing Conditions — Central Wisconsin</h1>
     <p><strong>Current flood status:</strong> ${escapeHtml(worstLabel)}. ${escapeHtml(statusSentence)}${updatedStr ? ` Updated ${escapeHtml(updatedStr)}.` : ''}</p>
     ${summaryHeadline ? `<h2>${escapeHtml(summaryHeadline)}</h2>` : ''}
     ${summaryBody ? `<p>${escapeHtml(summaryBody)}</p>` : ''}
@@ -185,11 +185,11 @@ const graph = [
     '@type': 'Dataset',
     name: 'Central Wisconsin River & Stream Gauge Conditions',
     description:
-      'Real-time gauge height and streamflow for the Wisconsin River and tributary streams in Marathon County, Wisconsin, with NWS flood-stage thresholds.',
+      'Real-time gauge height and streamflow for the Wisconsin River and tributary streams in central Wisconsin (Wausau, Marathon County, and surrounding counties), with NWS flood-stage thresholds.',
     url: SITE_URL,
     isAccessibleForFree: true,
     creator: { '@id': `${SITE_URL}#org` },
-    spatialCoverage: 'Marathon County, Wisconsin',
+    spatialCoverage: 'Central Wisconsin (Marathon County and surrounding counties)',
     ...(data.generated_at ? { dateModified: data.generated_at } : {}),
     keywords: [
       'Wisconsin River level',

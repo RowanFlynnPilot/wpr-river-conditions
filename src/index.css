@@ -1934,6 +1934,9 @@ body {
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--wpr-cream);
+  /* Contain Leaflet's high internal z-indexes (controls use ~1000) so they
+     can't paint over the sticky chrome bar / section nav while scrolling. */
+  isolation: isolate;
 }
 
 .overview-map {
@@ -1989,6 +1992,8 @@ body {
   margin-top: var(--space-sm);
   border-radius: var(--radius);
   border: 1px solid var(--wpr-rule);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 /* Leaflet popup tweaks to match newspaper aesthetic */
@@ -2599,5 +2604,261 @@ body {
   }
   .catch-form__field--wide {
     grid-column: auto;
+  }
+}
+
+/* ==========================================================================
+   Stale-data banner
+   ========================================================================== */
+
+.stale-banner {
+  background: var(--status-action-bg);
+  border-bottom: 1px solid var(--status-action);
+  color: var(--wpr-ink);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: var(--space-xs) var(--space-md);
+  text-align: center;
+}
+
+/* ==========================================================================
+   Section jump nav (sticky, below the chrome bar)
+   ========================================================================== */
+
+.section-nav {
+  position: sticky;
+  z-index: 90; /* below the chrome bar (100); maps are isolated below both */
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--wpr-cream);
+  border-bottom: 1px solid var(--wpr-rule);
+  padding: var(--space-xs) var(--space-md);
+}
+
+.section-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.section-nav__link {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--wpr-ink-light);
+  text-decoration: none;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.section-nav__link:hover,
+.section-nav__link:focus-visible {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+/* Anchored sections stop below the two sticky bars */
+#gauges,
+#fishing,
+#weather,
+#map,
+#reservoirs,
+.gauge-card-anchor {
+  scroll-margin-top: 96px;
+}
+
+/* ==========================================================================
+   At-a-glance table (answer-first summary under the hero)
+   ========================================================================== */
+
+.glance {
+  margin: var(--space-md) var(--space-md) 0;
+  background: white;
+  border: 1px solid var(--wpr-rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.glance__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md) 0;
+}
+
+.glance__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--wpr-ink);
+}
+
+.glance__hint {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--wpr-ink-muted);
+}
+
+.glance__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+
+.glance__table th {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wpr-ink-muted);
+  text-align: left;
+  padding: var(--space-sm) var(--space-sm) 4px;
+  border-bottom: 1px solid var(--wpr-rule);
+}
+
+.glance__table th:first-child,
+.glance__table td:first-child {
+  padding-left: var(--space-md);
+}
+
+.glance__table th:last-child,
+.glance__table td:last-child {
+  padding-right: var(--space-md);
+}
+
+.glance__row {
+  cursor: pointer;
+}
+
+.glance__row:hover,
+.glance__row:focus-visible {
+  background: var(--accent-light);
+  outline: none;
+}
+
+.glance__row td {
+  padding: 6px var(--space-sm);
+  border-bottom: 1px solid var(--wpr-cream-dark);
+  vertical-align: middle;
+}
+
+.glance__row:last-child td {
+  border-bottom: none;
+}
+
+.glance__name {
+  font-weight: 600;
+  color: var(--wpr-ink);
+}
+
+.glance__now {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--wpr-ink);
+}
+
+.glance__sub {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--wpr-ink-muted);
+}
+
+.glance__trend {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.glance__trend--rising  { color: var(--status-action); }
+.glance__trend--falling { color: var(--status-normal); }
+.glance__trend--steady,
+.glance__trend--na      { color: var(--wpr-ink-muted); }
+
+.glance__chip {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.glance__chip--normal   { background: var(--status-normal-bg);   color: var(--status-normal); }
+.glance__chip--action   { background: var(--status-action-bg);   color: var(--status-action); }
+.glance__chip--minor    { background: var(--status-minor-bg);    color: var(--status-minor); }
+.glance__chip--moderate { background: var(--status-moderate-bg); color: var(--status-moderate); }
+.glance__chip--major    { background: var(--status-major-bg);    color: var(--status-major); }
+
+@media (max-width: 480px) {
+  .glance {
+    margin: var(--space-sm) var(--space-sm) 0;
+  }
+  .glance__sub {
+    display: none;
+  }
+  .glance__table {
+    font-size: 0.8rem;
+  }
+}
+
+/* ==========================================================================
+   Gauge-card 24h trend line
+   ========================================================================== */
+
+.gauge-card__trend {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: var(--space-xs);
+}
+
+.gauge-card__trend--rising  { color: var(--status-action); }
+.gauge-card__trend--falling { color: var(--status-normal); }
+.gauge-card__trend--steady  { color: var(--wpr-ink-muted); }
+
+/* Sparkline scale range + reference line */
+
+.gauge-card__sparkline-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.gauge-card__sparkline-range {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--wpr-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.gauge-card__sparkline-ref {
+  stroke: var(--status-action);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Touch-target sizing on coarse pointers
+   ========================================================================== */
+
+@media (pointer: coarse) {
+  .gauge-filter__chip,
+  .gauge-map-toggle,
+  .section-nav__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }

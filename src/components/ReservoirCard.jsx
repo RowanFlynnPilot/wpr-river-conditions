@@ -17,13 +17,19 @@ function formatTimestamp(isoStr) {
 }
 
 function LevelBar({ feetBelowMax }) {
-  // Scale: 0 (full) to -15 (very low). Closer to 0 = more full.
+  // Visual position within a 15 ft drawdown band (0 = at maximum).
+  // WVIC only reports "feet below maximum" — we don't know each
+  // reservoir's true operating range, so don't present this as a
+  // real capacity percentage.
   const maxDrop = 15;
   const drop = Math.min(maxDrop, Math.abs(feetBelowMax));
   const fillPct = Math.max(0, ((maxDrop - drop) / maxDrop) * 100);
 
   return (
-    <div className="reservoir-bar">
+    <div
+      className="reservoir-bar"
+      title={`WVIC reports level as feet below maximum. Bar shows position within a ${maxDrop} ft drawdown band.`}
+    >
       <div className="reservoir-bar__track">
         <div className="reservoir-bar__fill" style={{ width: `${fillPct}%` }} />
       </div>
@@ -31,9 +37,7 @@ function LevelBar({ feetBelowMax }) {
         <span className="reservoir-bar__label-left">
           {Math.abs(feetBelowMax).toFixed(1)} ft below max
         </span>
-        <span className="reservoir-bar__label-right">
-          {Math.round(fillPct)}% capacity
-        </span>
+        <span className="reservoir-bar__label-right">full pool = 0 ft</span>
       </div>
     </div>
   );

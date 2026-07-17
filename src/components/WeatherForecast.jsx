@@ -30,8 +30,10 @@ function getWeatherLabel(code) {
   return 'Cloudy';
 }
 
-function formatDayName(dateStr, index) {
-  if (index === 0) return 'Today';
+function formatDayName(dateStr, index, hasHigh) {
+  // After the daytime forecast period ends, NWS only issues a "Tonight"
+  // period for the current date — no high temp. Label it accordingly.
+  if (index === 0) return hasHigh ? 'Today' : 'Tonight';
   const d = new Date(dateStr + 'T12:00:00');
   return d.toLocaleDateString('en-US', { weekday: 'short' });
 }
@@ -44,12 +46,12 @@ export default function WeatherForecast({ forecast }) {
       <div className="weather-strip__grid">
         {forecast.map((day, i) => (
           <div key={day.date} className="weather-strip__day">
-            <div className="weather-strip__day-name">{formatDayName(day.date, i)}</div>
+            <div className="weather-strip__day-name">{formatDayName(day.date, i, day.high_f != null)}</div>
             <div className="weather-strip__icon">{getWeatherIcon(day.weather_code)}</div>
             <div className="weather-strip__label">{getWeatherLabel(day.weather_code)}</div>
             <div className="weather-strip__temps">
-              <span className="weather-strip__high">{day.high_f}°</span>
-              <span className="weather-strip__low">{day.low_f}°</span>
+              {day.high_f != null && <span className="weather-strip__high">{day.high_f}°</span>}
+              {day.low_f != null && <span className="weather-strip__low">{day.low_f}°</span>}
             </div>
             {day.precip_pct > 0 && (
               <div className="weather-strip__precip">

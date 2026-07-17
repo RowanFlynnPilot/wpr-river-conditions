@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import GaugeCard from './components/GaugeCard';
 import AlertBanner from './components/AlertBanner';
 import ReservoirCard from './components/ReservoirCard';
@@ -10,21 +10,34 @@ import ConditionsSummary from './components/ConditionsSummary';
 import EventsCalendar from './components/EventsCalendar';
 import SponsorStrip from './components/SponsorStrip';
 import HeroStatus from './components/HeroStatus';
-import OverviewMap from './components/OverviewMap';
 import FloodAlertSignup from './components/FloodAlertSignup';
 import SkeletonPage from './components/SkeletonPage';
 import GaugeFilter, { FILTER_PREDICATES } from './components/GaugeFilter';
+import GlanceTable from './components/GlanceTable';
+import SectionNav from './components/SectionNav';
+import LazyMount from './components/LazyMount';
 import { trackEvent } from './utils/analytics';
 
 import logoUrl from './assets/logo-32.png';
 
+// Leaflet ships in its own on-demand chunk; the overview map mounts only
+// when scrolled near (see LazyMount below), keeping the initial load light.
+const OverviewMap = lazy(() => import('./components/OverviewMap'));
+
+// In dev, Vite serves the repo's source tree directly — a plain path avoids
+// the `new URL(..., import.meta.url)` form, which also emitted a duplicate
+// 312 KB copy of the JSON into the production build as a hashed asset.
 const DATA_URL = import.meta.env.DEV
-  ? new URL('./data/river-data.json', import.meta.url).href
+  ? '/src/data/river-data.json'
   : `${import.meta.env.BASE_URL}data/river-data.json`;
 
-const SPONSOR_URL = import.meta.env.DEV
-  ? new URL('../public/data/sponsor.json', import.meta.url).href
-  : `${import.meta.env.BASE_URL}data/sponsor.json`;
+// public/ files are served at the site root in dev, same as in the build.
+const SPONSOR_URL = `${import.meta.env.BASE_URL}data/sponsor.json`;
+
+const REFRESH_MS = 30 * 60 * 1000;      // matches the data cron cadence
+const VISIBLE_REFRESH_MS = 10 * 60 * 1000; // refetch on tab return if older
+const STALE_MS = 2 * 60 * 60 * 1000;    // warn when data is >2h old
+const FILTER_STORAGE_KEY = 'wpr-gauge-filter';
 
 function formatUpdatedAt(isoStr) {
   if (!isoStr) return '';
@@ -60,33 +73,79 @@ function sponsorAccentStyle(sponsor) {
   };
 }
 
+function initialFilter() {
+  try {
+    const saved = window.localStorage.getItem(FILTER_STORAGE_KEY);
+    return saved && FILTER_PREDICATES[saved] ? saved : 'all';
+  } catch {
+    return 'all';
+  }
+}
+
 export default function App() {
   const [data, setData] = useState(null);
   const [sponsor, setSponsor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(initialFilter);
+  const [, setClockTick] = useState(0); // re-renders relative timestamps
   const gaugeRefs = useRef({});
+  const lastFetchRef = useRef(0);
 
-  useEffect(() => {
-    Promise.all([
-      fetch(DATA_URL).then((r) => {
+  const fetchData = useCallback((isRefresh = false) => {
+    // Cache-bust refreshes so GitHub Pages' edge cache can't pin old data.
+    const dataUrl = isRefresh ? `${DATA_URL}?t=${Date.now()}` : DATA_URL;
+    const jobs = [
+      fetch(dataUrl).then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       }),
-      fetch(SPONSOR_URL).then((r) => (r.ok ? r.json() : null)).catch(() => null),
-    ])
+    ];
+    if (!isRefresh) {
+      jobs.push(fetch(SPONSOR_URL).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+    }
+    return Promise.all(jobs)
       .then(([d, s]) => {
+        lastFetchRef.current = Date.now();
         setData(d);
-        setSponsor(s);
+        if (!isRefresh) setSponsor(s);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to load river data:', err);
-        setError(err.message);
-        setLoading(false);
+        // Keep showing the previous data on a failed refresh.
+        if (!isRefresh) {
+          setError(err.message);
+          setLoading(false);
+        }
       });
   }, []);
+
+  useEffect(() => {
+    fetchData(false);
+  }, [fetchData]);
+
+  // Keep an embedded/left-open widget current: periodic refresh, a refetch
+  // when the tab becomes visible again, and a minute tick so "12m ago"
+  // relative labels don't freeze.
+  useEffect(() => {
+    const interval = setInterval(() => fetchData(true), REFRESH_MS);
+    const tick = setInterval(() => setClockTick((t) => t + 1), 60 * 1000);
+    const onVisible = () => {
+      if (
+        document.visibilityState === 'visible' &&
+        Date.now() - lastFetchRef.current > VISIBLE_REFRESH_MS
+      ) {
+        fetchData(true);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [fetchData]);
 
   // Hooks must run on every render — compute derived data even when loading.
   const hasData = (g) =>
@@ -108,6 +167,38 @@ export default function App() {
     [sortedGauges, filter]
   );
 
+  // A persisted filter can be empty against today's data (e.g. "Flooding"
+  // saved during a flood event) — fall back to All rather than a blank grid.
+  useEffect(() => {
+    if (!loading && filter !== 'all' && sortedGauges.length > 0 && filteredGauges.length === 0) {
+      setFilter('all');
+    }
+  }, [loading, filter, sortedGauges, filteredGauges]);
+
+  const scrollToGauge = useCallback(
+    (gaugeId) => {
+      const doScroll = () =>
+        gaugeRefs.current[gaugeId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const visible = filteredGauges.some((g) => g.id === gaugeId);
+      if (!visible) {
+        setFilter('all');
+        setTimeout(doScroll, 120); // let the full grid render first
+      } else {
+        doScroll();
+      }
+    },
+    [filteredGauges]
+  );
+
+  // Deep links: #gauge-05398000 scrolls to that card (articles can link
+  // straight to a river).
+  useEffect(() => {
+    if (loading || !data) return;
+    const m = window.location.hash.match(/^#gauge-(\w+)$/);
+    if (m) setTimeout(() => scrollToGauge(m[1]), 150);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   if (loading) {
     return (
       <div className="widget-container">
@@ -128,16 +219,26 @@ export default function App() {
 
   const activeCount = sortedGauges.length;
   const wrapperStyle = sponsorAccentStyle(sponsor);
-
-  const handleGaugePinClick = (gaugeId) => {
-    const el = gaugeRefs.current[gaugeId];
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
+  const reservoirsReporting = (data.reservoirs || []).filter((r) => r.has_data);
+  const isStale = data.generated_at && Date.now() - new Date(data.generated_at).getTime() > STALE_MS;
 
   const handleFilterChange = (key) => {
     setFilter(key);
+    try {
+      window.localStorage.setItem(FILTER_STORAGE_KEY, key);
+    } catch {
+      // private mode — persistence is best-effort
+    }
     trackEvent('gauge_filter', { filter: key });
   };
+
+  const navSections = [
+    { id: 'gauges', label: 'Rivers' },
+    data.fishing_conditions ? { id: 'fishing', label: 'Fishing' } : null,
+    data.weather_forecast?.length ? { id: 'weather', label: 'Weather' } : null,
+    { id: 'map', label: 'Map' },
+    reservoirsReporting.length > 0 ? { id: 'reservoirs', label: 'Reservoirs' } : null,
+  ].filter(Boolean);
 
   return (
     <div className="widget-container" style={wrapperStyle}>
@@ -159,6 +260,14 @@ export default function App() {
         </span>
       </div>
 
+      {/* Data-freshness warning — shown only if the feed pipeline stalls */}
+      {isStale && (
+        <div className="stale-banner" role="status">
+          Data feed delayed — readings were last updated{' '}
+          {formatUpdatedAt(data.generated_at)}. Showing the most recent available.
+        </div>
+      )}
+
       {/* Sponsor Strip — sponsor.json drives display or "Reach out" CTA. */}
       <SponsorStrip sponsor={sponsor} />
 
@@ -168,26 +277,17 @@ export default function App() {
       {/* NWS alerts (above the fold when active) */}
       <AlertBanner alerts={data.alerts} />
 
-      {/* Overview map with one pin per gauge, color-coded by status */}
-      <OverviewMap gauges={data.gauges} onGaugeClick={handleGaugePinClick} />
+      {/* Sticky in-widget navigation (the WP embed is a 900px window) */}
+      <SectionNav sections={navSections} />
 
-      {/* Flood-alert email signup (Web3Forms) */}
-      <FloodAlertSignup />
-
-      {/* 5-day weather forecast */}
-      <WeatherForecast forecast={data.weather_forecast} />
-
-      {/* Conditions narrative & seasonal activity */}
-      <ConditionsSummary
-        summary={data.conditions_summary}
-        seasonal={data.seasonal_activity}
-      />
+      {/* Answer-first summary: every reporting gauge in one screen */}
+      <GlanceTable gauges={sortedGauges} onSelect={scrollToGauge} />
 
       {/* Stream Gauges */}
-      <div className="section-header">
+      <div className="section-header" id="gauges">
         <h2 className="section-header__title">Stream Gauges</h2>
         <span className="section-header__subtitle">
-          {activeCount} of {data.gauges.length} reporting · Marathon County
+          {activeCount} of {data.gauges.length} reporting · Central Wisconsin
         </span>
       </div>
 
@@ -197,6 +297,8 @@ export default function App() {
         {filteredGauges.map((gauge) => (
           <div
             key={gauge.id}
+            id={`gauge-${gauge.id}`}
+            className="gauge-card-anchor"
             ref={(el) => { if (el) gaugeRefs.current[gauge.id] = el; }}
           >
             <GaugeCard gauge={gauge} />
@@ -207,7 +309,7 @@ export default function App() {
       {/* Fishing Conditions */}
       {data.fishing_conditions && (
         <>
-          <div className="section-header" style={{ marginTop: 'var(--space-lg)' }}>
+          <div className="section-header" id="fishing" style={{ marginTop: 'var(--space-lg)' }}>
             <h2 className="section-header__title">Fishing Conditions</h2>
             <span className="section-header__subtitle">
               Wausau area · updated every 30 min
@@ -217,22 +319,52 @@ export default function App() {
         </>
       )}
 
+      {/* 5-day weather forecast */}
+      {data.weather_forecast?.length > 0 && (
+        <div id="weather">
+          <WeatherForecast forecast={data.weather_forecast} />
+        </div>
+      )}
+
+      {/* Conditions narrative & seasonal activity */}
+      <ConditionsSummary
+        summary={data.conditions_summary}
+        seasonal={data.seasonal_activity}
+      />
+
+      {/* Overview map — orientation, below the readings it locates */}
+      <div id="map">
+        <LazyMount minHeight={340}>
+          <Suspense
+            fallback={
+              <div className="overview-map-wrap">
+                <div className="overview-map" aria-hidden="true" />
+              </div>
+            }
+          >
+            <OverviewMap gauges={data.gauges} onGaugeClick={scrollToGauge} />
+          </Suspense>
+        </LazyMount>
+      </div>
+
+      {/* Flood-alert email signup (Web3Forms) */}
+      <FloodAlertSignup />
+
       {/* Upcoming Events */}
       <EventsCalendar events={data.upcoming_events} />
 
       {/* Reservoirs */}
-      {data.reservoirs && data.reservoirs.length > 0 && (
+      {reservoirsReporting.length > 0 && (
         <>
-          <div className="section-header" style={{ marginTop: 'var(--space-lg)' }}>
+          <div className="section-header" id="reservoirs" style={{ marginTop: 'var(--space-lg)' }}>
             <h2 className="section-header__title">Reservoirs</h2>
             <span className="section-header__subtitle">
-              {data.reservoirs.filter((r) => r.has_data).length} of{' '}
-              {data.reservoirs.length} reporting · WVIC System
+              {reservoirsReporting.length} of {data.reservoirs.length} reporting · WVIC System
             </span>
           </div>
 
           <div className="reservoirs-grid">
-            {data.reservoirs.filter((r) => r.has_data).map((reservoir) => (
+            {reservoirsReporting.map((reservoir) => (
               <ReservoirCard key={reservoir.slug} reservoir={reservoir} />
             ))}
           </div>

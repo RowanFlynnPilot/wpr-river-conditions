@@ -29,20 +29,21 @@ Same pattern as other WPR widgets (gas prices, weather radar, adopt widget):
 - **Provides**: Official NWS flood stage thresholds (action/minor/moderate/major), current flood category, historic crests
 - Replaced the old AHPS system in March 2024
 
-### NWS Alerts API (active flood warnings)
-- **Endpoint**: `https://api.weather.gov/alerts/active?zone=WIC073`
+### NWS Alerts API (active alerts)
+- **Endpoint**: `https://api.weather.gov/alerts/active?zone=WIC067,WIC069,WIC073,WIC097,WIC141`
+- Covers every county with a monitored gauge: Langlade, Lincoln, Marathon, Portage, Wood
 - **Format**: GeoJSON
 - **Auth**: None (requires User-Agent)
-- Filtered to flood-related events only (flood, flash flood, river, hydrologic)
+- Filtered to outdoor-relevant categories (flood, severe, winter, fire, wind, heat)
 
-### WVIC Reservoir Data (Phase 2 — not yet implemented)
-- **Source pages**: `https://wvic.com/Content/{Name}_Flows.cfm`
-  - `Rainbow_Flows.cfm`, `Willow_Flows.cfm`, `Rice_Flows.cfm`, `Spirit_Flows.cfm`, `Eau_Pleine_Flows.cfm`
-- **Reservoirs**: Rainbow, Willow, Spirit, Eau Pleine, Rice, Lake Wausau
-- **Approach**: Needs Playwright scraping — data renders via JavaScript/embedded chart images, not scrapeable HTML
-- The main data hub page is `https://wvic.com/Content/Data--Reports.cfm`
+### WVIC Reservoir Data (implemented — no browser needed)
+- **Scraped page**: `https://wvic.com/Content/Data--Reports.cfm` — current "feet below maximum" values are embedded in a Google Charts `arrayToDataTable()` blob, extracted with a regex in `fetch_wvic_reservoirs()`
+- **Reservoirs**: Rainbow, Willow, Spirit, Eau Pleine, Rice (Lake Wausau configured but not reported by WVIC)
+- **Richer data available** (verified 2026-07): the `.cfm` pages wrap static HTML iframes under `wvic.com/TridentXML/` — hourly head level + gate flow per reservoir, and `tridentxml/FlowTempSummary/FlowTempSummary.html` has daily **water temperature at Rothschild** (the only temp source in the basin; USGS has none). Candidates for Phase 2.
 
 ## Monitored Gauges
+
+Twelve gauges across five counties (the widget outgrew its original Marathon-only roster — reader-facing copy says "Central Wisconsin"):
 
 | USGS ID | NWS LID | Name | Action (ft) | Minor (ft) | Moderate (ft) | Major (ft) |
 |---------|---------|------|-------------|------------|---------------|------------|
@@ -52,6 +53,12 @@ Same pattern as other WPR widgets (gas prices, weather radar, adopt widget):
 | 05396500 | — | Little Rib River near Wausau | — | — | — | — |
 | 05397500 | KELW3 | Eau Claire River near Kelly | 7.0 | 9.0 | 12.0 | 15.0 |
 | 05399500 | STRW3 | Big Eau Pleine at Stratford | 11.0 | 15.5 | 19.0 | 22.5 |
+| 05394500 | — | Prairie River near Merrill | — | — | — | — |
+| 05395000 | RRLW3 | Wisconsin River at Merrill | 10.0 | 11.0 | 13.5 | 15.0 |
+| 05400760 | WIRW3 | Wisconsin River at Wisconsin Rapids | 10.0 | 12.0 | 13.5 | 14.5 |
+| 04074950 | LGLW3 | Wolf River at Langlade | 9.5 | 11.5 | 12.5 | 14.0 |
+| 05400625 | — | Little Plover River near Plover | — | — | — | — |
+| 04080798 | — | Tomorrow River near Nelsonville | — | — | — | — |
 
 **Important**: The Rothschild gauge (primary Wausau gauge) uses gage height in feet. The *separate* NWS gauge WUUW3 ("Wisconsin River below Wausau Dam") reports in *elevation* above sea level (flood stage = 1167 ft NAVD88). These are different measurement systems for overlapping but different locations. Our widget uses ROTW3 (Rothschild, gage height) which aligns with the USGS data.
 
@@ -81,25 +88,31 @@ wpr-river-conditions/
 │   ├── assets/
 │   │   └── logo-32.png            # WPR logo (32x32, for chrome bar)
 │   ├── components/
-│   │   ├── AlertBanner.jsx        # NWS flood alert display
+│   │   ├── AlertBanner.jsx        # NWS alert display
 │   │   ├── CommunityBar.jsx
 │   │   ├── ConditionsSummary.jsx
 │   │   ├── EventsCalendar.jsx
 │   │   ├── FishingConditions.jsx
 │   │   ├── FishingReference.jsx
-│   │   ├── GaugeCard.jsx          # Individual gauge card with stage bar
-│   │   ├── GaugeFilter.jsx        # All/Flooding/Fishing/Paddling chips
-│   │   ├── GaugeMap.jsx           # Lazy-loaded per-gauge access-point map
+│   │   ├── FloodAlertSignup.jsx   # Web3Forms email capture
+│   │   ├── GaugeCard.jsx          # Individual gauge card with stage bar + 24h trend
+│   │   ├── GaugeFilter.jsx        # All/Flooding/WI River/Trout/Paddling chips
+│   │   ├── GaugeMap.jsx           # Per-gauge access-point map toggle (Leaflet lazy-loaded)
+│   │   ├── GaugeMapInner.jsx      # The Leaflet map itself (own async chunk)
+│   │   ├── GlanceTable.jsx        # Answer-first summary table under the hero
 │   │   ├── HeroStatus.jsx         # Big "All Clear / Flood Warning" headline
+│   │   ├── LazyMount.jsx          # IntersectionObserver-deferred mount wrapper
 │   │   ├── LureSuggestions.jsx    # "Right now, try" lure picks
-│   │   ├── OverviewMap.jsx        # Marathon County hero map with status pins
+│   │   ├── OverviewMap.jsx        # Regional map with status pins (lazy chunk)
 │   │   ├── ReservoirCard.jsx
+│   │   ├── SectionNav.jsx         # Sticky jump bar (Rivers/Fishing/Weather/Map/…)
 │   │   ├── SkeletonPage.jsx       # Loading-state placeholders
-│   │   ├── Sparkline.jsx          # 7-day trend mini chart
+│   │   ├── Sparkline.jsx          # 7-day trend mini chart (+ action-stage ref line)
 │   │   ├── SponsorStrip.jsx       # Active sponsor or "Reach out" CTA
 │   │   └── WeatherForecast.jsx
 │   ├── utils/
-│   │   └── analytics.js           # Provider-agnostic trackEvent helper
+│   │   ├── analytics.js           # Provider-agnostic trackEvent helper
+│   │   └── trend.js               # 24h rising/falling/steady from gauge history
 │   ├── data/
 │   │   └── river-data.json        # Generated data (gitignored in prod)
 │   ├── App.jsx                    # Main widget component
@@ -185,7 +198,7 @@ Custom events fire via `src/utils/analytics.js`. The helper is provider-agnostic
 - `sponsor_click` — props: `{ sponsor: name }` — active-sponsor strip clicked
 - `sponsor_cta_click` — "Reach out →" sponsorship-inquiry CTA clicked
 - `gauge_map_open` — props: `{ gauge: id }` — per-gauge access-point map expanded
-- `gauge_filter` — props: `{ filter: key }` — All/Flooding/Fishing/Paddling chip clicked
+- `gauge_filter` — props: `{ filter: key }` — All/Flooding/Wisconsin River/Trout Streams/Paddling chip clicked
 - `community_link_click` — props: `{ kind }` — Share-a-Catch or social link clicked
 - `catch_submitted` — Share Your Catch form submitted
 - `flood_alert_signup` — flood-alert email signup completed
@@ -233,11 +246,21 @@ Publishes a crawlable **"Central Wisconsin River Levels & Fishing Report"** arti
 - **Flood-alert email signup** — `FloodAlertSignup.jsx` (rendered under the overview map in `App.jsx`) captures emails via Web3Forms (same routing key as the catch-report form; lands in the WPR inbox). Fires the `flood_alert_signup` analytics event.
   - **Note — sending is not yet automated.** Signups currently arrive as individual emails to the WPR inbox; there's no list store or broadcast send. Next step for true automation: collect into an email service (or a stored list) and have the GitHub Action send when a gauge crosses a threshold (the workflow already computes `flood_status`).
 
+## UX notes (learned the hard way)
+
+- **The real canvas is 900px.** The widget is embedded on `wausaupilotandreview.com/outdoors/` as a fixed `<iframe height="900" scrolling="yes">` with **no** `wpr-resize` postMessage listener on the WordPress side — readers scroll inside that window. Hence: hero → alerts → sticky `SectionNav` → `GlanceTable` (every gauge in one screen) before any detail sections. Don't push readings below the first screen.
+- The widget auto-refreshes every 30 min (plus on tab-return), shows a stale-data banner when `generated_at` is >2h old, and supports deep links (`#gauge-05398000`) so articles can target a river.
+- The 24h trend math is shared between the scraper (`compute_conditions_summary`) and client (`src/utils/trend.js`): both average readings 20–28h back and use a ±15% flow threshold — keep them in sync so the card and the narrative can't disagree.
+
 ## Phase 2 Roadmap
-- [ ] WVIC reservoir scraping via Playwright (pages at wvic.com render data via JS)
-- [ ] Water temperature data (seasonal — not all gauges report year-round)
-- [ ] Boat launch status / DNR fishing links
+- [x] WVIC reservoir scraping — done via regex on the Data & Reports page (no Playwright needed)
+- [ ] **National Water Model forecasts** via NWPS `/reaches/{id}/streamflow?series=short_range|medium_range` — hourly flow forecasts for every gauge, verified working 2026-07; reach IDs live in each NWPS gauge response
+- [ ] **Water temperature** from WVIC `tridentxml/FlowTempSummary` (Rothschild + Wisconsin Rapids; USGS has zero temp gauges in-basin) — feeds the lure engine real temps
+- [ ] Lake/pool levels via NWPS gauges EPLW3 (Big Eau Pleine pool), DUBW3 (Lake DuBay), WUUW3 (below Wausau Dam) — same fetch function; **ignore `floodCategory` on pool-elevation gauges** (datum mismatch makes DuBay read a bogus "major")
+- [ ] "Rain upstream" chip (Open-Meteo multi-point over headwaters, or NWS gridpoint QPF at GRB/25,50)
+- [ ] U.S. Drought Monitor county chip (`usdmdataservices.unl.edu`, aoi=55073, weekly)
+- [ ] Boat launch status / DNR fishing links (no public API — DNR ArcGIS layers are static; one-time export only)
 - [x] Historical comparison ("Today vs. average for this date") — done (flow-based, see Engagement Features)
 - [ ] Automated flood-alert *sending* (signup capture is done; see Engagement Features)
+- [ ] Refresh `LOCAL_EVENTS` in fetch_data.py for 2H-2026 (list emptied after June's Free Fishing Weekend)
 - [ ] Migrate to new USGS OGC API (`api.waterdata.usgs.gov`) before 2027 decommission
-- [ ] Add WI River below Wausau Dam gauge (WUUW3) — uses elevation datum, needs conversion logic

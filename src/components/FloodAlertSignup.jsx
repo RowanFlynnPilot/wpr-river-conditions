@@ -71,13 +71,14 @@ export default function FloodAlertSignup() {
         </div>
       </div>
 
-      {/* Honeypot — visually hidden via CSS */}
+      {/* Honeypot — visually hidden via CSS, and hidden from assistive tech */}
       <input
         type="checkbox"
         name="botcheck"
         className="flood-signup__honeypot"
         tabIndex="-1"
         autoComplete="off"
+        aria-hidden="true"
       />
 
       <div className="flood-signup__controls">

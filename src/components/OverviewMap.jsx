@@ -52,7 +52,12 @@ export default function OverviewMap({ gauges, onGaugeClick }) {
     const markers = [];
     validGauges.forEach((g) => {
       const conf = STATUS_COLORS[g.flood_status] || STATUS_COLORS.normal;
-      const m = L.marker([g.lat, g.lon], { icon: makePin(conf.color) })
+      const m = L.marker([g.lat, g.lon], {
+        icon: makePin(conf.color),
+        // Accessible name for the marker's focusable element
+        title: `${g.short_name} — ${conf.label}`,
+        alt: `${g.short_name} — ${conf.label}`,
+      })
         .addTo(map)
         .bindPopup(
           `<div class="map-pin-label">${g.short_name}</div>

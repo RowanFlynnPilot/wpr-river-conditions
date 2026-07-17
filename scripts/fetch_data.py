@@ -8,6 +8,7 @@ Output: src/data/river-data.json (consumed by the React frontend)
 Schedule: Every 30 minutes via GitHub Actions
 """
 
+import hashlib
 import json
 import logging
 import re
@@ -187,9 +188,10 @@ PARAM_STREAMFLOW = "00060"    # cfs (cubic feet per second)
 PARAM_WATER_TEMP = "00010"    # °C
 PARAM_PRECIP = "00045"        # inches (incremental precipitation)
 
-# NWS alert zones for Marathon County
-NWS_ZONE = "WIC073"  # Marathon County zone code
-NWS_COUNTY_FIPS = "055073"
+# NWS county alert zones covering every monitored gauge:
+# Langlade (Wolf R), Lincoln (Merrill), Marathon (Wausau area),
+# Portage (Little Plover, Tomorrow R), Wood (Wisconsin Rapids)
+NWS_ZONES = ["WIC067", "WIC069", "WIC073", "WIC097", "WIC141"]
 
 # WVIC reservoirs to track (scraped from wvic.com)
 WVIC_RESERVOIRS = [
@@ -604,19 +606,21 @@ def fetch_usgs_current(gauge_id: str) -> dict:
                     result["precip_24h_in"] = round(total, 2)
                 continue
 
-            # For all other params, take the latest reading
+            # For all other params, take the latest reading.
+            # NB: compare against None, not truthiness — a reading of exactly 0
+            # (dry-bed flow, low-water stage) is valid data, not "missing".
             latest = values[-1]
             val = float(latest["value"]) if latest["value"] != "" else None
             if val is not None and val < 0:
                 val = None
 
             if var_code == PARAM_GAGE_HEIGHT:
-                result["gage_height_ft"] = round(val, 2) if val else None
+                result["gage_height_ft"] = round(val, 2) if val is not None else None
             elif var_code == PARAM_STREAMFLOW:
-                result["streamflow_cfs"] = round(val, 1) if val else None
+                result["streamflow_cfs"] = round(val, 1) if val is not None else None
             elif var_code == PARAM_WATER_TEMP:
-                result["water_temp_f"] = round(val * 9 / 5 + 32, 1) if val else None
-                result["water_temp_c"] = round(val, 1) if val else None
+                result["water_temp_f"] = round(val * 9 / 5 + 32, 1) if val is not None else None
+                result["water_temp_c"] = round(val, 1) if val is not None else None
 
             ts_str = latest.get("dateTime")
             if ts_str and (result["timestamp"] is None or ts_str > result["timestamp"]):
@@ -662,9 +666,9 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
                     by_hour[hour_key] = {"timestamp": dt_str}
 
                 if var_code == PARAM_GAGE_HEIGHT:
-                    by_hour[hour_key]["gage_height_ft"] = round(val, 2) if val else None
+                    by_hour[hour_key]["gage_height_ft"] = round(val, 2) if val is not None else None
                 elif var_code == PARAM_STREAMFLOW:
-                    by_hour[hour_key]["streamflow_cfs"] = round(val, 1) if val else None
+                    by_hour[hour_key]["streamflow_cfs"] = round(val, 1) if val is not None else None
     except (KeyError, IndexError, TypeError) as e:
         log.warning(f"Error parsing USGS history for {gauge_id}: {e}")
 
@@ -767,12 +771,13 @@ def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
 
 def fetch_nws_alerts() -> list[dict]:
     """
-    Fetch active outdoor-relevant alerts from the NWS API for Marathon County.
+    Fetch active outdoor-relevant alerts from the NWS API for every county
+    with a monitored gauge (Langlade, Lincoln, Marathon, Portage, Wood).
     Includes flood, severe weather, fire weather, winter, and wind events —
     anything an outdoor or floodplain audience would want to know about.
     Returns: [{event, category, headline, severity, description, onset, expires, url}, ...]
     """
-    url = f"https://api.weather.gov/alerts/active?zone={NWS_ZONE}"
+    url = f"https://api.weather.gov/alerts/active?zone={','.join(NWS_ZONES)}"
     data = fetch_json(url)
     if not data:
         return []
@@ -1483,7 +1488,9 @@ def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, m
     """
     Pick up to 3 lure recommendations for this gauge given current
     water temp (or seasonal fallback) and month. Returns one suggestion
-    per species, ordered by best fit.
+    per species, ordered by best fit. Among equally good options the pick
+    rotates on a per-gauge seed so neighboring cards with the same species
+    mix don't all show the same three lures.
     """
     fishing = gauge_record.get("fishing") or {}
     species_list = fishing.get("species") or []
@@ -1493,32 +1500,31 @@ def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, m
     if current_temp_f is None:
         current_temp_f = SEASONAL_WATER_TEMP_F.get(month, 50)
 
-    candidates = []
+    # Deterministic per-gauge seed. Hash the id string — raw USGS ids in one
+    # basin share digit patterns (all end in 0, several equal mod 3), so
+    # arithmetic on the number itself doesn't separate neighboring gauges.
+    gauge_id = str(gauge_record.get("id") or "")
+    seed = int(hashlib.md5(gauge_id.encode()).hexdigest()[:8], 16)
+
+    picks = []
     for species in species_list:
+        scored = []
         for entry in LURE_DATABASE.get(species, []):
             in_season = month in entry["months"]
             t_low, t_high = entry["temp_range"]
             temp_ok = t_low <= current_temp_f <= t_high
             score = (2 if in_season else 0) + (2 if temp_ok else 0)
-            if score == 0:
-                continue
-            candidates.append({
-                "species": species,
-                "lure": entry["lure"],
-                "why": entry["why"],
-                "score": score,
-            })
-
-    candidates.sort(key=lambda x: -x["score"])
-    seen, top = set(), []
-    for c in candidates:
-        if c["species"] in seen:
+            if score > 0:
+                scored.append((score, entry))
+        if not scored:
             continue
-        seen.add(c["species"])
-        top.append({"species": c["species"], "lure": c["lure"], "why": c["why"]})
-        if len(top) >= 3:
-            break
-    return top
+        best = max(s for s, _ in scored)
+        ties = [e for s, e in scored if s == best]
+        pick = ties[seed % len(ties)]
+        picks.append({"species": species, "lure": pick["lure"], "why": pick["why"], "score": best})
+
+    picks.sort(key=lambda x: -x["score"])
+    return [{"species": p["species"], "lure": p["lure"], "why": p["why"]} for p in picks[:3]]
 
 
 # Community engagement links (static)
@@ -1727,11 +1733,16 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
         if status in ("minor", "moderate", "major"):
             flood_alerts.append(f"{name} at {status} flood stage")
 
-        if current_cfs is None or len(history) < 24:
+        if current_cfs is None or len(history) < 28:
             continue
 
-        # Compare current to 24h ago
-        old_flows = [h["streamflow_cfs"] for h in history[:24] if h.get("streamflow_cfs")]
+        # Compare current to ~24h ago: history is ~hourly and ends now, so
+        # average the entries 20–28 hours back (NOT history[:24], which is
+        # the start of the 7-day window — a week ago).
+        old_flows = [
+            h["streamflow_cfs"] for h in history[-28:-20]
+            if h.get("streamflow_cfs") is not None
+        ]
         if not old_flows:
             continue
 
@@ -1804,10 +1815,11 @@ def generate_daily_summary(
         bt = fishing_conditions["best_time"]
         best_window = f"{fmt_time(bt['start'])}\u2013{fmt_time(bt['end'])}"
 
-    # Rating word
+    # Rating word — buckets match the widget UI (FishingConditions.jsx):
+    # 7–8 renders as "Good" there, 9+ as "Excellent". Keep the article in sync.
     rating_word = ""
     if rating:
-        rating_word = "poor" if rating <= 3 else "fair" if rating <= 5 else "good" if rating <= 7 else "excellent"
+        rating_word = "poor" if rating <= 3 else "fair" if rating <= 6 else "good" if rating <= 8 else "excellent"
 
     # Pressure description
     pressure_desc = {"falling": "falling", "rising": "rising", "steady": "steady"}.get(pressure_trend, "")
@@ -2065,7 +2077,7 @@ def main():
         gauges_data.append(gauge_record)
 
     # Fetch NWS alerts
-    log.info("Fetching NWS flood alerts for Marathon County...")
+    log.info("Fetching NWS alerts for all gauge counties...")
     alerts = fetch_nws_alerts()
 
     # Fetch WVIC reservoirs
@@ -2107,7 +2119,7 @@ def main():
     # Assemble output
     output = {
         "generated_at": now,
-        "region": "Central Wisconsin \u2014 Marathon County",
+        "region": "Central Wisconsin",
         "gauges": gauges_data,
         "alerts": alerts,
         "reservoirs": reservoirs,

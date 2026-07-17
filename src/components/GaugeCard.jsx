@@ -2,6 +2,7 @@ import React from 'react';
 import Sparkline from './Sparkline';
 import GaugeMap from './GaugeMap';
 import LureSuggestions from './LureSuggestions';
+import { computeTrend, trendText, TREND_ARROWS } from '../utils/trend';
 
 function getTempStyle(tempF) {
   if (tempF < 40) return { color: '#78716c', label: 'Cold' };
@@ -135,11 +136,14 @@ function FloodStageBar({ gageHeight, stages }) {
   );
 }
 
+const TREND_LABELS = { rising: 'Rising', falling: 'Falling', steady: 'Steady' };
+
 export default function GaugeCard({ gauge }) {
   const { current, history, flood_status, flood_stages } = gauge;
   const hasData = current && (current.gage_height_ft != null || current.streamflow_cfs != null);
   const statusConf = STATUS_CONFIG[flood_status] || STATUS_CONFIG.normal;
   const isAlert = ['minor', 'moderate', 'major'].includes(flood_status);
+  const trend = computeTrend(history);
 
   const cardClass = [
     'gauge-card',
@@ -206,6 +210,14 @@ export default function GaugeCard({ gauge }) {
             )}
           </div>
 
+          {trend && (
+            <div className={`gauge-card__trend gauge-card__trend--${trend.dir}`}>
+              <span aria-hidden="true">{TREND_ARROWS[trend.dir]}</span>{' '}
+              {TREND_LABELS[trend.dir]}
+              {trend.dir !== 'steady' && <> · {trendText(trend)}</>}
+            </div>
+          )}
+
           {current.precip_24h_in != null && current.precip_24h_in > 0 && (
             <div className="gauge-card__precip">
               💧 Last 24h precip:{' '}
@@ -238,11 +250,25 @@ export default function GaugeCard({ gauge }) {
             const hasFlow = history.some((h) => h.streamflow_cfs != null);
             const sparkKey = hasFlow ? 'streamflow_cfs' : 'gage_height_ft';
             const sparkLabel = hasFlow ? '7-day flow trend' : '7-day gage height trend';
+            const vals = history.map((h) => h[sparkKey]).filter((v) => v != null);
+            if (vals.length < 2) return null;
+            const lo = Math.min(...vals);
+            const hi = Math.max(...vals);
+            const fmtV = (v) =>
+              hasFlow ? Math.round(v).toLocaleString('en-US') : v.toFixed(1);
+            // Dashed action-stage reference line (stage plots only — flow
+            // plots can't share the ft-based threshold axis).
+            const refValue = !hasFlow && flood_stages ? flood_stages.action : null;
             return (
               <div className="gauge-card__sparkline-wrap">
-                <div className="gauge-card__sparkline-label">{sparkLabel}</div>
+                <div className="gauge-card__sparkline-label">
+                  <span>{sparkLabel}</span>
+                  <span className="gauge-card__sparkline-range">
+                    {fmtV(lo)}–{fmtV(hi)} {hasFlow ? 'cfs' : 'ft'}
+                  </span>
+                </div>
                 <div className="gauge-card__sparkline">
-                  <Sparkline data={history} valueKey={sparkKey} />
+                  <Sparkline data={history} valueKey={sparkKey} refValue={refValue} />
                 </div>
               </div>
             );
