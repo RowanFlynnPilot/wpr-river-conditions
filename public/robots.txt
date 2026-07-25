@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rowanflynnpilot.github.io/wpr-river-conditions/sitemap.xml

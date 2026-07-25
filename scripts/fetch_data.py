@@ -8,11 +8,13 @@ Output: src/data/river-data.json (consumed by the React frontend)
 Schedule: Every 30 minutes via GitHub Actions
 """
 
+import hashlib
 import json
 import logging
 import re
 import sys
 from datetime import datetime, timedelta, timezone
+from http.client import HTTPException  # IncompleteRead, BadStatusLine, …
 from pathlib import Path
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
@@ -29,6 +31,7 @@ log = logging.getLogger(__name__)
 GAUGES = [
     {
         "id": "05398000",
+        "nwm_reach": "14732372",
         "nws_lid": "ROTW3",  # NWS gauge ID for NWPS API
         "name": "Wisconsin River at Rothschild",
         "short_name": "WI River — Rothschild",
@@ -45,6 +48,7 @@ GAUGES = [
     },
     {
         "id": "05398100",
+        "nwm_reach": None,  # not an NWM output reach (no NLDI comid)
         "nws_lid": None,  # No NWS match — Mosinee
         "name": "Wisconsin River at Mosinee",
         "short_name": "WI River — Mosinee",
@@ -56,6 +60,7 @@ GAUGES = [
     },
     {
         "id": "05396000",
+        "nwm_reach": "14730490",
         "nws_lid": "RIBW3",
         "name": "Big Rib River at Rib Falls",
         "short_name": "Big Rib River",
@@ -72,17 +77,22 @@ GAUGES = [
     },
     {
         "id": "05396500",
+        "nwm_reach": "14730636",
         "nws_lid": None,  # No NWS match
         "name": "Little Rib River near Wausau",
         "short_name": "Little Rib River",
         "lat": 44.9472,
         "lon": -89.6793,
         "flood_stages": None,
+        # USGS has published no IV or DV data here for over a year
+        # (verified 2026-07) — surface that honestly instead of "seasonal".
+        "discontinued": True,
         "description": "Tributary flowing through western Marathon County",
         "has_temp_sensor": False,
     },
     {
         "id": "05397500",
+        "nwm_reach": "14730982",
         "nws_lid": "KELW3",
         "name": "Eau Claire River near Kelly",
         "short_name": "Eau Claire River",
@@ -99,6 +109,7 @@ GAUGES = [
     },
     {
         "id": "05399500",
+        "nwm_reach": "14733228",
         "nws_lid": "STRW3",
         "name": "Big Eau Pleine River at Stratford",
         "short_name": "Big Eau Pleine",
@@ -115,6 +126,7 @@ GAUGES = [
     },
     {
         "id": "05394500",
+        "nwm_reach": "14727088",
         "nws_lid": None,
         "name": "Prairie River near Merrill",
         "short_name": "Prairie River",
@@ -126,6 +138,7 @@ GAUGES = [
     },
     {
         "id": "05395000",
+        "nwm_reach": "14728798",
         "nws_lid": "RRLW3",
         "name": "Wisconsin River at Merrill",
         "short_name": "WI River — Merrill",
@@ -137,6 +150,7 @@ GAUGES = [
     },
     {
         "id": "05400760",
+        "nwm_reach": "14705230",
         "nws_lid": "WIRW3",
         "name": "Wisconsin River at Wisconsin Rapids",
         "short_name": "WI River — Wisconsin Rapids",
@@ -148,6 +162,7 @@ GAUGES = [
     },
     {
         "id": "04074950",
+        "nwm_reach": "9027875",
         "nws_lid": "LGLW3",
         "name": "Wolf River at Langlade",
         "short_name": "Wolf River — Langlade",
@@ -159,6 +174,7 @@ GAUGES = [
     },
     {
         "id": "05400625",
+        "nwm_reach": "14704932",
         "nws_lid": None,
         "name": "Little Plover River near Plover",
         "short_name": "Little Plover River",
@@ -170,6 +186,7 @@ GAUGES = [
     },
     {
         "id": "04080798",
+        "nwm_reach": "9033255",
         "nws_lid": None,
         "name": "Tomorrow River near Nelsonville",
         "short_name": "Tomorrow River",
@@ -177,6 +194,70 @@ GAUGES = [
         "lon": -89.3380,
         "flood_stages": None,
         "description": "Class I trout stream destination near Stevens Point",
+        "has_temp_sensor": False,
+    },
+    # --- Eight-county expansion (Shawano, Taylor, Oneida) ---
+    {
+        "id": "04077400",
+        "nwm_reach": "9031831",
+        "nws_lid": "SHAW3",
+        "name": "Wolf River near Shawano",
+        "short_name": "Wolf River — Shawano",
+        "lat": 44.8358,
+        "lon": -88.6250,
+        "flood_stages": {"action": 10.0, "minor": 11.0, "moderate": 13.0, "major": 15.0},
+        # USGS's real-time record here ended in 2001 — the live stage comes
+        # from the NWS sensor via NWPS (reading + history + flood status).
+        "stage_from_nws": True,
+        "description": "Lower Wolf at Shawano — the basin's flood-forecast point",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "04077630",
+        "nwm_reach": "9030269",
+        "nws_lid": "MORW3",
+        "name": "Red River at Morgan Road near Morgan",
+        "short_name": "Red River",
+        "lat": 44.8980,
+        "lon": -88.8443,
+        "flood_stages": {"action": 9.0, "minor": 11.0, "moderate": 14.0, "major": 16.5},
+        "description": "Wolf tributary near Gresham — live water-temp sensor",
+        "has_temp_sensor": True,
+    },
+    {
+        "id": "04078500",
+        "nwm_reach": "9030507",
+        "nws_lid": "EMBW3",
+        "name": "Embarrass River near Embarrass",
+        "short_name": "Embarrass River",
+        "lat": 44.7247,
+        "lon": -88.7361,
+        "flood_stages": {"action": 6.0, "minor": 7.0, "moderate": 9.5, "major": 11.5},
+        "description": "Wolf tributary draining western Shawano County",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "05363600",
+        "nwm_reach": None,  # not an NWM output reach
+        "nws_lid": "YELW3",
+        "name": "North Fork Yellow River near Perkinstown",
+        "short_name": "NF Yellow River",
+        "lat": 45.2986,
+        "lon": -90.5965,
+        "flood_stages": None,
+        "description": "Chequamegon country stream in Taylor County",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "05391000",
+        "nwm_reach": "13396483",
+        "nws_lid": "LTKW3",
+        "name": "Wisconsin River at Rainbow Lake near Lake Tomahawk",
+        "short_name": "WI River — Rainbow",
+        "lat": 45.8305,
+        "lon": -89.5524,
+        "flood_stages": {"action": 4.0, "minor": 6.0, "moderate": 7.5, "major": 9.0},
+        "description": "Headwaters gauge at Rainbow Reservoir — the top of the system",
         "has_temp_sensor": False,
     },
 ]
@@ -187,18 +268,35 @@ PARAM_STREAMFLOW = "00060"    # cfs (cubic feet per second)
 PARAM_WATER_TEMP = "00010"    # °C
 PARAM_PRECIP = "00045"        # inches (incremental precipitation)
 
-# NWS alert zones for Marathon County
-NWS_ZONE = "WIC073"  # Marathon County zone code
-NWS_COUNTY_FIPS = "055073"
+# NWS county alert zones — the eight-county WPR coverage area:
+# Langlade, Lincoln, Marathon, Oneida, Portage, Shawano, Taylor, Wood
+NWS_ZONES = [
+    "WIC067",  # Langlade
+    "WIC069",  # Lincoln
+    "WIC073",  # Marathon
+    "WIC085",  # Oneida
+    "WIC097",  # Portage
+    "WIC115",  # Shawano
+    "WIC119",  # Taylor
+    "WIC141",  # Wood
+]
 
-# WVIC reservoirs to track (scraped from wvic.com)
+# WVIC reservoirs to track (scraped from wvic.com).
+# lat/lon are the NWS NWPS gauge locations at each impoundment
+# (LTKW3, WILW3, SPDW3, EPLW3, RRVW3) \u2014 used for the overview-map pins.
 WVIC_RESERVOIRS = [
-    {"name": "Rainbow Reservoir", "slug": "rainbow", "description": "Controls upper WI River flow north of Wausau"},
-    {"name": "Willow Reservoir", "slug": "willow", "description": "Regulates Willow Creek into the WI River"},
-    {"name": "Spirit Reservoir", "slug": "spirit", "description": "Feeds Spirit River \u2014 affects WI River levels"},
-    {"name": "Eau Pleine Reservoir", "slug": "eau-pleine", "description": "Directly feeds Big Eau Pleine gauge at Stratford"},
-    {"name": "Rice Reservoir", "slug": "rice", "description": "Controls Rice Creek flow into the WI River"},
-    {"name": "Lake Wausau", "slug": "lake-wausau", "description": "Run-of-river impoundment in downtown Wausau"},
+    {"name": "Rainbow Reservoir", "slug": "rainbow", "lat": 45.8306, "lon": -89.5522,
+     "description": "Controls upper WI River flow north of Wausau"},
+    {"name": "Willow Reservoir", "slug": "willow", "lat": 45.7128, "lon": -89.8450,
+     "description": "Regulates Willow Creek into the WI River"},
+    {"name": "Spirit Reservoir", "slug": "spirit", "lat": 45.4381, "lon": -89.7425,
+     "description": "Feeds Spirit River \u2014 affects WI River levels"},
+    {"name": "Eau Pleine Reservoir", "slug": "eau-pleine", "lat": 44.7331, "lon": -89.7581,
+     "description": "Directly feeds Big Eau Pleine gauge at Stratford"},
+    {"name": "Rice Reservoir", "slug": "rice", "lat": 45.5397, "lon": -89.7478,
+     "description": "Controls Rice Creek flow into the WI River"},
+    {"name": "Lake Wausau", "slug": "lake-wausau", "lat": 44.9420, "lon": -89.6560,
+     "description": "Run-of-river impoundment in downtown Wausau"},
 ]
 
 # Wausau area coordinates (used for weather/solunar APIs)
@@ -473,6 +571,134 @@ FISHING_REFERENCE = {
         ],
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
     },
+    # --- Eight-county expansion waters (researched + source-verified 2026-07;
+    #     regulations reflect the 2026-27 season) ---
+    "04077400": {  # Wolf River near Shawano
+        "species": ["Walleye", "White Bass", "Smallmouth Bass", "Channel Catfish", "Northern Pike"],
+        "trout_class": None,
+        "tips": {
+            "Walleye": "Winnebago-system walleye push upriver to the Shawano dam in April — but the dam-to-County-M reach is a posted no-fishing refuge Apr 1–May 1. Drift jig-and-minnow along current seams downstream of the County M bridge until it reopens.",
+            "White Bass": "The famous run follows the walleye — May, classically peaking around Mother's Day. Small white jigs or inline spinners below the dam and off the Sturgeon Park pier.",
+            "Smallmouth Bass": "DNR-designated smallmouth water through town — float it in summer, working tubes and topwater around boulders and wood.",
+            "Channel Catfish": "Summer nights on cut bait or crawlers in the deeper holes below town; the river below the dam is open year-round for most species.",
+            "Northern Pike": "Work spoons and large minnows along the weedy margins of the millpond above the dam in spring and fall.",
+        },
+        "regulations": [
+            {"species": "Walleye", "rule": "Winnebago-system rules below the dam — 3 daily with new-for-2026 slot protection; check DNR for your reach"},
+            {"species": "Sturgeon", "rule": "Closed to fishing on the river — the spring spawning run at the dam is watch-only"},
+            {"species": "All species", "rule": "No fishing from the dam down to the Cty M bridge, Apr 1 until the Friday before the general opener (spring refuge)"},
+            {"species": "Bass", "rule": '14" min, 5 daily (special smallmouth rules on some stretches — check DNR)'},
+        ],
+        "season_notes": [
+            "Lake sturgeon spawn below the Shawano dam in the second half of April — thousands come to watch at Sturgeon Park. Look, don't cast.",
+            "Spring walleye run late March–April; white bass peak mid-May; catfish take the deep holes June–August",
+        ],
+        "access_points": [
+            {"name": "Sturgeon Park", "directions": "801 S. Water St., Shawano — east bank below the dam; accessible fishing pier", "lat": 44.7745, "lng": -88.6192},
+            {"name": "Huckleberry Harbor", "directions": "220 N. Sawyer St., Shawano — main city landing above the dam; 4 ramps", "lat": 44.7849, "lng": -88.6087},
+            {"name": "Judd Park", "directions": "1121 S. Water St., Shawano — small landing below the dam (city launch permit)", "lat": 44.7706, "lng": -88.6199},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/fisheriesmanagement/Public/LakeRegulation/Details?WBIC=241300&WBIC_NAME=Wolf+River",
+    },
+    "04077630": {  # Red River at Morgan Road near Gresham
+        "species": ["Brook Trout", "Smallmouth Bass", "Panfish"],
+        "trout_class": "Class II (mainstem at the gauge; West Branch nearby is Class I)",
+        "tips": {
+            "Brook Trout": "Wild brookies through this reach — small inline spinners or attractor dries through the pockets. Harvest is allowed from opening day under the new season structure.",
+            "Smallmouth Bass": "The Morgan Road area doubles as DNR-designated wadable smallmouth water — wade small craws and topwater through pocketwater after the May 2 opener.",
+            "Panfish": "The Gresham millponds (Upper and Lower Red lakes) a few miles downstream hold bluegill, crappie, bass, and pike with public landings.",
+        },
+        "regulations": [
+            {"species": "Trout", "rule": "5 daily, any length (county base rule) · season Apr 4 – Oct 15"},
+            {"species": "Bass", "rule": '14" min, 5 daily'},
+            {"species": "Sturgeon", "rule": "Closed — no fishing"},
+        ],
+        "season_notes": [
+            "Below Gresham the river turns into a Class I–III whitewater paddling run (Monastery Falls, Ziemer's Falls) — the trout-and-smallmouth water is upstream, around the gauge",
+        ],
+        "access_points": [
+            {"name": "Morgan Road bridge", "directions": "Road crossing at the gauge, ~5 mi NW of Gresham — carry-in/wade access; stay in the streambed", "lat": 44.8980, "lng": -88.8443},
+            {"name": "Lower Red Lake Dam landing", "directions": "Off Lower Lake Rd, Gresham — parking, sandy put-in below the dam; carry-in", "lat": 44.8416, "lng": -88.7607},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/fisheriesmanagement/Public/LakeRegulation/Details?WBIC=326600&WBIC_NAME=Red+River",
+    },
+    "04078500": {  # Embarrass River near Embarrass
+        "species": ["Smallmouth Bass", "Northern Pike", "Freshwater Drum"],
+        "trout_class": None,
+        "tips": {
+            "Smallmouth Bass": "The boulder gardens from the Pella dam down past Range Line Road are classic wade-and-float smallmouth water — tubes, craws, and topwater in summer low flows.",
+            "Northern Pike": "After the May 2 opener, throw spinnerbaits and large minnows through the slower sloughs and deeper outside bends between the rapids.",
+            "Freshwater Drum": "Underrated scrap on light tackle — bottom-fish crawlers in the deeper holes in summer.",
+        },
+        "regulations": [
+            {"species": "All species", "rule": "No fishing from the Cty M bridge down to Rangeline Rd (the gauge), Apr 1 until the Friday before the general opener (spring refuge)"},
+            {"species": "Walleye", "rule": "3 daily; minimum length varies by stretch — check DNR for your reach"},
+            {"species": "Sturgeon", "rule": "Closed — no fishing; Winnebago sturgeon run the Embarrass in spring and are watch-only"},
+        ],
+        "season_notes": [
+            "The reach just upstream of the gauge is a posted spring refuge protecting spawners (Apr 1 – May 1)",
+            "Trout live in the cold tributaries (Beaver Creek Class I, Mill Creek Class II), not the mainstem here",
+        ],
+        "access_points": [
+            {"name": "Old Mill Park at Pella Dam", "directions": "Island between the millrace and dam at Pella Pond, ~3.5 mi upstream of the gauge; carry-in", "lat": 44.7395, "lng": -88.8043},
+            {"name": "Hayman Falls County Park", "directions": "N4386 Hayman Falls Ln, Town of Pella — 54-acre county park with rapids, trails, restroom", "lat": 44.7457, "lng": -88.8443},
+            {"name": "East Range Line Road bridge", "directions": "Crossing at the gauge — informal carry-in via the path NW of the bridge", "lat": 44.7247, "lng": -88.7361},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/fisheriesmanagement/Public/LakeRegulation/Details?WBIC=291900&WBIC_NAME=Embarrass+River",
+    },
+    "05363600": {  # NF Yellow River near Perkinstown → Chequamegon Waters Flowage
+        "species": ["Largemouth Bass", "Northern Pike", "Panfish", "Walleye"],
+        "trout_class": None,
+        "tips": {
+            "Largemouth Bass": "The nearby Chequamegon Waters Flowage is largemouth-first water — work weedlines and wild-rice bay edges with soft plastics or spinnerbaits.",
+            "Northern Pike": "Pike are the flowage's top predator (DNR surveys found no musky) — larger baits along weed edges, and the bite holds through the ice season.",
+            "Panfish": "Bluegill and crappie are the flowage's bread and butter — shallow wood early in the season, weed edges in summer.",
+            "Walleye": "DNR calls walleye here a rare bonus fish — the few caught tend to be large.",
+        },
+        "regulations": [
+            {"species": "Panfish", "rule": "25 daily in total, no size limit (Chequamegon Waters Flowage)"},
+            {"species": "Largemouth Bass", "rule": '14" min, 5 daily'},
+            {"species": "Northern Pike", "rule": "No size limit, 5 daily"},
+            {"species": "Walleye", "rule": '15" min with 20–24" protected slot, 3 daily'},
+        ],
+        "season_notes": [
+            "The gauge stream itself is not DNR-classified trout water — the local fishery is Chequamegon Waters Flowage (Miller Dam), ~8 miles southwest",
+            "Ice fishing is popular on the flowage; an aeration system runs Jan–March near the Yellow River inlet",
+        ],
+        "access_points": [
+            {"name": "Chippewa Recreation Area (USFS)", "directions": "East shore of Chequamegon Waters Flowage via CTH M and Forest Rd 1417 — ramp, campground, fish-cleaning station", "lat": 45.2225, "lng": -90.7056},
+            {"name": "Miller Dam boat landing", "directions": "County ramp at the Miller Dam outlet (rebuilt 2024)", "lat": 45.2006, "lng": -90.7110},
+            {"name": "Yellow River Road bridge", "directions": "Informal carry-in/wading access at the gauge crossing on national forest land", "lat": 45.2986, "lng": -90.5965},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/lakes/lakepages/LakeDetail.aspx?wbic=2160700",
+    },
+    "05391000": {  # Wisconsin River at Rainbow Lake / Rainbow Flowage
+        "species": ["Walleye", "Musky", "Smallmouth Bass", "Northern Pike", "Panfish"],
+        "trout_class": None,
+        "tips": {
+            "Walleye": "May is the peak month by DNR creel data — work sand flats and drop-offs early; most keepers run 15–17 inches.",
+            "Musky": "Dark-stained water warms early, making Rainbow a strong early-season pick — and with a special 50-inch minimum it fishes as trophy catch-and-release water.",
+            "Smallmouth Bass": "July is the busiest smallmouth month here; DNR netting found most adults over 14 inches. Catch-and-release only until June 19.",
+            "Northern Pike": "Pike action holds through the ice — January is the peak month. Tip-ups with large shiners over weed flats.",
+            "Panfish": "Crappie are the most-sought panfish and genuinely quality-sized (11-inch average in the last creel survey) — wood and creek arms after ice-out.",
+        },
+        "regulations": [
+            {"species": "Musky", "rule": '50" min on Rainbow Flowage (special — statewide is 40"), 1 daily'},
+            {"species": "Walleye", "rule": '15" min, 20–24" protected slot (one over 24"), 3 daily'},
+            {"species": "Bass", "rule": 'Catch-and-release until June 19, then 14" min, 5 daily'},
+            {"species": "Panfish", "rule": "25 daily in total, no size limit"},
+        ],
+        "season_notes": [
+            "WVIC storage reservoir: drawn down to minimum pool by late March, then refilled with snowmelt — expect low water and mudflats in early spring",
+            "Fishable ice typically forms mid-December; winter creel shows strong pike, perch, and walleye effort",
+        ],
+        "access_points": [
+            {"name": "Rainbow Dam Recreation Area (WVIC)", "directions": "At the dam on the southeast corner — landing, restrooms, shore fishing; the USGS gauge is here", "lat": 45.8305, "lng": -89.5524},
+            {"name": "County D Landing", "directions": "Off CTH D on the southeast shore, just east of the D/E intersection", "lat": 45.8355, "lng": -89.5476},
+            {"name": "Stormy Camp landing", "directions": "Northwest shore at the end of Stormy Landing Rd (primitive; location approximate)", "lat": 45.8680, "lng": -89.5900},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/lakes/lakepages/LakeDetail.aspx?wbic=1595300",
+    },
 }
 
 # Upcoming local events — manually updated as events are announced
@@ -480,44 +706,36 @@ FISHING_REFERENCE = {
 # To remove: delete the dict. Events with past dates are auto-filtered out.
 LOCAL_EVENTS = [
     {
-        "date": "2026-04-04",
-        "name": "Inland Trout Harvest Opener",
-        "description": "NEW for 2026 \u2014 harvest season opens a full month earlier than prior years. Streams, springs, and spring ponds. Requires inland trout stamp.",
-        "location": "Statewide",
-        "category": "season",
-        "url": "https://wausaupilotandreview.com/2026/03/18/dnr-reminds-anglers-of-new-opening-day-for-inland-trout-harvest-season/",
-    },
-    {
-        "date": "2026-05-01",
-        "name": "Governor's Fishing Opener",
-        "description": "Annual tradition since 1966. Family Fishing Day on May 2 at Lake Hayward Beach with casting lessons, DNR Fishmobile, and giveaways.",
-        "location": "Nelson Lake, Hayward",
-        "category": "event",
-        "url": None,
-    },
-    {
-        "date": "2026-05-02",
-        "name": "General Inland Fishing Opener",
-        "description": "Walleye, bass (harvest), northern pike, and musky all open statewide. Musky opener now unified to May 2 (previously Memorial Day weekend for northern zone).",
+        "date": "2026-10-15",
+        "name": "Inland Trout Season Closes",
+        "description": "Last day for inland trout on streams, springs, and spring ponds. The Prairie, Little Plover, Tomorrow, and Rib tributaries all close until the early catch-and-release period in January.",
         "location": "Statewide",
         "category": "season",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
     },
     {
-        "date": "2026-05-02",
-        "name": "Lake & Pond Trout Season Opens",
-        "description": "Trout season on inland lakes and ponds. The earlier April 4 opener applies only to streams and springs.",
+        "date": "2027-01-02",
+        "name": "Early Catch-and-Release Trout Opens",
+        "description": "Winter catch-and-release trout season opens on inland streams (artificials only). Runs until the regular season opener in April.",
         "location": "Statewide",
         "category": "season",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
     },
     {
-        "date": "2026-06-06",
-        "name": "Free Fishing Weekend",
-        "description": "June 6\u20137. No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
+        "date": "2027-01-16",
+        "name": "Free Fishing Weekend (Winter)",
+        "description": "Jan. 16\u201317. No license or stamps required for residents or nonresidents \u2014 a great weekend to try ice fishing. All bag/size limits still apply.",
         "location": "Statewide",
         "category": "event",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend",
+    },
+    {
+        "date": "2027-03-07",
+        "name": "General Inland Game Fish Season Closes",
+        "description": "Walleye, northern pike, and most inland game fish seasons close on inland waters until the first Saturday in May.",
+        "location": "Statewide",
+        "category": "season",
+        "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
     },
 ]
 
@@ -535,7 +753,7 @@ def fetch_json(url: str, timeout: int = 30) -> dict | list | None:
     try:
         with urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
-    except (URLError, HTTPError, json.JSONDecodeError, TimeoutError, OSError) as e:
+    except (URLError, HTTPError, HTTPException, json.JSONDecodeError, TimeoutError, OSError) as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
@@ -549,7 +767,7 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
     try:
         with urlopen(req, timeout=timeout) as resp:
             return resp.read().decode("utf-8")
-    except (URLError, HTTPError, TimeoutError, OSError) as e:
+    except (URLError, HTTPError, HTTPException, TimeoutError, OSError) as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
@@ -558,10 +776,15 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
 # USGS: Current instantaneous values
 # ---------------------------------------------------------------------------
 
-def fetch_usgs_current(gauge_id: str) -> dict:
+def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
     """
     Fetch the most recent instantaneous values for a gauge.
     Uses the legacy WaterServices IV endpoint (still active, migrating to OGC API).
+
+    Some gauges publish on a lag (Wolf at Shawano's computed flow can trail
+    by days) — when the 24h window comes back empty, retry over a week and
+    take the latest available reading; its timestamp shows the true age.
+
     Returns: {gage_height_ft, streamflow_cfs, water_temp_f, timestamp}
     """
     site = gauge_id
@@ -569,7 +792,7 @@ def fetch_usgs_current(gauge_id: str) -> dict:
     # period=P1D so precip can be summed over the past 24h
     url = (
         f"https://waterservices.usgs.gov/nwis/iv/"
-        f"?format=json&sites={site}&parameterCd={params}&period=P1D&siteStatus=all"
+        f"?format=json&sites={site}&parameterCd={params}&period={period}&siteStatus=all"
     )
     data = fetch_json(url)
     if not data:
@@ -604,25 +827,35 @@ def fetch_usgs_current(gauge_id: str) -> dict:
                     result["precip_24h_in"] = round(total, 2)
                 continue
 
-            # For all other params, take the latest reading
+            # For all other params, take the latest reading.
+            # NB: compare against None, not truthiness — a reading of exactly 0
+            # (dry-bed flow, low-water stage) is valid data, not "missing".
             latest = values[-1]
             val = float(latest["value"]) if latest["value"] != "" else None
             if val is not None and val < 0:
                 val = None
 
             if var_code == PARAM_GAGE_HEIGHT:
-                result["gage_height_ft"] = round(val, 2) if val else None
+                result["gage_height_ft"] = round(val, 2) if val is not None else None
             elif var_code == PARAM_STREAMFLOW:
-                result["streamflow_cfs"] = round(val, 1) if val else None
+                result["streamflow_cfs"] = round(val, 1) if val is not None else None
             elif var_code == PARAM_WATER_TEMP:
-                result["water_temp_f"] = round(val * 9 / 5 + 32, 1) if val else None
-                result["water_temp_c"] = round(val, 1) if val else None
+                result["water_temp_f"] = round(val * 9 / 5 + 32, 1) if val is not None else None
+                result["water_temp_c"] = round(val, 1) if val is not None else None
 
             ts_str = latest.get("dateTime")
             if ts_str and (result["timestamp"] is None or ts_str > result["timestamp"]):
                 result["timestamp"] = ts_str
     except (KeyError, IndexError, TypeError) as e:
         log.warning(f"Error parsing USGS data for {gauge_id}: {e}")
+
+    # Lagged reporter: nothing in the last 24h — widen to a week. (Only
+    # height/flow trigger this; the precip sum never rides the fallback
+    # because its gauge reports continuously.)
+    if (period == "P1D"
+            and result.get("gage_height_ft") is None
+            and result.get("streamflow_cfs") is None):
+        return fetch_usgs_current(gauge_id, period="P7D")
 
     return result
 
@@ -644,15 +877,17 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
     if not data:
         return []
 
-    # Build a dict keyed by hour (YYYY-MM-DD HH) to sample ~hourly
+    # Downsample 15-min data to 2-hour buckets: everything that consumes
+    # history (200px sparklines, the map replay's 2h steps, the ±4h trend
+    # window) is indistinguishable at this cadence, and it halves the
+    # payload's largest component.
     by_hour: dict[str, dict] = {}
     try:
         for ts in data["value"]["timeSeries"]:
             var_code = ts["variable"]["variableCode"][0]["value"]
             for val_entry in ts["values"][0]["value"]:
                 dt_str = val_entry["dateTime"]
-                # Key by hour to downsample 15-min data to hourly
-                hour_key = dt_str[:13]  # "YYYY-MM-DDTHH"
+                hour_key = f"{dt_str[:11]}{int(dt_str[11:13]) // 2 * 2:02d}"
                 raw = val_entry["value"]
                 val = float(raw) if raw != "" else None
                 if val is not None and val < 0:
@@ -662,13 +897,103 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
                     by_hour[hour_key] = {"timestamp": dt_str}
 
                 if var_code == PARAM_GAGE_HEIGHT:
-                    by_hour[hour_key]["gage_height_ft"] = round(val, 2) if val else None
+                    by_hour[hour_key]["gage_height_ft"] = round(val, 2) if val is not None else None
                 elif var_code == PARAM_STREAMFLOW:
-                    by_hour[hour_key]["streamflow_cfs"] = round(val, 1) if val else None
+                    by_hour[hour_key]["streamflow_cfs"] = round(val, 1) if val is not None else None
     except (KeyError, IndexError, TypeError) as e:
         log.warning(f"Error parsing USGS history for {gauge_id}: {e}")
 
     return sorted(by_hour.values(), key=lambda x: x["timestamp"])
+
+
+# ---------------------------------------------------------------------------
+# USGS: "Today vs. normal" flow comparison (daily statistics service)
+# ---------------------------------------------------------------------------
+
+# Percentile buckets follow the USGS WaterWatch convention.
+def _flow_class(flow: float, p10, p25, p75, p90) -> str:
+    if p90 is not None and flow > p90:
+        return "much_above"
+    if p75 is not None and flow > p75:
+        return "above"
+    if p10 is not None and flow < p10:
+        return "much_below"
+    if p25 is not None and flow < p25:
+        return "below"
+    return "normal"
+
+
+def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
+    """
+    Compare current streamflow to the long-term normal for today's calendar day,
+    using the USGS daily statistics service (period-of-record percentiles per
+    month/day). Comparison is flow-based (00060) because gage-height stats are
+    unreliable across datum revisions.
+
+    Returns {median_cfs, class, pct_of_median, years, count} or None.
+    """
+    if current_flow is None:
+        return None
+
+    url = (
+        f"https://waterservices.usgs.gov/nwis/stat/"
+        f"?sites={gauge_id}&statReportType=daily&statTypeCd=all"
+        f"&parameterCd={PARAM_STREAMFLOW}&format=rdb"
+    )
+    text = fetch_text(url)
+    if not text:
+        return None
+
+    today = datetime.now()
+    header = None
+    target = None
+    for line in text.splitlines():
+        if line.startswith("#") or not line.strip():
+            continue
+        cols = line.split("\t")
+        if header is None:
+            header = cols
+            continue
+        # The line right after the header is an RDB format spec ("5s", "12n"…) — skip it.
+        if re.match(r"^\d+[sn]$", cols[0]):
+            continue
+        idx = {name: i for i, name in enumerate(header)}
+        try:
+            if (int(cols[idx["month_nu"]]) == today.month
+                    and int(cols[idx["day_nu"]]) == today.day):
+                target = (cols, idx)
+                break
+        except (KeyError, ValueError, IndexError):
+            continue
+
+    if not target:
+        return None
+
+    cols, idx = target
+
+    def col(name):
+        try:
+            raw = cols[idx[name]].strip()
+            return float(raw) if raw not in ("", None) else None
+        except (KeyError, ValueError, IndexError):
+            return None
+
+    p10, p25, p50, p75, p90 = (col("p10_va"), col("p25_va"),
+                               col("p50_va"), col("p75_va"), col("p90_va"))
+    if p50 is None:
+        return None
+
+    begin_yr = cols[idx["begin_yr"]] if "begin_yr" in idx else None
+    end_yr = cols[idx["end_yr"]] if "end_yr" in idx else None
+    count = col("count_nu")
+
+    return {
+        "median_cfs": round(p50),
+        "class": _flow_class(current_flow, p10, p25, p75, p90),
+        "pct_of_median": round(current_flow / p50 * 100) if p50 else None,
+        "years": f"{begin_yr}–{end_yr}" if begin_yr and end_yr else None,
+        "count": int(count) if count else None,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -677,12 +1002,13 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
 
 def fetch_nws_alerts() -> list[dict]:
     """
-    Fetch active outdoor-relevant alerts from the NWS API for Marathon County.
+    Fetch active outdoor-relevant alerts from the NWS API for every county
+    with a monitored gauge (Langlade, Lincoln, Marathon, Portage, Wood).
     Includes flood, severe weather, fire weather, winter, and wind events —
     anything an outdoor or floodplain audience would want to know about.
     Returns: [{event, category, headline, severity, description, onset, expires, url}, ...]
     """
-    url = f"https://api.weather.gov/alerts/active?zone={NWS_ZONE}"
+    url = f"https://api.weather.gov/alerts/active?zone={','.join(NWS_ZONES)}"
     data = fetch_json(url)
     if not data:
         return []
@@ -712,6 +1038,11 @@ def fetch_nws_alerts() -> list[dict]:
             if category is None:
                 continue
 
+            # County zones this alert covers (drives map shading) — only
+            # the counties we monitor, from the alert's UGC geocodes.
+            ugc = (props.get("geocode") or {}).get("UGC") or []
+            zones = [z for z in ugc if z in NWS_ZONES]
+
             alerts.append({
                 "event": props.get("event"),
                 "category": category,
@@ -722,6 +1053,7 @@ def fetch_nws_alerts() -> list[dict]:
                 "onset": props.get("onset"),
                 "expires": props.get("expires"),
                 "url": props.get("@id"),
+                "zones": zones,
             })
     except (KeyError, TypeError) as e:
         log.warning(f"Error parsing NWS alerts: {e}")
@@ -757,6 +1089,41 @@ def fetch_nws_flood_category(nws_lid: str) -> dict:
     except (KeyError, TypeError) as e:
         log.warning(f"Error parsing NWS NWPS data for {nws_lid}: {e}")
         return {}
+
+
+def fetch_nws_stage_history(nws_lid: str, days: int = 7) -> list[dict]:
+    """
+    Observed stage history from NWPS (~30 days of 15-min data), shaped
+    like the USGS history entries and downsampled to hourly. Used for
+    gauges whose USGS real-time record is dead but whose NWS sensor is
+    live (Wolf at Shawano).
+    Returns: [{timestamp, gage_height_ft}, ...]
+    """
+    if not nws_lid:
+        return []
+    url = f"https://api.water.noaa.gov/nwps/v1/gauges/{nws_lid}/stageflow/observed"
+    data = fetch_json(url)
+    points = (data or {}).get("data") or []
+    if not points:
+        return []
+
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    by_hour: dict[str, dict] = {}
+    for p in points:
+        t = p.get("validTime")
+        v = p.get("primary")
+        if not t or v is None or v <= -999:
+            continue
+        if t < cutoff:
+            continue
+        # 2-hour buckets, matching fetch_usgs_history's cadence
+        hour_key = f"{t[:11]}{int(t[11:13]) // 2 * 2:02d}"
+        if hour_key not in by_hour:
+            by_hour[hour_key] = {
+                "timestamp": t,
+                "gage_height_ft": round(float(v), 2),
+            }
+    return sorted(by_hour.values(), key=lambda x: x["timestamp"])
 
 
 def fetch_nws_forecast(nws_lid: str) -> dict | None:
@@ -798,6 +1165,162 @@ def fetch_nws_forecast(nws_lid: str) -> dict | None:
     except (KeyError, TypeError, ValueError) as e:
         log.warning(f"Error parsing NWS forecast for {nws_lid}: {e}")
         return None
+
+
+# ---------------------------------------------------------------------------
+# NOAA National Water Model: flow forecasts via the NWPS /reaches API
+# ---------------------------------------------------------------------------
+
+def _nwm_points(obj) -> list:
+    """Tolerantly extract [{validTime, flow}, ...] from an NWM payload —
+    the series may sit at .data, .series.data, .shortRange.series.data,
+    or .mediumRange.mean.data depending on the query."""
+    if not isinstance(obj, dict):
+        return []
+    if isinstance(obj.get("data"), list):
+        return obj["data"]
+    for key in ("series", "mean", "shortRange", "mediumRange"):
+        if key in obj:
+            pts = _nwm_points(obj[key])
+            if pts:
+                return pts
+    return []
+
+
+def _nwm_reference_time(obj) -> str | None:
+    if not isinstance(obj, dict):
+        return None
+    if obj.get("referenceTime"):
+        return obj["referenceTime"]
+    for key in ("series", "mean", "shortRange", "mediumRange"):
+        if key in obj:
+            r = _nwm_reference_time(obj[key])
+            if r:
+                return r
+    return None
+
+
+def _parse_iso(t: str):
+    try:
+        return datetime.fromisoformat(t.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+
+
+# Circuit breaker: when the NWM endpoint is down (it 504s/hangs under
+# load), don't burn 15s × 22 calls of cron time — after two gauges fail
+# completely, skip the rest of this run. Resets on any success.
+_NWM_CONSECUTIVE_FAILURES = 0
+_NWM_BREAKER_LIMIT = 2
+
+
+def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
+    """
+    National Water Model flow forecast for an NHD reach, via NWPS.
+    short_range = 18 hourly points (refreshed hourly); medium_range =
+    ~8.5-day ensemble mean (refreshed every 6h). Values are ft³/s;
+    -9999 sentinels mark non-forecast reaches. The endpoint 504s under
+    load, so timeouts are short and any failure degrades to None.
+
+    Returns {points, issued, peak_cfs, peak_time, next24h_pct,
+    horizon_h, class} or None.
+    """
+    global _NWM_CONSECUTIVE_FAILURES
+    if not reach_id:
+        return None
+    if _NWM_CONSECUTIVE_FAILURES >= _NWM_BREAKER_LIMIT:
+        return None
+
+    base = f"https://api.water.noaa.gov/nwps/v1/reaches/{reach_id}/streamflow?series="
+    short = fetch_json(base + "short_range", timeout=15)
+    medium = fetch_json(base + "medium_range", timeout=15)
+
+    if short is None and medium is None:
+        _NWM_CONSECUTIVE_FAILURES += 1
+        if _NWM_CONSECUTIVE_FAILURES == _NWM_BREAKER_LIMIT:
+            log.warning("NWM API unreachable — skipping remaining forecast fetches this run")
+        return None
+    _NWM_CONSECUTIVE_FAILURES = 0
+
+    def parse(payload):
+        out = []
+        for p in _nwm_points(payload or {}):
+            t, f = p.get("validTime"), p.get("flow")
+            if t is None or f is None:
+                continue
+            try:
+                f = float(f)
+            except (TypeError, ValueError):
+                continue
+            if f < 0:  # -9999 sentinel
+                continue
+            out.append((t, f))
+        return out
+
+    s_pts = parse(short)
+    m_pts = parse(medium)
+    if not s_pts and not m_pts:
+        return None
+
+    # Full hourly short-range, then every 3rd medium-range point beyond it,
+    # capped at +72h — enough for the card summary and the sparkline tail
+    # without bloating the payload.
+    last_short = s_pts[-1][0] if s_pts else ""
+    merged = list(s_pts)
+    kept = 0
+    for t, f in m_pts:
+        if t <= last_short:
+            continue
+        if kept % 3 == 0:
+            merged.append((t, f))
+        kept += 1
+    if not merged:
+        return None
+
+    t0 = _parse_iso(merged[0][0])
+    if t0:
+        merged = [
+            (t, f) for t, f in merged
+            if (_parse_iso(t) or t0) - t0 <= timedelta(hours=72)
+        ]
+
+    peak_t, peak_f = max(merged, key=lambda x: x[1])
+    result = {
+        "points": [{"t": t, "cfs": round(f, 1)} for t, f in merged],
+        "issued": _nwm_reference_time(short) or _nwm_reference_time(medium),
+        "peak_cfs": round(peak_f, 1),
+        "peak_time": peak_t,
+    }
+
+    # Card summary: % change at the farthest forecast point within 24h,
+    # against the current observed flow — or, for gauges with no live flow
+    # (Wolf at Shawano, discontinued sites), against the model's own first
+    # point. Thresholds match the observed-trend math.
+    baseline = None
+    baseline_kind = None
+    if current_flow is not None and current_flow > 0:
+        baseline = current_flow
+        baseline_kind = "observed"
+    elif merged[0][1] > 0:
+        baseline = merged[0][1]
+        baseline_kind = "model"
+
+    if baseline and t0:
+        best = None
+        for t, f in merged:
+            dt = _parse_iso(t)
+            if dt and dt - t0 <= timedelta(hours=24):
+                best = (dt, f)
+        if best:
+            pct = (best[1] - baseline) / baseline * 100
+            result["next24h_pct"] = round(pct)
+            result["horizon_h"] = max(1, round((best[0] - t0).total_seconds() / 3600))
+            result["class"] = (
+                "rising" if pct > 15 else "falling" if pct < -15 else "steady"
+            )
+            result["baseline"] = baseline_kind
+
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -856,6 +1379,8 @@ def fetch_wvic_reservoirs() -> list[dict]:
             "name": res["name"],
             "slug": slug,
             "description": res.get("description", ""),
+            "lat": res.get("lat"),
+            "lon": res.get("lon"),
             "feet_below_max": feet_below_max,
             "has_data": feet_below_max is not None,
             "source_url": WVIC_DATA_URL,
@@ -863,6 +1388,69 @@ def fetch_wvic_reservoirs() -> list[dict]:
         })
 
     return results
+
+
+# ---------------------------------------------------------------------------
+# WVIC: Daily water temperatures (Flow-Temperature Summary)
+# ---------------------------------------------------------------------------
+
+WVIC_TEMP_URL = "https://wvic.com/tridentxml/FlowTempSummary/FlowTempSummary.html"
+
+# Data-row cell layout (11 cells, first empty):
+# [_, day, Rhinelander flow, temp, Tomahawk flow, Grandmother flow, temp,
+#  Rothschild flow, temp, Wisconsin Rapids flow, temp]
+WVIC_TEMP_COLUMNS = {8: "05398000", 10: "05400760"}  # temp cell → USGS gauge
+
+_MONTHS = {m: i for i, m in enumerate(
+    ["January", "February", "March", "April", "May", "June", "July",
+     "August", "September", "October", "November", "December"], start=1)}
+
+
+def fetch_wvic_water_temp() -> dict:
+    """
+    Daily water temperatures from WVIC's Flow-Temperature Summary page —
+    the only water-temp source in the basin (USGS operates no active temp
+    gauges here). The page is a static month-to-date HTML table; the last
+    populated row is the most recent daily reading.
+
+    Returns {usgs_gauge_id: {"temp_f": float, "date": "YYYY-MM-DD"}}.
+    Provisional data — attribute WVIC wherever it surfaces.
+    """
+    html = fetch_text(WVIC_TEMP_URL)
+    if not html:
+        return {}
+
+    # The header text is split across nested tags in the raw source —
+    # strip markup before searching for e.g. "July - 2026".
+    text = re.sub(r"<[^>]+>|&nbsp;?", " ", html)
+    m = re.search(r"(January|February|March|April|May|June|July|August|"
+                  r"September|October|November|December)\s*-\s*(\d{4})", text)
+    if not m:
+        log.warning("WVIC temp page: month header not found")
+        return {}
+    month, year = _MONTHS[m.group(1)], int(m.group(2))
+
+    latest: dict = {}
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S | re.I):
+        cells = [re.sub(r"<[^>]+>|&nbsp;?", " ", c).strip()
+                 for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.S | re.I)]
+        if len(cells) < 11:
+            continue
+        try:
+            day = int(cells[1])
+        except ValueError:
+            continue
+        for idx, gid in WVIC_TEMP_COLUMNS.items():
+            try:
+                temp = float(cells[idx].replace(",", ""))
+            except ValueError:
+                continue
+            if 32.0 <= temp <= 95.0:  # physical sanity for °F river water
+                latest[gid] = {
+                    "temp_f": temp,
+                    "date": f"{year}-{month:02d}-{day:02d}",
+                }
+    return latest
 
 
 # ---------------------------------------------------------------------------
@@ -1393,7 +1981,9 @@ def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, m
     """
     Pick up to 3 lure recommendations for this gauge given current
     water temp (or seasonal fallback) and month. Returns one suggestion
-    per species, ordered by best fit.
+    per species, ordered by best fit. Among equally good options the pick
+    rotates on a per-gauge seed so neighboring cards with the same species
+    mix don't all show the same three lures.
     """
     fishing = gauge_record.get("fishing") or {}
     species_list = fishing.get("species") or []
@@ -1403,32 +1993,31 @@ def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, m
     if current_temp_f is None:
         current_temp_f = SEASONAL_WATER_TEMP_F.get(month, 50)
 
-    candidates = []
+    # Deterministic per-gauge seed. Hash the id string — raw USGS ids in one
+    # basin share digit patterns (all end in 0, several equal mod 3), so
+    # arithmetic on the number itself doesn't separate neighboring gauges.
+    gauge_id = str(gauge_record.get("id") or "")
+    seed = int(hashlib.md5(gauge_id.encode()).hexdigest()[:8], 16)
+
+    picks = []
     for species in species_list:
+        scored = []
         for entry in LURE_DATABASE.get(species, []):
             in_season = month in entry["months"]
             t_low, t_high = entry["temp_range"]
             temp_ok = t_low <= current_temp_f <= t_high
             score = (2 if in_season else 0) + (2 if temp_ok else 0)
-            if score == 0:
-                continue
-            candidates.append({
-                "species": species,
-                "lure": entry["lure"],
-                "why": entry["why"],
-                "score": score,
-            })
-
-    candidates.sort(key=lambda x: -x["score"])
-    seen, top = set(), []
-    for c in candidates:
-        if c["species"] in seen:
+            if score > 0:
+                scored.append((score, entry))
+        if not scored:
             continue
-        seen.add(c["species"])
-        top.append({"species": c["species"], "lure": c["lure"], "why": c["why"]})
-        if len(top) >= 3:
-            break
-    return top
+        best = max(s for s, _ in scored)
+        ties = [e for s, e in scored if s == best]
+        pick = ties[seed % len(ties)]
+        picks.append({"species": species, "lure": pick["lure"], "why": pick["why"], "score": best})
+
+    picks.sort(key=lambda x: -x["score"])
+    return [{"species": p["species"], "lure": p["lure"], "why": p["why"]} for p in picks[:3]]
 
 
 # Community engagement links (static)
@@ -1637,11 +2226,28 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
         if status in ("minor", "moderate", "major"):
             flood_alerts.append(f"{name} at {status} flood stage")
 
-        if current_cfs is None or len(history) < 24:
+        if current_cfs is None or len(history) < 8:
             continue
 
-        # Compare current to 24h ago
-        old_flows = [h["streamflow_cfs"] for h in history[:24] if h.get("streamflow_cfs")]
+        # Compare current to ~24h ago: average the readings 20–28 hours
+        # before the latest entry. Timestamp-based so it survives cadence
+        # changes in the history sampling (currently 2-hour buckets).
+        try:
+            last_t = datetime.fromisoformat(history[-1]["timestamp"])
+        except (KeyError, ValueError):
+            continue
+        old_flows = []
+        for h in history:
+            flow = h.get("streamflow_cfs")
+            if flow is None:
+                continue
+            try:
+                t = datetime.fromisoformat(h["timestamp"])
+            except (KeyError, ValueError):
+                continue
+            age_h = (last_t - t).total_seconds() / 3600
+            if 20 <= age_h <= 28:
+                old_flows.append(flow)
         if not old_flows:
             continue
 
@@ -1655,20 +2261,28 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
         else:
             stable.append(name)
 
-    # Build summary sentences
+    # Build summary sentences. With 17 gauges a full name list turns into a
+    # wall of text \u2014 cap at three names and count the rest.
+    def name_list(parts):
+        if len(parts) <= 3:
+            return ", ".join(parts)
+        return ", ".join(parts[:3]) + f", and {len(parts) - 3} more"
+
     if flood_alerts:
         summaries.append("\u26a0\ufe0f " + "; ".join(flood_alerts) + ".")
 
     if rising:
         parts = [f"{n} (+{p}%)" for n, p in rising]
-        summaries.append(f"Flows rising on {', '.join(parts)} \u2014 expect reduced clarity.")
+        summaries.append(f"Flows rising on {name_list(parts)} \u2014 expect reduced clarity.")
 
     if falling:
         parts = [f"{n} (-{p}%)" for n, p in falling]
-        summaries.append(f"Flows dropping on {', '.join(parts)} \u2014 clarity improving.")
+        summaries.append(f"Flows dropping on {name_list(parts)} \u2014 clarity improving.")
 
     if stable and not rising and not falling:
         summaries.append("All gauges showing stable flows \u2014 consistent conditions.")
+    elif len(stable) > 3:
+        summaries.append(f"Flows steady on the other {len(stable)} gauges.")
     elif stable:
         summaries.append(f"Stable on {', '.join(stable)}.")
 
@@ -1714,10 +2328,11 @@ def generate_daily_summary(
         bt = fishing_conditions["best_time"]
         best_window = f"{fmt_time(bt['start'])}\u2013{fmt_time(bt['end'])}"
 
-    # Rating word
+    # Rating word — buckets match the widget UI (FishingConditions.jsx):
+    # 7–8 renders as "Good" there, 9+ as "Excellent". Keep the article in sync.
     rating_word = ""
     if rating:
-        rating_word = "poor" if rating <= 3 else "fair" if rating <= 5 else "good" if rating <= 7 else "excellent"
+        rating_word = "poor" if rating <= 3 else "fair" if rating <= 6 else "good" if rating <= 8 else "excellent"
 
     # Pressure description
     pressure_desc = {"falling": "falling", "rising": "rising", "steady": "steady"}.get(pressure_trend, "")
@@ -1910,12 +2525,30 @@ def main():
     log.info("Starting WPR River Conditions data fetch...")
     now = datetime.now(timezone.utc).isoformat()
 
+    # Daily WVIC water temps (one fetch covers Rothschild + Wisconsin Rapids)
+    log.info("Fetching WVIC water temperatures...")
+    wvic_temps = fetch_wvic_water_temp()
+    if wvic_temps:
+        log.info("  " + ", ".join(
+            f"{gid}: {v['temp_f']:.0f}F ({v['date']})" for gid, v in wvic_temps.items()))
+
     # Fetch gauge data
     gauges_data = []
     for gauge in GAUGES:
         log.info(f"Fetching USGS data for {gauge['name']} ({gauge['id']})...")
         current = fetch_usgs_current(gauge["id"])
+
+        # WVIC's daily reading fills the water-temp gap where USGS has no
+        # sensor — set before lure suggestions so they use the real temp.
+        wt = wvic_temps.get(gauge["id"])
+        if wt and current.get("water_temp_f") is None:
+            current["water_temp_f"] = wt["temp_f"]
+            current["water_temp_source"] = "wvic"
+            current["water_temp_date"] = wt["date"]
         history = fetch_usgs_history(gauge["id"], days=7)
+        normal_flow = fetch_usgs_normal_flow(gauge["id"], current.get("streamflow_cfs"))
+        if normal_flow:
+            log.info(f"  Flow vs normal: {normal_flow['pct_of_median']}% of median ({normal_flow['class']})")
 
         # Fetch NWS flood category + forecast crest if available
         nws_data = {}
@@ -1927,10 +2560,43 @@ def main():
             if nws_forecast:
                 log.info(f"    Forecast: peak {nws_forecast['peak_stage']} {nws_forecast['units']} at {nws_forecast['peak_time']}")
 
-        # Determine flood status using NWS thresholds
+        # NWS-sourced stage for gauges whose USGS real-time record is dead
+        # (Wolf at Shawano): reading + hourly history from NWPS.
+        if gauge.get("stage_from_nws"):
+            nws_stage = nws_data.get("nws_observed_stage")
+            nws_unit = (nws_data.get("nws_observed_unit") or "").lower()
+            if (current.get("gage_height_ft") is None
+                    and nws_stage is not None and nws_stage > -999
+                    and nws_unit.startswith("ft")):
+                current["gage_height_ft"] = round(float(nws_stage), 2)
+                current["stage_source"] = "nws"
+                if not current.get("timestamp"):
+                    current["timestamp"] = nws_data.get("nws_valid_time")
+            if not history:
+                history = fetch_nws_stage_history(gauge["nws_lid"])
+
+        # National Water Model flow forecast — the everyday "will it rise?"
+        # signal (the NWS crest forecast above only appears in high water).
+        nwm_forecast = None
+        if gauge.get("nwm_reach"):
+            nwm_forecast = fetch_nwm_forecast(gauge["nwm_reach"], current.get("streamflow_cfs"))
+            if nwm_forecast and nwm_forecast.get("next24h_pct") is not None:
+                log.info(
+                    f"  NWM: {nwm_forecast['next24h_pct']:+d}% over next "
+                    f"{nwm_forecast['horizon_h']}h"
+                )
+
+        # Determine flood status using NWS thresholds.
+        # Some gauges (Wolf at Shawano) report flow only through USGS —
+        # fall back to the NWS-observed stage so thresholds still work.
         flood_status = "normal"
         stages = gauge.get("flood_stages")
         gage_ht = current.get("gage_height_ft")
+        if gage_ht is None:
+            nws_stage = nws_data.get("nws_observed_stage")
+            nws_unit = (nws_data.get("nws_observed_unit") or "").lower()
+            if nws_stage is not None and nws_stage > -999 and nws_unit.startswith("ft"):
+                gage_ht = nws_stage
 
         if stages and gage_ht is not None:
             if gage_ht >= stages["major"]:
@@ -1953,10 +2619,13 @@ def main():
             "flood_stages": stages,
             "flood_status": flood_status,
             "has_temp_sensor": gauge.get("has_temp_sensor", False),
+            "discontinued": gauge.get("discontinued", False),
             "nws_flood_category": nws_data.get("nws_flood_category"),
             "nws_forecast": nws_forecast,
+            "nwm_forecast": nwm_forecast,
             "current": current,
             "history": history,
+            "normal_flow": normal_flow,
             "fishing": FISHING_REFERENCE.get(gauge["id"]),
             "recreation": compute_recreation_status(gauge["id"], current.get("streamflow_cfs")),
             "water_clarity": estimate_water_clarity(current.get("streamflow_cfs"), history),
@@ -1971,7 +2640,7 @@ def main():
         gauges_data.append(gauge_record)
 
     # Fetch NWS alerts
-    log.info("Fetching NWS flood alerts for Marathon County...")
+    log.info("Fetching NWS alerts for all gauge counties...")
     alerts = fetch_nws_alerts()
 
     # Fetch WVIC reservoirs
@@ -1989,6 +2658,13 @@ def main():
         **sun,
         **solunar,
     } if (weather or sun or solunar) else None
+
+    # Surface the Rothschild water temp on the fishing panel too.
+    if fishing_conditions is not None and wvic_temps.get("05398000"):
+        wt = wvic_temps["05398000"]
+        fishing_conditions["water_temp_f"] = wt["temp_f"]
+        fishing_conditions["water_temp_station"] = "Wisconsin River at Rothschild"
+        fishing_conditions["water_temp_date"] = wt["date"]
 
     # Fetch weather forecast
     log.info("Fetching 5-day weather forecast...")
@@ -2013,7 +2689,7 @@ def main():
     # Assemble output
     output = {
         "generated_at": now,
-        "region": "Central Wisconsin \u2014 Marathon County",
+        "region": "Central Wisconsin",
         "gauges": gauges_data,
         "alerts": alerts,
         "reservoirs": reservoirs,
@@ -2056,8 +2732,12 @@ def main():
     out_path.write_text(json.dumps(output, indent=2))
     log.info(f"Wrote {out_path} ({out_path.stat().st_size:,} bytes)")
 
-    # Summary
-    active_gauges = sum(1 for g in gauges_data if g["current"].get("gage_height_ft"))
+    # Summary — "reporting" matches the frontend's hasData (height OR flow)
+    active_gauges = sum(
+        1 for g in gauges_data
+        if g["current"].get("gage_height_ft") is not None
+        or g["current"].get("streamflow_cfs") is not None
+    )
     log.info(
         f"Done: {active_gauges}/{len(gauges_data)} gauges reporting, "
         f"{len(alerts)} active alerts"

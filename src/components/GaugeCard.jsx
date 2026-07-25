@@ -2,14 +2,8 @@ import React from 'react';
 import Sparkline from './Sparkline';
 import GaugeMap from './GaugeMap';
 import LureSuggestions from './LureSuggestions';
-
-function getTempStyle(tempF) {
-  if (tempF < 40) return { color: '#78716c', label: 'Cold' };
-  if (tempF < 55) return { color: '#2563eb', label: 'Cool' };
-  if (tempF < 70) return { color: '#0d7377', label: 'Moderate' };
-  if (tempF < 80) return { color: '#ea580c', label: 'Warm' };
-  return { color: '#dc2626', label: 'Hot' };
-}
+import { computeTrend, trendText, TREND_ARROWS } from '../utils/trend';
+import { tempStyle } from '../utils/waterTemp';
 
 const REC_STATUS = {
   ideal:     { label: 'Ideal', css: 'ideal' },
@@ -38,6 +32,32 @@ const STATUS_CONFIG = {
   moderate: { label: 'Moderate',    css: 'moderate' },
   major:    { label: 'Major Flood', css: 'major' },
 };
+
+// "Today vs. normal" flow comparison, keyed to the USGS WaterWatch percentile class.
+const NORMAL_FLOW_CONFIG = {
+  much_below: { label: 'Much below normal', css: 'much-below' },
+  below:      { label: 'Below normal',      css: 'below' },
+  normal:     { label: 'Near normal',       css: 'normal' },
+  above:      { label: 'Above normal',      css: 'above' },
+  much_above: { label: 'Much above normal', css: 'much-above' },
+};
+
+function VsNormal({ normalFlow }) {
+  if (!normalFlow || normalFlow.pct_of_median == null) return null;
+  const conf = NORMAL_FLOW_CONFIG[normalFlow.class] || NORMAL_FLOW_CONFIG.normal;
+  const tip = normalFlow.years
+    ? `${normalFlow.years} median for today: ${normalFlow.median_cfs.toLocaleString('en-US')} cfs`
+      + (normalFlow.count ? ` (${normalFlow.count} years of record)` : '')
+    : undefined;
+  return (
+    <div className={`gauge-card__vs-normal vs-normal--${conf.css}`} title={tip}>
+      <span className="vs-normal__dot" aria-hidden="true" />
+      <span className="vs-normal__text">
+        {conf.label} · <strong>{normalFlow.pct_of_median}%</strong> of normal flow for today
+      </span>
+    </div>
+  );
+}
 
 function formatCrestTime(isoStr) {
   if (!isoStr) return '';
@@ -109,11 +129,14 @@ function FloodStageBar({ gageHeight, stages }) {
   );
 }
 
+const TREND_LABELS = { rising: 'Rising', falling: 'Falling', steady: 'Steady' };
+
 export default function GaugeCard({ gauge }) {
   const { current, history, flood_status, flood_stages } = gauge;
   const hasData = current && (current.gage_height_ft != null || current.streamflow_cfs != null);
   const statusConf = STATUS_CONFIG[flood_status] || STATUS_CONFIG.normal;
   const isAlert = ['minor', 'moderate', 'major'].includes(flood_status);
+  const trend = computeTrend(history);
 
   const cardClass = [
     'gauge-card',
@@ -156,16 +179,22 @@ export default function GaugeCard({ gauge }) {
               </div>
             )}
             {current.water_temp_f != null && (() => {
-              const tempStyle = getTempStyle(current.water_temp_f);
+              const ts = tempStyle(current.water_temp_f);
+              const fromWvic = current.water_temp_source === 'wvic';
+              const tip = fromWvic
+                ? `Daily reading from WVIC (provisional)${current.water_temp_date ? `, ${current.water_temp_date}` : ''}`
+                : undefined;
               return (
-                <div className="gauge-card__reading">
-                  <div className="gauge-card__reading-label">Water Temp</div>
-                  <div className="gauge-card__reading-value" style={{ color: tempStyle.color }}>
+                <div className="gauge-card__reading" title={tip}>
+                  <div className="gauge-card__reading-label">
+                    Water Temp{fromWvic ? ' (daily)' : ''}
+                  </div>
+                  <div className="gauge-card__reading-value" style={{ color: ts.color }}>
                     {formatNumber(current.water_temp_f, 1)}
                     <span className="gauge-card__reading-unit">&deg;F</span>
                   </div>
-                  <div className="gauge-card__temp-context" style={{ color: tempStyle.color }}>
-                    {tempStyle.label}
+                  <div className="gauge-card__temp-context" style={{ color: ts.color }}>
+                    {ts.label}
                   </div>
                 </div>
               );
@@ -180,6 +209,31 @@ export default function GaugeCard({ gauge }) {
             )}
           </div>
 
+          {trend && (
+            <div className={`gauge-card__trend gauge-card__trend--${trend.dir}`}>
+              <span aria-hidden="true">{TREND_ARROWS[trend.dir]}</span>{' '}
+              {TREND_LABELS[trend.dir]}
+              {trend.dir !== 'steady' && <> · {trendText(trend)}</>}
+            </div>
+          )}
+
+          {gauge.nwm_forecast?.next24h_pct != null && (() => {
+            const f = gauge.nwm_forecast;
+            const dir = f.class || 'steady';
+            const tip = `NOAA National Water Model flow forecast${
+              f.issued ? `, issued ${formatCrestTime(f.issued)}` : ''
+            }${f.baseline === 'model' ? ' (vs. the model’s own current estimate)' : ''}`;
+            return (
+              <div className={`gauge-card__nwm gauge-card__nwm--${dir}`} title={tip}>
+                <span className="gauge-card__nwm-label">Forecast</span>
+                <span aria-hidden="true">{TREND_ARROWS[dir]}</span>{' '}
+                {dir === 'steady'
+                  ? 'Holding steady'
+                  : `${f.next24h_pct > 0 ? '+' : ''}${f.next24h_pct}% next ${f.horizon_h || 24}h`}
+              </div>
+            );
+          })()}
+
           {current.precip_24h_in != null && current.precip_24h_in > 0 && (
             <div className="gauge-card__precip">
               💧 Last 24h precip:{' '}
@@ -188,6 +242,8 @@ export default function GaugeCard({ gauge }) {
               </span>
             </div>
           )}
+
+          <VsNormal normalFlow={gauge.normal_flow} />
 
           <FloodStageBar gageHeight={current.gage_height_ft} stages={flood_stages} />
 
@@ -209,12 +265,37 @@ export default function GaugeCard({ gauge }) {
           {history && history.length >= 2 && (() => {
             const hasFlow = history.some((h) => h.streamflow_cfs != null);
             const sparkKey = hasFlow ? 'streamflow_cfs' : 'gage_height_ft';
-            const sparkLabel = hasFlow ? '7-day flow trend' : '7-day gage height trend';
+            const vals = history.map((h) => h[sparkKey]).filter((v) => v != null);
+            if (vals.length < 2) return null;
+            // NWM forecast tail (flow plots only — the forecast is cfs).
+            const fcst = hasFlow
+              ? (gauge.nwm_forecast?.points || []).map((p) => p.cfs)
+              : [];
+            const sparkLabel = hasFlow
+              ? (fcst.length ? '7-day flow + 3-day outlook' : '7-day flow trend')
+              : '7-day gage height trend';
+            const lo = Math.min(...vals, ...(fcst.length ? fcst : [Infinity]));
+            const hi = Math.max(...vals, ...(fcst.length ? fcst : [-Infinity]));
+            const fmtV = (v) =>
+              hasFlow ? Math.round(v).toLocaleString('en-US') : v.toFixed(1);
+            // Dashed action-stage reference line (stage plots only — flow
+            // plots can't share the ft-based threshold axis).
+            const refValue = !hasFlow && flood_stages ? flood_stages.action : null;
             return (
               <div className="gauge-card__sparkline-wrap">
-                <div className="gauge-card__sparkline-label">{sparkLabel}</div>
+                <div className="gauge-card__sparkline-label">
+                  <span>{sparkLabel}</span>
+                  <span className="gauge-card__sparkline-range">
+                    {fmtV(lo)}–{fmtV(hi)} {hasFlow ? 'cfs' : 'ft'}
+                  </span>
+                </div>
                 <div className="gauge-card__sparkline">
-                  <Sparkline data={history} valueKey={sparkKey} />
+                  <Sparkline
+                    data={history}
+                    valueKey={sparkKey}
+                    refValue={refValue}
+                    forecast={fcst}
+                  />
                 </div>
               </div>
             );
@@ -261,8 +342,22 @@ export default function GaugeCard({ gauge }) {
       ) : (
         <div className="gauge-card__reading gauge-card__reading--na">
           <div className="gauge-card__reading-value" style={{ color: 'var(--wpr-ink-muted)', fontSize: '1rem' }}>No current data</div>
+          {gauge.nwm_forecast?.next24h_pct != null && (
+            <div className={`gauge-card__nwm gauge-card__nwm--${gauge.nwm_forecast.class || 'steady'}`}
+              title="NOAA National Water Model estimate — no live gauge here">
+              <span className="gauge-card__nwm-label">Model</span>
+              <span aria-hidden="true">{TREND_ARROWS[gauge.nwm_forecast.class || 'steady']}</span>{' '}
+              {gauge.nwm_forecast.class === 'steady'
+                ? 'Holding steady'
+                : `${gauge.nwm_forecast.next24h_pct > 0 ? '+' : ''}${gauge.nwm_forecast.next24h_pct}% next ${gauge.nwm_forecast.horizon_h || 24}h`}
+            </div>
+          )}
           <div className="gauge-card__timestamp" style={{ marginTop: '0.5rem' }}>
-            <span>Gauge may be offline or seasonal</span>
+            <span>
+              {gauge.discontinued
+                ? 'USGS discontinued real-time reporting at this site'
+                : 'Gauge may be offline or seasonal'}
+            </span>
             <a className="gauge-card__usgs-link" href={gauge.usgs_url} target="_blank" rel="noopener noreferrer">USGS &rarr;</a>
           </div>
         </div>

@@ -13,6 +13,15 @@ export default function FishingReference({ gauges }) {
         className="section-header fishing-ref__header"
         style={{ marginTop: 'var(--space-lg)', cursor: 'pointer' }}
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setExpanded(!expanded);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
       >
         <h2 className="section-header__title">Fishing Guide</h2>
         <span className="section-header__subtitle">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { tempStyle } from '../utils/waterTemp';
 
 const TREND_CONFIG = {
   falling: { arrow: '\u2198', color: 'var(--status-normal)', label: 'Falling' },
@@ -145,6 +146,24 @@ export default function FishingConditions({ conditions }) {
                   {conditions.uv_index}
                   <span className="fishing-panel__trend" style={{ color: uv.color }}>
                     {uv.label}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+          {conditions.water_temp_f != null && (() => {
+            const ts = tempStyle(conditions.water_temp_f);
+            const tip = `${conditions.water_temp_station || 'Wisconsin River'} — daily reading from WVIC (provisional)${
+              conditions.water_temp_date ? `, ${conditions.water_temp_date}` : ''
+            }`;
+            return (
+              <div className="fishing-panel__item" title={tip}>
+                <div className="fishing-panel__label">Water Temp · Rothschild</div>
+                <div className="fishing-panel__value">
+                  {conditions.water_temp_f}
+                  <span className="fishing-panel__unit">&deg;F</span>
+                  <span className="fishing-panel__trend" style={{ color: ts.color }}>
+                    {ts.label}
                   </span>
                 </div>
               </div>

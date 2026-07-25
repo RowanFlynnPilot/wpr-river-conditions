@@ -23,7 +23,7 @@ const STATUS_CONFIG = {
   },
   normal: {
     label: 'All Clear',
-    detail: 'River levels normal across Marathon County.',
+    detail: 'River levels normal across central Wisconsin.',
     mod: 'normal',
   },
 };
@@ -56,7 +56,7 @@ export default function HeroStatus({ gauges }) {
 
   return (
     <div className={`hero-status hero-status--${conf.mod}`} role="status">
-      <div className="hero-status__label">Current Status · Marathon County</div>
+      <div className="hero-status__label">Current Status · Central Wisconsin</div>
       <div className="hero-status__headline">{conf.label}</div>
       <div className="hero-status__detail">{detail}</div>
     </div>

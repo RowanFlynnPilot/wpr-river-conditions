@@ -1,17 +1,29 @@
 import React from 'react';
 
+// Wisconsin River main-stem gauges, upstream → downstream.
+const WI_RIVER_IDS = new Set(['05391000', '05395000', '05398000', '05398100', '05400760']);
+
+// Wolf River basin: main stem (Langlade, Shawano) + Red and Embarrass tribs.
+const WOLF_BASIN_IDS = new Set(['04074950', '04077400', '04077630', '04078500']);
+
 const FILTERS = [
   { key: 'all',      label: 'All' },
   { key: 'flooding', label: 'Flooding' },
-  { key: 'fishing',  label: 'Fishing' },
+  { key: 'river',    label: 'Wisconsin River' },
+  { key: 'wolf',     label: 'Wolf Basin' },
+  { key: 'trout',    label: 'Trout Streams' },
   { key: 'paddling', label: 'Paddling' },
 ];
 
 // Predicates that decide whether a gauge belongs in each filter.
+// Groupings match how readers think about the water, and each one
+// actually narrows the list (the old "Fishing" chip matched everything).
 export const FILTER_PREDICATES = {
   all:      () => true,
   flooding: (g) => ['action', 'minor', 'moderate', 'major'].includes(g.flood_status),
-  fishing:  (g) => !!g.fishing,
+  river:    (g) => WI_RIVER_IDS.has(g.id),
+  wolf:     (g) => WOLF_BASIN_IDS.has(g.id),
+  trout:    (g) => !!g.fishing?.trout_class,
   paddling: (g) => !!g.recreation,
 };
 
