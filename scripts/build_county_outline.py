@@ -19,7 +19,10 @@ ZONES = {
     "WIC067": "Langlade",
     "WIC069": "Lincoln",
     "WIC073": "Marathon",
+    "WIC085": "Oneida",
     "WIC097": "Portage",
+    "WIC115": "Shawano",
+    "WIC119": "Taylor",
     "WIC141": "Wood",
 }
 

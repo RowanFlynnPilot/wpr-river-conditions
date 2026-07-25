@@ -193,6 +193,70 @@ GAUGES = [
         "description": "Class I trout stream destination near Stevens Point",
         "has_temp_sensor": False,
     },
+    # --- Eight-county expansion (Shawano, Taylor, Oneida) ---
+    {
+        "id": "04077400",
+        "nwm_reach": "9031831",
+        "nws_lid": "SHAW3",
+        "name": "Wolf River near Shawano",
+        "short_name": "Wolf River — Shawano",
+        "lat": 44.8358,
+        "lon": -88.6250,
+        "flood_stages": {"action": 10.0, "minor": 11.0, "moderate": 13.0, "major": 15.0},
+        # USGS's real-time record here ended in 2001 — the live stage comes
+        # from the NWS sensor via NWPS (reading + history + flood status).
+        "stage_from_nws": True,
+        "description": "Lower Wolf at Shawano — the basin's flood-forecast point",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "04077630",
+        "nwm_reach": "9030269",
+        "nws_lid": "MORW3",
+        "name": "Red River at Morgan Road near Morgan",
+        "short_name": "Red River",
+        "lat": 44.8980,
+        "lon": -88.8443,
+        "flood_stages": {"action": 9.0, "minor": 11.0, "moderate": 14.0, "major": 16.5},
+        "description": "Wolf tributary near Gresham — live water-temp sensor",
+        "has_temp_sensor": True,
+    },
+    {
+        "id": "04078500",
+        "nwm_reach": "9030507",
+        "nws_lid": "EMBW3",
+        "name": "Embarrass River near Embarrass",
+        "short_name": "Embarrass River",
+        "lat": 44.7247,
+        "lon": -88.7361,
+        "flood_stages": {"action": 6.0, "minor": 7.0, "moderate": 9.5, "major": 11.5},
+        "description": "Wolf tributary draining western Shawano County",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "05363600",
+        "nwm_reach": None,  # not an NWM output reach
+        "nws_lid": "YELW3",
+        "name": "North Fork Yellow River near Perkinstown",
+        "short_name": "NF Yellow River",
+        "lat": 45.2986,
+        "lon": -90.5965,
+        "flood_stages": None,
+        "description": "Chequamegon country stream in Taylor County",
+        "has_temp_sensor": False,
+    },
+    {
+        "id": "05391000",
+        "nwm_reach": "13396483",
+        "nws_lid": "LTKW3",
+        "name": "Wisconsin River at Rainbow Lake near Lake Tomahawk",
+        "short_name": "WI River — Rainbow",
+        "lat": 45.8305,
+        "lon": -89.5524,
+        "flood_stages": {"action": 4.0, "minor": 6.0, "moderate": 7.5, "major": 9.0},
+        "description": "Headwaters gauge at Rainbow Reservoir — the top of the system",
+        "has_temp_sensor": False,
+    },
 ]
 
 # USGS parameter codes
@@ -201,10 +265,18 @@ PARAM_STREAMFLOW = "00060"    # cfs (cubic feet per second)
 PARAM_WATER_TEMP = "00010"    # °C
 PARAM_PRECIP = "00045"        # inches (incremental precipitation)
 
-# NWS county alert zones covering every monitored gauge:
-# Langlade (Wolf R), Lincoln (Merrill), Marathon (Wausau area),
-# Portage (Little Plover, Tomorrow R), Wood (Wisconsin Rapids)
-NWS_ZONES = ["WIC067", "WIC069", "WIC073", "WIC097", "WIC141"]
+# NWS county alert zones — the eight-county WPR coverage area:
+# Langlade, Lincoln, Marathon, Oneida, Portage, Shawano, Taylor, Wood
+NWS_ZONES = [
+    "WIC067",  # Langlade
+    "WIC069",  # Lincoln
+    "WIC073",  # Marathon
+    "WIC085",  # Oneida
+    "WIC097",  # Portage
+    "WIC115",  # Shawano
+    "WIC119",  # Taylor
+    "WIC141",  # Wood
+]
 
 # WVIC reservoirs to track (scraped from wvic.com).
 # lat/lon are the NWS NWPS gauge locations at each impoundment
@@ -573,10 +645,15 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
 # USGS: Current instantaneous values
 # ---------------------------------------------------------------------------
 
-def fetch_usgs_current(gauge_id: str) -> dict:
+def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
     """
     Fetch the most recent instantaneous values for a gauge.
     Uses the legacy WaterServices IV endpoint (still active, migrating to OGC API).
+
+    Some gauges publish on a lag (Wolf at Shawano's computed flow can trail
+    by days) — when the 24h window comes back empty, retry over a week and
+    take the latest available reading; its timestamp shows the true age.
+
     Returns: {gage_height_ft, streamflow_cfs, water_temp_f, timestamp}
     """
     site = gauge_id
@@ -584,7 +661,7 @@ def fetch_usgs_current(gauge_id: str) -> dict:
     # period=P1D so precip can be summed over the past 24h
     url = (
         f"https://waterservices.usgs.gov/nwis/iv/"
-        f"?format=json&sites={site}&parameterCd={params}&period=P1D&siteStatus=all"
+        f"?format=json&sites={site}&parameterCd={params}&period={period}&siteStatus=all"
     )
     data = fetch_json(url)
     if not data:
@@ -640,6 +717,14 @@ def fetch_usgs_current(gauge_id: str) -> dict:
                 result["timestamp"] = ts_str
     except (KeyError, IndexError, TypeError) as e:
         log.warning(f"Error parsing USGS data for {gauge_id}: {e}")
+
+    # Lagged reporter: nothing in the last 24h — widen to a week. (Only
+    # height/flow trigger this; the precip sum never rides the fallback
+    # because its gauge reports continuously.)
+    if (period == "P1D"
+            and result.get("gage_height_ft") is None
+            and result.get("streamflow_cfs") is None):
+        return fetch_usgs_current(gauge_id, period="P7D")
 
     return result
 
@@ -871,6 +956,40 @@ def fetch_nws_flood_category(nws_lid: str) -> dict:
     except (KeyError, TypeError) as e:
         log.warning(f"Error parsing NWS NWPS data for {nws_lid}: {e}")
         return {}
+
+
+def fetch_nws_stage_history(nws_lid: str, days: int = 7) -> list[dict]:
+    """
+    Observed stage history from NWPS (~30 days of 15-min data), shaped
+    like the USGS history entries and downsampled to hourly. Used for
+    gauges whose USGS real-time record is dead but whose NWS sensor is
+    live (Wolf at Shawano).
+    Returns: [{timestamp, gage_height_ft}, ...]
+    """
+    if not nws_lid:
+        return []
+    url = f"https://api.water.noaa.gov/nwps/v1/gauges/{nws_lid}/stageflow/observed"
+    data = fetch_json(url)
+    points = (data or {}).get("data") or []
+    if not points:
+        return []
+
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    by_hour: dict[str, dict] = {}
+    for p in points:
+        t = p.get("validTime")
+        v = p.get("primary")
+        if not t or v is None or v <= -999:
+            continue
+        if t < cutoff:
+            continue
+        hour_key = t[:13]
+        if hour_key not in by_hour:
+            by_hour[hour_key] = {
+                "timestamp": t,
+                "gage_height_ft": round(float(v), 2),
+            }
+    return sorted(by_hour.values(), key=lambda x: x["timestamp"])
 
 
 def fetch_nws_forecast(nws_lid: str) -> dict | None:
@@ -2275,6 +2394,21 @@ def main():
             if nws_forecast:
                 log.info(f"    Forecast: peak {nws_forecast['peak_stage']} {nws_forecast['units']} at {nws_forecast['peak_time']}")
 
+        # NWS-sourced stage for gauges whose USGS real-time record is dead
+        # (Wolf at Shawano): reading + hourly history from NWPS.
+        if gauge.get("stage_from_nws"):
+            nws_stage = nws_data.get("nws_observed_stage")
+            nws_unit = (nws_data.get("nws_observed_unit") or "").lower()
+            if (current.get("gage_height_ft") is None
+                    and nws_stage is not None and nws_stage > -999
+                    and nws_unit.startswith("ft")):
+                current["gage_height_ft"] = round(float(nws_stage), 2)
+                current["stage_source"] = "nws"
+                if not current.get("timestamp"):
+                    current["timestamp"] = nws_data.get("nws_valid_time")
+            if not history:
+                history = fetch_nws_stage_history(gauge["nws_lid"])
+
         # National Water Model flow forecast — the everyday "will it rise?"
         # signal (the NWS crest forecast above only appears in high water).
         nwm_forecast = None
@@ -2286,10 +2420,17 @@ def main():
                     f"{nwm_forecast['horizon_h']}h"
                 )
 
-        # Determine flood status using NWS thresholds
+        # Determine flood status using NWS thresholds.
+        # Some gauges (Wolf at Shawano) report flow only through USGS —
+        # fall back to the NWS-observed stage so thresholds still work.
         flood_status = "normal"
         stages = gauge.get("flood_stages")
         gage_ht = current.get("gage_height_ft")
+        if gage_ht is None:
+            nws_stage = nws_data.get("nws_observed_stage")
+            nws_unit = (nws_data.get("nws_observed_unit") or "").lower()
+            if nws_stage is not None and nws_stage > -999 and nws_unit.startswith("ft"):
+                gage_ht = nws_stage
 
         if stages and gage_ht is not None:
             if gage_ht >= stages["major"]:
@@ -2424,8 +2565,12 @@ def main():
     out_path.write_text(json.dumps(output, indent=2))
     log.info(f"Wrote {out_path} ({out_path.stat().st_size:,} bytes)")
 
-    # Summary
-    active_gauges = sum(1 for g in gauges_data if g["current"].get("gage_height_ft"))
+    # Summary — "reporting" matches the frontend's hasData (height OR flow)
+    active_gauges = sum(
+        1 for g in gauges_data
+        if g["current"].get("gage_height_ft") is not None
+        or g["current"].get("streamflow_cfs") is not None
+    )
     log.info(
         f"Done: {active_gauges}/{len(gauges_data)} gauges reporting, "
         f"{len(alerts)} active alerts"

@@ -30,8 +30,8 @@ Same pattern as other WPR widgets (gas prices, weather radar, adopt widget):
 - Replaced the old AHPS system in March 2024
 
 ### NWS Alerts API (active alerts)
-- **Endpoint**: `https://api.weather.gov/alerts/active?zone=WIC067,WIC069,WIC073,WIC097,WIC141`
-- Covers every county with a monitored gauge: Langlade, Lincoln, Marathon, Portage, Wood
+- **Endpoint**: `https://api.weather.gov/alerts/active?zone=WIC067,WIC069,WIC073,WIC085,WIC097,WIC115,WIC119,WIC141`
+- Covers the eight-county WPR coverage area (same footprint as wpr-cleanup-ledger): Langlade, Lincoln, Marathon, Oneida, Portage, Shawano, Taylor, Wood
 - **Format**: GeoJSON
 - **Auth**: None (requires User-Agent)
 - Filtered to outdoor-relevant categories (flood, severe, winter, fire, wind, heat)
@@ -43,7 +43,7 @@ Same pattern as other WPR widgets (gas prices, weather radar, adopt widget):
 
 ## Monitored Gauges
 
-Twelve gauges across five counties (the widget outgrew its original Marathon-only roster — reader-facing copy says "Central Wisconsin"):
+Seventeen gauges across the eight-county WPR coverage area (reader-facing copy says "Central Wisconsin"):
 
 | USGS ID | NWS LID | Name | Action (ft) | Minor (ft) | Moderate (ft) | Major (ft) |
 |---------|---------|------|-------------|------------|---------------|------------|
@@ -59,6 +59,13 @@ Twelve gauges across five counties (the widget outgrew its original Marathon-onl
 | 04074950 | LGLW3 | Wolf River at Langlade | 9.5 | 11.5 | 12.5 | 14.0 |
 | 05400625 | — | Little Plover River near Plover | — | — | — | — |
 | 04080798 | — | Tomorrow River near Nelsonville | — | — | — | — |
+| 04077400 | SHAW3 | Wolf River near Shawano | 10.0 | 11.0 | 13.0 | 15.0 |
+| 04077630 | MORW3 | Red River at Morgan Road nr Morgan | 9.0 | 11.0 | 14.0 | 16.5 |
+| 04078500 | EMBW3 | Embarrass River near Embarrass | 6.0 | 7.0 | 9.5 | 11.5 |
+| 05363600 | YELW3 | NF Yellow River near Perkinstown | — | — | — | — |
+| 05391000 | LTKW3 | Wisconsin R at Rainbow Lake | 4.0 | 6.0 | 7.5 | 9.0 |
+
+Notes: **04077400 (Wolf at Shawano)'s USGS real-time record ended in 2001** — its live reading, 7-day history, and flood status all come from the NWS sensor via NWPS (`stage_from_nws: True` → `fetch_nws_stage_history()`); don't "fix" its empty USGS IV response. **04077630 (Red River) has the coverage area's only live USGS water-temp sensor** (`has_temp_sensor: True`). A generic NWS-stage fallback also exists in `main()` for any future flow-only gauge.
 
 **Important**: The Rothschild gauge (primary Wausau gauge) uses gage height in feet. The *separate* NWS gauge WUUW3 ("Wisconsin River below Wausau Dam") reports in *elevation* above sea level (flood stage = 1167 ft NAVD88). These are different measurement systems for overlapping but different locations. Our widget uses ROTW3 (Rothschild, gage height) which aligns with the USGS data.
 

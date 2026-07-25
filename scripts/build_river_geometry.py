@@ -32,12 +32,20 @@ from fetch_data import GAUGES  # gauge coordinates for ownership assignment
 
 NLDI = "https://api.water.usgs.gov/nldi/linked-data/nwissite"
 
-MAIN_STEM_GAUGES = ["05395000", "05398000", "05398100", "05400760"]
+# Rivers monitored by more than one gauge get their chains split into
+# nearest-gauge ownership runs (each run colors/paces from its gauge).
+RIVER_GAUGES = {
+    "wisconsin": ["05391000", "05395000", "05398000", "05398100", "05400760"],
+    "wolf": ["04074950", "04077400"],
+}
 
 # (river slug, origin gauge, [(navigation mode, km), ...])
 # UM = upstream-main context tail, DM = downstream-main trace.
+# Order matters: earlier traces claim reaches; later ones trim where they
+# meet them (tributaries at confluences, extensions at overlaps).
 TRACES = [
     ("wisconsin",      "05395000", [("UM", 20), ("DM", 140)]),
+    ("wisconsin",      "05391000", [("DM", 95)]),   # Rainbow → Tomahawk → Merrill
     ("prairie",        "05394500", [("UM", 15), ("DM", 25)]),
     ("big-rib",        "05396000", [("UM", 15), ("DM", 60)]),
     ("little-rib",     "05396500", [("UM", 12), ("DM", 40)]),
@@ -45,6 +53,10 @@ TRACES = [
     ("big-eau-pleine", "05399500", [("UM", 15), ("DM", 70)]),
     ("little-plover",  "05400625", [("UM", 8),  ("DM", 30)]),
     ("wolf",           "04074950", [("UM", 18), ("DM", 22)]),
+    ("wolf",           "04077400", [("UM", 75), ("DM", 15)]),  # Langlade → Shawano
+    ("red",            "04077630", [("UM", 12), ("DM", 25)]),
+    ("embarrass",      "04078500", [("UM", 15), ("DM", 30)]),
+    ("nf-yellow",      "05363600", [("UM", 10), ("DM", 20)]),
     ("tomorrow",       "04080798", [("UM", 10), ("DM", 18)]),
 ]
 
@@ -152,23 +164,24 @@ def clean(coords, step=1):
     return out
 
 
-def nearest_main_gauge(pt):
+def nearest_gauge(pt, gauge_ids):
     best, best_d = None, None
-    for gid in MAIN_STEM_GAUGES:
+    for gid in gauge_ids:
         d = dist2(pt, GAUGE_LONLAT[gid])
         if best_d is None or d < best_d:
             best, best_d = gid, d
     return best
 
 
-def split_by_owner(coords, min_run=8):
-    """Split a main-stem chain into runs owned by the nearest main-stem
-    gauge. Runs shorter than min_run vertices (meander flip-flops across
-    the equidistant line between two gauges) merge into their neighbor."""
+def split_by_owner(coords, gauge_ids, min_run=8):
+    """Split a multi-gauge river chain into runs owned by the nearest of
+    its gauges. Runs shorter than min_run vertices (meander flip-flops
+    across the equidistant line between two gauges) merge into their
+    neighbor."""
     runs = []
     cur_owner, cur = None, []
     for pt in coords:
-        owner = nearest_main_gauge(pt)
+        owner = nearest_gauge(pt, gauge_ids)
         if owner != cur_owner and cur:
             cur.append(pt)  # share the boundary vertex so lines stay joined
             runs.append([cur_owner, cur])
@@ -228,28 +241,30 @@ def main():
 
         chains = chain_segments(segments)
         n_pts = 0
+        stem = river == "wisconsin"
+        multi = RIVER_GAUGES.get(river)
         for chain in chains:
             # Tributaries are ambience at regional zooms — thin them.
-            step = 1 if river == "wisconsin" else 2
+            step = 1 if stem else 2
             coords = clean(orient_chain(chain, GAUGE_LONLAT[gauge_id]), step=step)
             if len(coords) < 2:
                 continue
-            if river == "wisconsin":
-                for owner, run in split_by_owner(coords):
+            if multi and len(multi) > 1:
+                for owner, run in split_by_owner(coords, multi):
                     features.append({
                         "type": "Feature",
-                        "properties": {"gauge": owner, "river": river, "stem": True},
+                        "properties": {"gauge": owner, "river": river, "stem": stem},
                         "geometry": {"type": "LineString", "coordinates": run},
                     })
                     n_pts += len(run)
             else:
                 features.append({
                     "type": "Feature",
-                    "properties": {"gauge": gauge_id, "river": river, "stem": False},
+                    "properties": {"gauge": gauge_id, "river": river, "stem": stem},
                     "geometry": {"type": "LineString", "coordinates": coords},
                 })
                 n_pts += len(coords)
-        print(f"  {river}: {len(segments)} reaches -> {len(chains)} chain(s), {n_pts} pts")
+        print(f"  {river} ({gauge_id}): {len(segments)} reaches -> {len(chains)} chain(s), {n_pts} pts")
 
     out = {"type": "FeatureCollection", "features": features}
     out_path = Path(__file__).parent.parent / "public" / "data" / "rivers.geojson"
