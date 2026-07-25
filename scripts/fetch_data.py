@@ -31,6 +31,7 @@ log = logging.getLogger(__name__)
 GAUGES = [
     {
         "id": "05398000",
+        "nwm_reach": "14732372",
         "nws_lid": "ROTW3",  # NWS gauge ID for NWPS API
         "name": "Wisconsin River at Rothschild",
         "short_name": "WI River — Rothschild",
@@ -47,6 +48,7 @@ GAUGES = [
     },
     {
         "id": "05398100",
+        "nwm_reach": None,  # not an NWM output reach (no NLDI comid)
         "nws_lid": None,  # No NWS match — Mosinee
         "name": "Wisconsin River at Mosinee",
         "short_name": "WI River — Mosinee",
@@ -58,6 +60,7 @@ GAUGES = [
     },
     {
         "id": "05396000",
+        "nwm_reach": "14730490",
         "nws_lid": "RIBW3",
         "name": "Big Rib River at Rib Falls",
         "short_name": "Big Rib River",
@@ -74,6 +77,7 @@ GAUGES = [
     },
     {
         "id": "05396500",
+        "nwm_reach": "14730636",
         "nws_lid": None,  # No NWS match
         "name": "Little Rib River near Wausau",
         "short_name": "Little Rib River",
@@ -85,6 +89,7 @@ GAUGES = [
     },
     {
         "id": "05397500",
+        "nwm_reach": "14730982",
         "nws_lid": "KELW3",
         "name": "Eau Claire River near Kelly",
         "short_name": "Eau Claire River",
@@ -101,6 +106,7 @@ GAUGES = [
     },
     {
         "id": "05399500",
+        "nwm_reach": "14733228",
         "nws_lid": "STRW3",
         "name": "Big Eau Pleine River at Stratford",
         "short_name": "Big Eau Pleine",
@@ -117,6 +123,7 @@ GAUGES = [
     },
     {
         "id": "05394500",
+        "nwm_reach": "14727088",
         "nws_lid": None,
         "name": "Prairie River near Merrill",
         "short_name": "Prairie River",
@@ -128,6 +135,7 @@ GAUGES = [
     },
     {
         "id": "05395000",
+        "nwm_reach": "14728798",
         "nws_lid": "RRLW3",
         "name": "Wisconsin River at Merrill",
         "short_name": "WI River — Merrill",
@@ -139,6 +147,7 @@ GAUGES = [
     },
     {
         "id": "05400760",
+        "nwm_reach": "14705230",
         "nws_lid": "WIRW3",
         "name": "Wisconsin River at Wisconsin Rapids",
         "short_name": "WI River — Wisconsin Rapids",
@@ -150,6 +159,7 @@ GAUGES = [
     },
     {
         "id": "04074950",
+        "nwm_reach": "9027875",
         "nws_lid": "LGLW3",
         "name": "Wolf River at Langlade",
         "short_name": "Wolf River — Langlade",
@@ -161,6 +171,7 @@ GAUGES = [
     },
     {
         "id": "05400625",
+        "nwm_reach": "14704932",
         "nws_lid": None,
         "name": "Little Plover River near Plover",
         "short_name": "Little Plover River",
@@ -172,6 +183,7 @@ GAUGES = [
     },
     {
         "id": "04080798",
+        "nwm_reach": "9033255",
         "nws_lid": None,
         "name": "Tomorrow River near Nelsonville",
         "short_name": "Tomorrow River",
@@ -900,6 +912,150 @@ def fetch_nws_forecast(nws_lid: str) -> dict | None:
     except (KeyError, TypeError, ValueError) as e:
         log.warning(f"Error parsing NWS forecast for {nws_lid}: {e}")
         return None
+
+
+# ---------------------------------------------------------------------------
+# NOAA National Water Model: flow forecasts via the NWPS /reaches API
+# ---------------------------------------------------------------------------
+
+def _nwm_points(obj) -> list:
+    """Tolerantly extract [{validTime, flow}, ...] from an NWM payload —
+    the series may sit at .data, .series.data, .shortRange.series.data,
+    or .mediumRange.mean.data depending on the query."""
+    if not isinstance(obj, dict):
+        return []
+    if isinstance(obj.get("data"), list):
+        return obj["data"]
+    for key in ("series", "mean", "shortRange", "mediumRange"):
+        if key in obj:
+            pts = _nwm_points(obj[key])
+            if pts:
+                return pts
+    return []
+
+
+def _nwm_reference_time(obj) -> str | None:
+    if not isinstance(obj, dict):
+        return None
+    if obj.get("referenceTime"):
+        return obj["referenceTime"]
+    for key in ("series", "mean", "shortRange", "mediumRange"):
+        if key in obj:
+            r = _nwm_reference_time(obj[key])
+            if r:
+                return r
+    return None
+
+
+def _parse_iso(t: str):
+    try:
+        return datetime.fromisoformat(t.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+
+
+# Circuit breaker: when the NWM endpoint is down (it 504s/hangs under
+# load), don't burn 15s × 22 calls of cron time — after two gauges fail
+# completely, skip the rest of this run. Resets on any success.
+_NWM_CONSECUTIVE_FAILURES = 0
+_NWM_BREAKER_LIMIT = 2
+
+
+def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
+    """
+    National Water Model flow forecast for an NHD reach, via NWPS.
+    short_range = 18 hourly points (refreshed hourly); medium_range =
+    ~8.5-day ensemble mean (refreshed every 6h). Values are ft³/s;
+    -9999 sentinels mark non-forecast reaches. The endpoint 504s under
+    load, so timeouts are short and any failure degrades to None.
+
+    Returns {points, issued, peak_cfs, peak_time, next24h_pct,
+    horizon_h, class} or None.
+    """
+    global _NWM_CONSECUTIVE_FAILURES
+    if not reach_id:
+        return None
+    if _NWM_CONSECUTIVE_FAILURES >= _NWM_BREAKER_LIMIT:
+        return None
+
+    base = f"https://api.water.noaa.gov/nwps/v1/reaches/{reach_id}/streamflow?series="
+    short = fetch_json(base + "short_range", timeout=15)
+    medium = fetch_json(base + "medium_range", timeout=15)
+
+    if short is None and medium is None:
+        _NWM_CONSECUTIVE_FAILURES += 1
+        if _NWM_CONSECUTIVE_FAILURES == _NWM_BREAKER_LIMIT:
+            log.warning("NWM API unreachable — skipping remaining forecast fetches this run")
+        return None
+    _NWM_CONSECUTIVE_FAILURES = 0
+
+    def parse(payload):
+        out = []
+        for p in _nwm_points(payload or {}):
+            t, f = p.get("validTime"), p.get("flow")
+            if t is None or f is None:
+                continue
+            try:
+                f = float(f)
+            except (TypeError, ValueError):
+                continue
+            if f < 0:  # -9999 sentinel
+                continue
+            out.append((t, f))
+        return out
+
+    s_pts = parse(short)
+    m_pts = parse(medium)
+    if not s_pts and not m_pts:
+        return None
+
+    # Full hourly short-range, then every 3rd medium-range point beyond it,
+    # capped at +72h — enough for the card summary and the sparkline tail
+    # without bloating the payload.
+    last_short = s_pts[-1][0] if s_pts else ""
+    merged = list(s_pts)
+    kept = 0
+    for t, f in m_pts:
+        if t <= last_short:
+            continue
+        if kept % 3 == 0:
+            merged.append((t, f))
+        kept += 1
+    if not merged:
+        return None
+
+    t0 = _parse_iso(merged[0][0])
+    if t0:
+        merged = [
+            (t, f) for t, f in merged
+            if (_parse_iso(t) or t0) - t0 <= timedelta(hours=72)
+        ]
+
+    peak_t, peak_f = max(merged, key=lambda x: x[1])
+    result = {
+        "points": [{"t": t, "cfs": round(f, 1)} for t, f in merged],
+        "issued": _nwm_reference_time(short) or _nwm_reference_time(medium),
+        "peak_cfs": round(peak_f, 1),
+        "peak_time": peak_t,
+    }
+
+    # Card summary: % change vs the current observed flow at the farthest
+    # forecast point within 24h. Thresholds match the observed-trend math.
+    if current_flow is not None and current_flow > 0 and t0:
+        best = None
+        for t, f in merged:
+            dt = _parse_iso(t)
+            if dt and dt - t0 <= timedelta(hours=24):
+                best = (dt, f)
+        if best:
+            pct = (best[1] - current_flow) / current_flow * 100
+            result["next24h_pct"] = round(pct)
+            result["horizon_h"] = max(1, round((best[0] - t0).total_seconds() / 3600))
+            result["class"] = (
+                "rising" if pct > 15 else "falling" if pct < -15 else "steady"
+            )
+
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -2041,6 +2197,17 @@ def main():
             if nws_forecast:
                 log.info(f"    Forecast: peak {nws_forecast['peak_stage']} {nws_forecast['units']} at {nws_forecast['peak_time']}")
 
+        # National Water Model flow forecast — the everyday "will it rise?"
+        # signal (the NWS crest forecast above only appears in high water).
+        nwm_forecast = None
+        if gauge.get("nwm_reach"):
+            nwm_forecast = fetch_nwm_forecast(gauge["nwm_reach"], current.get("streamflow_cfs"))
+            if nwm_forecast and nwm_forecast.get("next24h_pct") is not None:
+                log.info(
+                    f"  NWM: {nwm_forecast['next24h_pct']:+d}% over next "
+                    f"{nwm_forecast['horizon_h']}h"
+                )
+
         # Determine flood status using NWS thresholds
         flood_status = "normal"
         stages = gauge.get("flood_stages")
@@ -2069,6 +2236,7 @@ def main():
             "has_temp_sensor": gauge.get("has_temp_sensor", False),
             "nws_flood_category": nws_data.get("nws_flood_category"),
             "nws_forecast": nws_forecast,
+            "nwm_forecast": nwm_forecast,
             "current": current,
             "history": history,
             "normal_flow": normal_flow,

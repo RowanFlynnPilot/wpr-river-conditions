@@ -218,6 +218,23 @@ export default function GaugeCard({ gauge }) {
             </div>
           )}
 
+          {gauge.nwm_forecast?.next24h_pct != null && (() => {
+            const f = gauge.nwm_forecast;
+            const dir = f.class || 'steady';
+            const tip = `NOAA National Water Model flow forecast${
+              f.issued ? `, issued ${formatCrestTime(f.issued)}` : ''
+            }`;
+            return (
+              <div className={`gauge-card__nwm gauge-card__nwm--${dir}`} title={tip}>
+                <span className="gauge-card__nwm-label">Forecast</span>
+                <span aria-hidden="true">{TREND_ARROWS[dir]}</span>{' '}
+                {dir === 'steady'
+                  ? 'Holding steady'
+                  : `${f.next24h_pct > 0 ? '+' : ''}${f.next24h_pct}% next ${f.horizon_h || 24}h`}
+              </div>
+            );
+          })()}
+
           {current.precip_24h_in != null && current.precip_24h_in > 0 && (
             <div className="gauge-card__precip">
               💧 Last 24h precip:{' '}
@@ -249,11 +266,17 @@ export default function GaugeCard({ gauge }) {
           {history && history.length >= 2 && (() => {
             const hasFlow = history.some((h) => h.streamflow_cfs != null);
             const sparkKey = hasFlow ? 'streamflow_cfs' : 'gage_height_ft';
-            const sparkLabel = hasFlow ? '7-day flow trend' : '7-day gage height trend';
             const vals = history.map((h) => h[sparkKey]).filter((v) => v != null);
             if (vals.length < 2) return null;
-            const lo = Math.min(...vals);
-            const hi = Math.max(...vals);
+            // NWM forecast tail (flow plots only — the forecast is cfs).
+            const fcst = hasFlow
+              ? (gauge.nwm_forecast?.points || []).map((p) => p.cfs)
+              : [];
+            const sparkLabel = hasFlow
+              ? (fcst.length ? '7-day flow + 3-day outlook' : '7-day flow trend')
+              : '7-day gage height trend';
+            const lo = Math.min(...vals, ...(fcst.length ? fcst : [Infinity]));
+            const hi = Math.max(...vals, ...(fcst.length ? fcst : [-Infinity]));
             const fmtV = (v) =>
               hasFlow ? Math.round(v).toLocaleString('en-US') : v.toFixed(1);
             // Dashed action-stage reference line (stage plots only — flow
@@ -268,7 +291,12 @@ export default function GaugeCard({ gauge }) {
                   </span>
                 </div>
                 <div className="gauge-card__sparkline">
-                  <Sparkline data={history} valueKey={sparkKey} refValue={refValue} />
+                  <Sparkline
+                    data={history}
+                    valueKey={sparkKey}
+                    refValue={refValue}
+                    forecast={fcst}
+                  />
                 </div>
               </div>
             );

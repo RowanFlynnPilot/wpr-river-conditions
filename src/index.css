@@ -2968,6 +2968,42 @@ body {
   opacity: 0.7;
 }
 
+/* National Water Model forecast tail — dotted continuation of the line */
+.gauge-card__sparkline-fcst {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  opacity: 0.75;
+}
+
+/* NWM forecast summary line on the card */
+.gauge-card__nwm {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gauge-card__nwm-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wpr-ink-muted);
+  background: var(--wpr-cream-dark);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.gauge-card__nwm--rising  { color: var(--status-action); }
+.gauge-card__nwm--falling { color: var(--status-normal); }
+.gauge-card__nwm--steady  { color: var(--wpr-ink-muted); }
+
 /* ==========================================================================
    Touch-target sizing on coarse pointers
    ========================================================================== */

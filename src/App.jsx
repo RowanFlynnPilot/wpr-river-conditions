@@ -398,6 +398,10 @@ export default function App() {
             National Weather Service
           </a>
           {' · '}
+          <a href="https://water.noaa.gov/about/nwm" target="_blank" rel="noopener noreferrer">
+            NOAA National Water Model
+          </a>
+          {' · '}
           <a href="https://wvic.com/" target="_blank" rel="noopener noreferrer">
             WVIC
           </a>
