@@ -14,6 +14,7 @@ import logging
 import re
 import sys
 from datetime import datetime, timedelta, timezone
+from http.client import HTTPException  # IncompleteRead, BadStatusLine, …
 from pathlib import Path
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
@@ -537,7 +538,7 @@ def fetch_json(url: str, timeout: int = 30) -> dict | list | None:
     try:
         with urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
-    except (URLError, HTTPError, json.JSONDecodeError, TimeoutError, OSError) as e:
+    except (URLError, HTTPError, HTTPException, json.JSONDecodeError, TimeoutError, OSError) as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
@@ -551,7 +552,7 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
     try:
         with urlopen(req, timeout=timeout) as resp:
             return resp.read().decode("utf-8")
-    except (URLError, HTTPError, TimeoutError, OSError) as e:
+    except (URLError, HTTPError, HTTPException, TimeoutError, OSError) as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
@@ -807,6 +808,11 @@ def fetch_nws_alerts() -> list[dict]:
             if category is None:
                 continue
 
+            # County zones this alert covers (drives map shading) — only
+            # the counties we monitor, from the alert's UGC geocodes.
+            ugc = (props.get("geocode") or {}).get("UGC") or []
+            zones = [z for z in ugc if z in NWS_ZONES]
+
             alerts.append({
                 "event": props.get("event"),
                 "category": category,
@@ -817,6 +823,7 @@ def fetch_nws_alerts() -> list[dict]:
                 "onset": props.get("onset"),
                 "expires": props.get("expires"),
                 "url": props.get("@id"),
+                "zones": zones,
             })
     except (KeyError, TypeError) as e:
         log.warning(f"Error parsing NWS alerts: {e}")

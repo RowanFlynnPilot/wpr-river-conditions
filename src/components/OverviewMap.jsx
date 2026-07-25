@@ -21,6 +21,10 @@ const STATUS_DRAW_ORDER = { normal: 0, action: 1, minor: 2, moderate: 3, major: 
 // reservoirs, small teal triangles for boat launches.
 const RESERVOIR_COLOR = '#5B7A99';
 
+// Neutral water color for river channels whose owning gauge is normal;
+// segments switch to the status color when their gauge runs action+.
+const RIVER_COLOR = '#4a90a4';
+
 const FALLBACK_CENTER = [44.89, -89.69];
 
 // Pin radii track zoom: compact at regional view, clickable at street
@@ -53,12 +57,20 @@ function gaugeTipHtml(gauge) {
   );
 }
 
-export default function OverviewMap({ gauges, reservoirs = [], selectedId = null, onGaugeClick }) {
+export default function OverviewMap({
+  gauges,
+  reservoirs = [],
+  alerts = [],
+  selectedId = null,
+  onGaugeClick,
+}) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const gaugeLayerRef = useRef(null);
   const reservoirLayerRef = useRef(null);
   const launchLayerRef = useRef(null);
+  const riverLayerRef = useRef(null);
+  const boundaryRef = useRef(null);
   const haloRef = useRef(null);
 
   const [shownStatuses, setShownStatuses] = useState({
@@ -66,9 +78,16 @@ export default function OverviewMap({ gauges, reservoirs = [], selectedId = null
   });
   const [showReservoirs, setShowReservoirs] = useState(true);
   const [showLaunches, setShowLaunches] = useState(false);
+  const [countiesGeo, setCountiesGeo] = useState(null);
+  const [riversGeo, setRiversGeo] = useState(null);
 
   const validGauges = useMemo(
     () => gauges.filter((g) => g.lat && g.lon),
+    [gauges]
+  );
+
+  const gaugesById = useMemo(
+    () => Object.fromEntries(gauges.map((g) => [g.id, g])),
     [gauges]
   );
 
@@ -121,37 +140,37 @@ export default function OverviewMap({ gauges, reservoirs = [], selectedId = null
       pane: 'labels',
     }).addTo(map);
 
-    // County outlines sit beneath the marker SVG (overlayPane is z 400).
+    // Stacking: boundary (350) < rivers (360) < overlayPane markers (400).
     map.createPane('boundary');
     map.getPane('boundary').style.zIndex = 350;
+    map.createPane('rivers');
+    map.getPane('rivers').style.zIndex = 360;
 
+    riverLayerRef.current = L.layerGroup().addTo(map);
     gaugeLayerRef.current = L.layerGroup().addTo(map);
     reservoirLayerRef.current = L.layerGroup().addTo(map);
     launchLayerRef.current = L.layerGroup().addTo(map);
 
-    // Rescale gauge pins in place on zoom (not a React re-render).
+    // Rescale gauge pins (and their pulse rings) in place on zoom.
     map.on('zoomend', () => {
       const zoom = map.getZoom();
       gaugeLayerRef.current?.eachLayer((m) => {
         if (m.options.statusKey) m.setRadius(radiusFor(m.options.statusKey, zoom));
+        if (m.options.pulseFor) m.setRadius(radiusFor(m.options.pulseFor, zoom) + 5);
       });
     });
 
-    // Dashed five-county outline — orientation, quietly omitted on failure.
+    // Static geometry, fetched once: county outlines (also the alert-shading
+    // polygons) and the flow-oriented river network. Both are orientation/
+    // ambience — quietly omitted on failure.
     const ac = new AbortController();
     fetch(`${import.meta.env.BASE_URL}data/counties.geojson`, { signal: ac.signal })
       .then((r) => (r.ok ? r.json() : null))
-      .then((geo) => {
-        if (!geo || !mapRef.current) return;
-        const boundary = L.geoJSON(geo, {
-          pane: 'boundary',
-          interactive: false,
-          style: { color: '#66756f', weight: 1.2, dashArray: '5 4', fill: false },
-        }).addTo(mapRef.current);
-        // Keep panning in the neighborhood (padded so the northern
-        // reservoirs stay reachable).
-        mapRef.current.setMaxBounds(boundary.getBounds().pad(0.6));
-      })
+      .then((geo) => geo && setCountiesGeo(geo))
+      .catch(() => {});
+    fetch(`${import.meta.env.BASE_URL}data/rivers.geojson`, { signal: ac.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((geo) => geo && setRiversGeo(geo))
       .catch(() => {});
 
     mapRef.current = map;
@@ -173,6 +192,96 @@ export default function OverviewMap({ gauges, reservoirs = [], selectedId = null
     if (bounds.isValid()) map.fitBounds(bounds.pad(0.12), { maxZoom: 10 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // --- County outlines + alert shading ---
+  // Counties with an active alert fill with the alert's color (flood wins
+  // over other categories), so a warning reads geographically at a glance.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !countiesGeo) return;
+    if (boundaryRef.current) {
+      boundaryRef.current.remove();
+      boundaryRef.current = null;
+    }
+
+    const zoneCategory = {};
+    for (const a of alerts || []) {
+      for (const z of a.zones || []) {
+        if (a.category === 'flood' || !zoneCategory[z]) zoneCategory[z] = a.category;
+      }
+    }
+
+    const boundary = L.geoJSON(countiesGeo, {
+      pane: 'boundary',
+      interactive: false,
+      style: (feature) => {
+        const cat = zoneCategory[feature.properties?.zone];
+        const base = { color: '#66756f', weight: 1.2, dashArray: '5 4', fill: false };
+        if (!cat) return base;
+        const alertColor = cat === 'flood' ? '#dc2626' : '#ca8a04';
+        return {
+          ...base,
+          color: alertColor,
+          weight: 1.6,
+          fill: true,
+          fillColor: alertColor,
+          fillOpacity: 0.09,
+        };
+      },
+    }).addTo(map);
+    boundaryRef.current = boundary;
+    // Keep panning in the neighborhood (padded so the northern reservoirs
+    // stay reachable).
+    map.setMaxBounds(boundary.getBounds().pad(0.6));
+  }, [countiesGeo, alerts]);
+
+  // --- The living river layer ---
+  // Each segment: a soft base channel plus an animated dash overlay whose
+  // direction follows the geometry (built upstream→downstream) and whose
+  // speed follows the owning gauge's flow vs. normal. Color switches from
+  // water-blue to the status color when the owner runs action stage or up.
+  useEffect(() => {
+    const map = mapRef.current;
+    const group = riverLayerRef.current;
+    if (!map || !group || !riversGeo) return;
+    group.clearLayers();
+
+    for (const f of riversGeo.features || []) {
+      const coords = f.geometry?.coordinates || [];
+      if (coords.length < 2) continue;
+      const latlngs = coords.map(([lon, lat]) => [lat, lon]);
+      const stem = !!f.properties?.stem;
+      const owner = gaugesById[f.properties?.gauge];
+      const status = owner && STATUS_COLORS[owner.flood_status] && owner.flood_status !== 'normal'
+        ? owner.flood_status
+        : null;
+      const flowColor = status ? STATUS_COLORS[status].color : RIVER_COLOR;
+
+      L.polyline(latlngs, {
+        pane: 'rivers',
+        interactive: false,
+        color: RIVER_COLOR,
+        weight: stem ? 5 : 3,
+        opacity: 0.26,
+        lineCap: 'round',
+      }).addTo(group);
+
+      const cls = owner?.normal_flow?.class;
+      const speed =
+        cls === 'much_above' || cls === 'above' ? 'riverflow--fast'
+        : cls === 'much_below' || cls === 'below' ? 'riverflow--slow'
+        : '';
+      L.polyline(latlngs, {
+        pane: 'rivers',
+        interactive: false,
+        color: flowColor,
+        weight: stem ? 2.4 : 1.7,
+        opacity: 0.85,
+        lineCap: 'round',
+        className: `riverflow ${speed}`.trim(),
+      }).addTo(group);
+    }
+  }, [riversGeo, gaugesById]);
 
   // --- Gauge pins ---
   useEffect(() => {
@@ -205,6 +314,20 @@ export default function OverviewMap({ gauges, reservoirs = [], selectedId = null
         offset: [0, -6],
       });
       marker.on('click', () => onGaugeClick?.(g.id));
+
+      // Gauges at action stage or above get a pulsing attention ring.
+      if (key !== 'normal') {
+        L.circleMarker([g.lat, g.lon], {
+          radius: radiusFor(key, map.getZoom()) + 5,
+          color: conf.color,
+          weight: 2,
+          fill: false,
+          interactive: false,
+          className: 'gauge-pulse',
+          pulseFor: key,
+        }).addTo(group);
+      }
+
       marker.addTo(group);
     }
   }, [validGauges, shownStatuses, onGaugeClick]);

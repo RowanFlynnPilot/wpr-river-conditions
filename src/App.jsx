@@ -348,6 +348,7 @@ export default function App() {
             <OverviewMap
               gauges={data.gauges}
               reservoirs={data.reservoirs || []}
+              alerts={data.alerts || []}
               selectedId={selectedGaugeId}
               onGaugeClick={scrollToGauge}
             />

@@ -84,6 +84,9 @@ wpr-river-conditions/
 │       └── river-data.json        # Copy of data for Vite build
 ├── scripts/
 │   ├── build_county_outline.py    # One-time: NWS zone geometry → public/data/counties.geojson
+│   ├── build_river_geometry.py    # One-time: NLDI flowline trace → public/data/rivers.geojson
+│   │                              #   (flow-oriented polylines; coordinate order = downstream,
+│   │                              #   which the map's dash animation depends on)
 │   └── fetch_data.py              # Data scraper (USGS + NWS + WVIC)
 ├── src/
 │   ├── assets/
@@ -256,7 +259,8 @@ Publishes a crawlable **"Central Wisconsin River Levels & Fishing Report"** arti
 ## Phase 2 Roadmap
 - [x] WVIC reservoir scraping — done via regex on the Data & Reports page (no Playwright needed)
 - [x] **Living map, phase A** — CARTO no-labels basemap + labels pane, hover tooltips, per-status/reservoir/launch layer toggles, selection halo synced with the glance table, dashed 5-county outline, zoom-responsive pins (patterns ported from wpr-cleanup-ledger's SiteMap.jsx)
-- [ ] **Living map, phase B** — river flowlines from NLDI (`scripts/build_river_geometry.py`, to be written) colored by gauge status with CSS dash-offset flow animation (speed = `pct_of_median`), pulsing action-stage pins, NWS alert-zone shading (counties.geojson already carries the polygons)
+- [x] **Living map, phase B** — river network drawn from NLDI flowlines (`scripts/build_river_geometry.py` → 53 KB rivers.geojson) with CSS dash-offset flow animation: direction = geometry order (downstream), speed = owning gauge's `normal_flow.class`, color switches to status color at action+; pulsing rings on action+ gauges; county polygons shade red/amber when their NWS zone has an active alert (alerts now carry `zones`). All animation honors `prefers-reduced-motion`.
+- [ ] **Living map, phase C** — radar overlay toggle (RainViewer), NWM forecast on gauge hover, 7-day replay scrubber
 - [ ] **National Water Model forecasts** via NWPS `/reaches/{id}/streamflow?series=short_range|medium_range` — hourly flow forecasts for every gauge, verified working 2026-07; reach IDs live in each NWPS gauge response
 - [ ] **Water temperature** from WVIC `tridentxml/FlowTempSummary` (Rothschild + Wisconsin Rapids; USGS has zero temp gauges in-basin) — feeds the lure engine real temps
 - [ ] Lake/pool levels via NWPS gauges EPLW3 (Big Eau Pleine pool), DUBW3 (Lake DuBay), WUUW3 (below Wausau Dam) — same fetch function; **ignore `floodCategory` on pool-elevation gauges** (datum mismatch makes DuBay read a bogus "major")
