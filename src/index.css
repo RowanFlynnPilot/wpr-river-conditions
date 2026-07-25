@@ -1940,14 +1940,20 @@ body {
 }
 
 .overview-map {
-  height: 280px;
+  height: 360px;
   width: 100%;
+}
+
+@media (max-width: 480px) {
+  .overview-map {
+    height: 300px;
+  }
 }
 
 .overview-map-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md);
+  gap: var(--space-sm) var(--space-md);
   padding: var(--space-sm) var(--space-md);
   background: var(--wpr-cream);
   border-top: 1px solid var(--wpr-rule);
@@ -1956,10 +1962,23 @@ body {
   color: var(--wpr-ink-light);
 }
 
-.overview-map-legend__item {
+.overview-map-legend__toggle {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.overview-map-legend__toggle input[type='checkbox'] {
+  accent-color: var(--accent);
+  margin: 0;
+  cursor: pointer;
+}
+
+.overview-map-legend__toggle--sep {
+  border-left: 1px solid var(--wpr-rule);
+  padding-left: var(--space-md);
 }
 
 .overview-map-legend__swatch {
@@ -1967,6 +1986,69 @@ body {
   height: 10px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.overview-map-legend__diamond {
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.overview-map-legend__launch {
+  color: var(--wpr-teal);
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+/* Map hover tooltips — dark tip, same voice as the Cleanup Ledger's */
+.leaflet-tooltip.map-tip {
+  background: var(--wpr-ink);
+  color: var(--wpr-cream);
+  border: none;
+  border-radius: 4px;
+  padding: 5px 9px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.35;
+  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.35);
+}
+
+.leaflet-tooltip.map-tip::before {
+  display: none;
+}
+
+.map-tip__name {
+  font-weight: 600;
+  display: block;
+}
+
+.map-tip__sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* Reservoir diamonds + boat-launch triangles (divIcon overlays) */
+.rsv-pin__diamond {
+  display: block;
+  width: 11px;
+  height: 11px;
+  margin: 2px;
+  transform: rotate(45deg);
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.launch-pin__tri {
+  display: block;
+  color: var(--wpr-teal);
+  font-size: 13px;
+  line-height: 14px;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 #fff, 1px -1px 0 #fff,
+    -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
 
 .gauge-map-toggle {

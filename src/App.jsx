@@ -88,6 +88,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState(initialFilter);
+  const [selectedGaugeId, setSelectedGaugeId] = useState(null);
   const [, setClockTick] = useState(0); // re-renders relative timestamps
   const gaugeRefs = useRef({});
   const lastFetchRef = useRef(0);
@@ -177,6 +178,8 @@ export default function App() {
 
   const scrollToGauge = useCallback(
     (gaugeId) => {
+      // Selection is shared with the overview map (halo + pan).
+      setSelectedGaugeId(gaugeId);
       const doScroll = () =>
         gaugeRefs.current[gaugeId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       const visible = filteredGauges.some((g) => g.id === gaugeId);
@@ -342,7 +345,12 @@ export default function App() {
               </div>
             }
           >
-            <OverviewMap gauges={data.gauges} onGaugeClick={scrollToGauge} />
+            <OverviewMap
+              gauges={data.gauges}
+              reservoirs={data.reservoirs || []}
+              selectedId={selectedGaugeId}
+              onGaugeClick={scrollToGauge}
+            />
           </Suspense>
         </LazyMount>
       </div>

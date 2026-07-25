@@ -193,14 +193,22 @@ PARAM_PRECIP = "00045"        # inches (incremental precipitation)
 # Portage (Little Plover, Tomorrow R), Wood (Wisconsin Rapids)
 NWS_ZONES = ["WIC067", "WIC069", "WIC073", "WIC097", "WIC141"]
 
-# WVIC reservoirs to track (scraped from wvic.com)
+# WVIC reservoirs to track (scraped from wvic.com).
+# lat/lon are the NWS NWPS gauge locations at each impoundment
+# (LTKW3, WILW3, SPDW3, EPLW3, RRVW3) \u2014 used for the overview-map pins.
 WVIC_RESERVOIRS = [
-    {"name": "Rainbow Reservoir", "slug": "rainbow", "description": "Controls upper WI River flow north of Wausau"},
-    {"name": "Willow Reservoir", "slug": "willow", "description": "Regulates Willow Creek into the WI River"},
-    {"name": "Spirit Reservoir", "slug": "spirit", "description": "Feeds Spirit River \u2014 affects WI River levels"},
-    {"name": "Eau Pleine Reservoir", "slug": "eau-pleine", "description": "Directly feeds Big Eau Pleine gauge at Stratford"},
-    {"name": "Rice Reservoir", "slug": "rice", "description": "Controls Rice Creek flow into the WI River"},
-    {"name": "Lake Wausau", "slug": "lake-wausau", "description": "Run-of-river impoundment in downtown Wausau"},
+    {"name": "Rainbow Reservoir", "slug": "rainbow", "lat": 45.8306, "lon": -89.5522,
+     "description": "Controls upper WI River flow north of Wausau"},
+    {"name": "Willow Reservoir", "slug": "willow", "lat": 45.7128, "lon": -89.8450,
+     "description": "Regulates Willow Creek into the WI River"},
+    {"name": "Spirit Reservoir", "slug": "spirit", "lat": 45.4381, "lon": -89.7425,
+     "description": "Feeds Spirit River \u2014 affects WI River levels"},
+    {"name": "Eau Pleine Reservoir", "slug": "eau-pleine", "lat": 44.7331, "lon": -89.7581,
+     "description": "Directly feeds Big Eau Pleine gauge at Stratford"},
+    {"name": "Rice Reservoir", "slug": "rice", "lat": 45.5397, "lon": -89.7478,
+     "description": "Controls Rice Creek flow into the WI River"},
+    {"name": "Lake Wausau", "slug": "lake-wausau", "lat": 44.9420, "lon": -89.6560,
+     "description": "Run-of-river impoundment in downtown Wausau"},
 ]
 
 # Wausau area coordinates (used for weather/solunar APIs)
@@ -482,44 +490,36 @@ FISHING_REFERENCE = {
 # To remove: delete the dict. Events with past dates are auto-filtered out.
 LOCAL_EVENTS = [
     {
-        "date": "2026-04-04",
-        "name": "Inland Trout Harvest Opener",
-        "description": "NEW for 2026 \u2014 harvest season opens a full month earlier than prior years. Streams, springs, and spring ponds. Requires inland trout stamp.",
-        "location": "Statewide",
-        "category": "season",
-        "url": "https://wausaupilotandreview.com/2026/03/18/dnr-reminds-anglers-of-new-opening-day-for-inland-trout-harvest-season/",
-    },
-    {
-        "date": "2026-05-01",
-        "name": "Governor's Fishing Opener",
-        "description": "Annual tradition since 1966. Family Fishing Day on May 2 at Lake Hayward Beach with casting lessons, DNR Fishmobile, and giveaways.",
-        "location": "Nelson Lake, Hayward",
-        "category": "event",
-        "url": None,
-    },
-    {
-        "date": "2026-05-02",
-        "name": "General Inland Fishing Opener",
-        "description": "Walleye, bass (harvest), northern pike, and musky all open statewide. Musky opener now unified to May 2 (previously Memorial Day weekend for northern zone).",
+        "date": "2026-10-15",
+        "name": "Inland Trout Season Closes",
+        "description": "Last day for inland trout on streams, springs, and spring ponds. The Prairie, Little Plover, Tomorrow, and Rib tributaries all close until the early catch-and-release period in January.",
         "location": "Statewide",
         "category": "season",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
     },
     {
-        "date": "2026-05-02",
-        "name": "Lake & Pond Trout Season Opens",
-        "description": "Trout season on inland lakes and ponds. The earlier April 4 opener applies only to streams and springs.",
+        "date": "2027-01-02",
+        "name": "Early Catch-and-Release Trout Opens",
+        "description": "Winter catch-and-release trout season opens on inland streams (artificials only). Runs until the regular season opener in April.",
         "location": "Statewide",
         "category": "season",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
     },
     {
-        "date": "2026-06-06",
-        "name": "Free Fishing Weekend",
-        "description": "June 6\u20137. No license, trout stamp, or salmon stamp required for residents or nonresidents. All bag/size limits still apply. Great for families!",
+        "date": "2027-01-16",
+        "name": "Free Fishing Weekend (Winter)",
+        "description": "Jan. 16\u201317. No license or stamps required for residents or nonresidents \u2014 a great weekend to try ice fishing. All bag/size limits still apply.",
         "location": "Statewide",
         "category": "event",
         "url": "https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend",
+    },
+    {
+        "date": "2027-03-07",
+        "name": "General Inland Game Fish Season Closes",
+        "description": "Walleye, northern pike, and most inland game fish seasons close on inland waters until the first Saturday in May.",
+        "location": "Statewide",
+        "category": "season",
+        "url": "https://dnr.wisconsin.gov/topic/Fishing/seasons",
     },
 ]
 
@@ -951,6 +951,8 @@ def fetch_wvic_reservoirs() -> list[dict]:
             "name": res["name"],
             "slug": slug,
             "description": res.get("description", ""),
+            "lat": res.get("lat"),
+            "lon": res.get("lon"),
             "feet_below_max": feet_below_max,
             "has_data": feet_below_max is not None,
             "source_url": WVIC_DATA_URL,
