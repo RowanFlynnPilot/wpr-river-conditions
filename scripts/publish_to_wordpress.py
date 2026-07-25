@@ -60,7 +60,7 @@ PREVIEW_PATH = ROOT / "src" / "data" / "wp-report.html"
 
 WIDGET_URL = "https://rowanflynnpilot.github.io/wpr-river-conditions/"
 DEFAULT_SLUG = "central-wisconsin-river-fishing-report"
-POST_TITLE = "Central Wisconsin River Levels & Fishing Report — Wausau & Marathon County"
+POST_TITLE = "Central Wisconsin River Levels & Fishing Report — Wisconsin River, Wolf River & Area Trout Streams"
 
 STATUS_LABEL = {
     "normal": "Normal",

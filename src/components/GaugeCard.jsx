@@ -222,7 +222,7 @@ export default function GaugeCard({ gauge }) {
             const dir = f.class || 'steady';
             const tip = `NOAA National Water Model flow forecast${
               f.issued ? `, issued ${formatCrestTime(f.issued)}` : ''
-            }`;
+            }${f.baseline === 'model' ? ' (vs. the model’s own current estimate)' : ''}`;
             return (
               <div className={`gauge-card__nwm gauge-card__nwm--${dir}`} title={tip}>
                 <span className="gauge-card__nwm-label">Forecast</span>
@@ -342,8 +342,22 @@ export default function GaugeCard({ gauge }) {
       ) : (
         <div className="gauge-card__reading gauge-card__reading--na">
           <div className="gauge-card__reading-value" style={{ color: 'var(--wpr-ink-muted)', fontSize: '1rem' }}>No current data</div>
+          {gauge.nwm_forecast?.next24h_pct != null && (
+            <div className={`gauge-card__nwm gauge-card__nwm--${gauge.nwm_forecast.class || 'steady'}`}
+              title="NOAA National Water Model estimate — no live gauge here">
+              <span className="gauge-card__nwm-label">Model</span>
+              <span aria-hidden="true">{TREND_ARROWS[gauge.nwm_forecast.class || 'steady']}</span>{' '}
+              {gauge.nwm_forecast.class === 'steady'
+                ? 'Holding steady'
+                : `${gauge.nwm_forecast.next24h_pct > 0 ? '+' : ''}${gauge.nwm_forecast.next24h_pct}% next ${gauge.nwm_forecast.horizon_h || 24}h`}
+            </div>
+          )}
           <div className="gauge-card__timestamp" style={{ marginTop: '0.5rem' }}>
-            <span>Gauge may be offline or seasonal</span>
+            <span>
+              {gauge.discontinued
+                ? 'USGS discontinued real-time reporting at this site'
+                : 'Gauge may be offline or seasonal'}
+            </span>
             <a className="gauge-card__usgs-link" href={gauge.usgs_url} target="_blank" rel="noopener noreferrer">USGS &rarr;</a>
           </div>
         </div>

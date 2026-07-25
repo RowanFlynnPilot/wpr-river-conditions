@@ -153,15 +153,19 @@ export default function App() {
     g.current?.gage_height_ft != null || g.current?.streamflow_cfs != null;
   const statusOrder = { major: 0, moderate: 1, minor: 2, action: 3, normal: 4 };
 
+  // Worst status first; gauges with no current reading sort last but still
+  // render (their cards explain why — discontinued/offline — and can carry
+  // a model-only forecast).
   const sortedGauges = useMemo(() => {
     if (!data) return [];
-    return [...data.gauges]
-      .filter(hasData)
-      .sort(
-        (a, b) =>
-          (statusOrder[a.flood_status] ?? 4) - (statusOrder[b.flood_status] ?? 4)
-      );
+    return [...data.gauges].sort((a, b) => {
+      const dataRank = (hasData(a) ? 0 : 1) - (hasData(b) ? 0 : 1);
+      if (dataRank !== 0) return dataRank;
+      return (statusOrder[a.flood_status] ?? 4) - (statusOrder[b.flood_status] ?? 4);
+    });
   }, [data]);
+
+  const reportingGauges = useMemo(() => sortedGauges.filter(hasData), [sortedGauges]);
 
   const filteredGauges = useMemo(
     () => sortedGauges.filter(FILTER_PREDICATES[filter] || FILTER_PREDICATES.all),
@@ -220,7 +224,7 @@ export default function App() {
     );
   }
 
-  const activeCount = sortedGauges.length;
+  const activeCount = reportingGauges.length;
   const wrapperStyle = sponsorAccentStyle(sponsor);
   const reservoirsReporting = (data.reservoirs || []).filter((r) => r.has_data);
   const isStale = data.generated_at && Date.now() - new Date(data.generated_at).getTime() > STALE_MS;
@@ -284,7 +288,7 @@ export default function App() {
       <SectionNav sections={navSections} />
 
       {/* Answer-first summary: every reporting gauge in one screen */}
-      <GlanceTable gauges={sortedGauges} onSelect={scrollToGauge} />
+      <GlanceTable gauges={reportingGauges} onSelect={scrollToGauge} />
 
       {/* Stream Gauges */}
       <div className="section-header" id="gauges">

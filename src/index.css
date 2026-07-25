@@ -2878,11 +2878,28 @@ body {
   color: var(--wpr-ink-muted);
 }
 
+.glance__cols {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* Two side-by-side tables once the roster outgrows one screen. Rows are
+   compact on purpose: the whole table must fit the 900px embed fold. */
+@media (min-width: 700px) {
+  .glance__cols--split {
+    grid-template-columns: 1fr 1fr;
+  }
+  .glance__cols--split .glance__table + .glance__table {
+    border-left: 1px solid var(--wpr-rule);
+  }
+}
+
 .glance__table {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  align-self: start;
 }
 
 .glance__table th {
@@ -2918,9 +2935,10 @@ body {
 }
 
 .glance__row td {
-  padding: 6px var(--space-sm);
+  padding: 3px var(--space-sm);
   border-bottom: 1px solid var(--wpr-cream-dark);
   vertical-align: middle;
+  line-height: 1.35;
 }
 
 .glance__row:last-child td {
@@ -2959,11 +2977,11 @@ body {
 .glance__chip {
   display: inline-block;
   font-family: var(--font-body);
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 2px 8px;
+  padding: 1px 7px;
   border-radius: 999px;
   white-space: nowrap;
 }

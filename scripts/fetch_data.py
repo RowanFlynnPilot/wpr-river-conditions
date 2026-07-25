@@ -84,6 +84,9 @@ GAUGES = [
         "lat": 44.9472,
         "lon": -89.6793,
         "flood_stages": None,
+        # USGS has published no IV or DV data here for over a year
+        # (verified 2026-07) — surface that honestly instead of "seasonal".
+        "discontinued": True,
         "description": "Tributary flowing through western Marathon County",
         "has_temp_sensor": False,
     },
@@ -874,15 +877,17 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
     if not data:
         return []
 
-    # Build a dict keyed by hour (YYYY-MM-DD HH) to sample ~hourly
+    # Downsample 15-min data to 2-hour buckets: everything that consumes
+    # history (200px sparklines, the map replay's 2h steps, the ±4h trend
+    # window) is indistinguishable at this cadence, and it halves the
+    # payload's largest component.
     by_hour: dict[str, dict] = {}
     try:
         for ts in data["value"]["timeSeries"]:
             var_code = ts["variable"]["variableCode"][0]["value"]
             for val_entry in ts["values"][0]["value"]:
                 dt_str = val_entry["dateTime"]
-                # Key by hour to downsample 15-min data to hourly
-                hour_key = dt_str[:13]  # "YYYY-MM-DDTHH"
+                hour_key = f"{dt_str[:11]}{int(dt_str[11:13]) // 2 * 2:02d}"
                 raw = val_entry["value"]
                 val = float(raw) if raw != "" else None
                 if val is not None and val < 0:
@@ -1111,7 +1116,8 @@ def fetch_nws_stage_history(nws_lid: str, days: int = 7) -> list[dict]:
             continue
         if t < cutoff:
             continue
-        hour_key = t[:13]
+        # 2-hour buckets, matching fetch_usgs_history's cadence
+        hour_key = f"{t[:11]}{int(t[11:13]) // 2 * 2:02d}"
         if hour_key not in by_hour:
             by_hour[hour_key] = {
                 "timestamp": t,
@@ -1286,21 +1292,33 @@ def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
         "peak_time": peak_t,
     }
 
-    # Card summary: % change vs the current observed flow at the farthest
-    # forecast point within 24h. Thresholds match the observed-trend math.
-    if current_flow is not None and current_flow > 0 and t0:
+    # Card summary: % change at the farthest forecast point within 24h,
+    # against the current observed flow — or, for gauges with no live flow
+    # (Wolf at Shawano, discontinued sites), against the model's own first
+    # point. Thresholds match the observed-trend math.
+    baseline = None
+    baseline_kind = None
+    if current_flow is not None and current_flow > 0:
+        baseline = current_flow
+        baseline_kind = "observed"
+    elif merged[0][1] > 0:
+        baseline = merged[0][1]
+        baseline_kind = "model"
+
+    if baseline and t0:
         best = None
         for t, f in merged:
             dt = _parse_iso(t)
             if dt and dt - t0 <= timedelta(hours=24):
                 best = (dt, f)
         if best:
-            pct = (best[1] - current_flow) / current_flow * 100
+            pct = (best[1] - baseline) / baseline * 100
             result["next24h_pct"] = round(pct)
             result["horizon_h"] = max(1, round((best[0] - t0).total_seconds() / 3600))
             result["class"] = (
                 "rising" if pct > 15 else "falling" if pct < -15 else "steady"
             )
+            result["baseline"] = baseline_kind
 
     return result
 
@@ -2208,16 +2226,28 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
         if status in ("minor", "moderate", "major"):
             flood_alerts.append(f"{name} at {status} flood stage")
 
-        if current_cfs is None or len(history) < 28:
+        if current_cfs is None or len(history) < 8:
             continue
 
-        # Compare current to ~24h ago: history is ~hourly and ends now, so
-        # average the entries 20–28 hours back (NOT history[:24], which is
-        # the start of the 7-day window — a week ago).
-        old_flows = [
-            h["streamflow_cfs"] for h in history[-28:-20]
-            if h.get("streamflow_cfs") is not None
-        ]
+        # Compare current to ~24h ago: average the readings 20–28 hours
+        # before the latest entry. Timestamp-based so it survives cadence
+        # changes in the history sampling (currently 2-hour buckets).
+        try:
+            last_t = datetime.fromisoformat(history[-1]["timestamp"])
+        except (KeyError, ValueError):
+            continue
+        old_flows = []
+        for h in history:
+            flow = h.get("streamflow_cfs")
+            if flow is None:
+                continue
+            try:
+                t = datetime.fromisoformat(h["timestamp"])
+            except (KeyError, ValueError):
+                continue
+            age_h = (last_t - t).total_seconds() / 3600
+            if 20 <= age_h <= 28:
+                old_flows.append(flow)
         if not old_flows:
             continue
 
@@ -2231,20 +2261,28 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
         else:
             stable.append(name)
 
-    # Build summary sentences
+    # Build summary sentences. With 17 gauges a full name list turns into a
+    # wall of text \u2014 cap at three names and count the rest.
+    def name_list(parts):
+        if len(parts) <= 3:
+            return ", ".join(parts)
+        return ", ".join(parts[:3]) + f", and {len(parts) - 3} more"
+
     if flood_alerts:
         summaries.append("\u26a0\ufe0f " + "; ".join(flood_alerts) + ".")
 
     if rising:
         parts = [f"{n} (+{p}%)" for n, p in rising]
-        summaries.append(f"Flows rising on {', '.join(parts)} \u2014 expect reduced clarity.")
+        summaries.append(f"Flows rising on {name_list(parts)} \u2014 expect reduced clarity.")
 
     if falling:
         parts = [f"{n} (-{p}%)" for n, p in falling]
-        summaries.append(f"Flows dropping on {', '.join(parts)} \u2014 clarity improving.")
+        summaries.append(f"Flows dropping on {name_list(parts)} \u2014 clarity improving.")
 
     if stable and not rising and not falling:
         summaries.append("All gauges showing stable flows \u2014 consistent conditions.")
+    elif len(stable) > 3:
+        summaries.append(f"Flows steady on the other {len(stable)} gauges.")
     elif stable:
         summaries.append(f"Stable on {', '.join(stable)}.")
 
@@ -2581,6 +2619,7 @@ def main():
             "flood_stages": stages,
             "flood_status": flood_status,
             "has_temp_sensor": gauge.get("has_temp_sensor", False),
+            "discontinued": gauge.get("discontinued", False),
             "nws_flood_category": nws_data.get("nws_flood_category"),
             "nws_forecast": nws_forecast,
             "nwm_forecast": nwm_forecast,

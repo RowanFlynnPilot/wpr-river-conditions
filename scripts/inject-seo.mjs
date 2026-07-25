@@ -189,13 +189,18 @@ const graph = [
     url: SITE_URL,
     isAccessibleForFree: true,
     creator: { '@id': `${SITE_URL}#org` },
-    spatialCoverage: 'Central Wisconsin (Marathon County and surrounding counties)',
+    spatialCoverage:
+      'Central Wisconsin — Marathon, Shawano, Oneida, Taylor, Lincoln, Langlade, Portage, and Wood counties',
     ...(data.generated_at ? { dateModified: data.generated_at } : {}),
     keywords: [
       'Wisconsin River level',
+      'Wolf River water level',
       'Wausau flood status',
       'Marathon County river conditions',
+      'Shawano fishing report',
+      'Rainbow Flowage',
       'central Wisconsin fishing report',
+      'central Wisconsin trout streams',
     ],
   },
 ];
