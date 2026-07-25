@@ -266,12 +266,24 @@ body {
   gap: var(--space-sm);
   border-bottom: 2px solid var(--wpr-ink);
   margin: 0 var(--space-md);
+  position: relative;
+}
+
+/* Teal accent segment over the section rule — quiet newspaper flourish */
+.section-header::after {
+  content: '';
+  position: absolute;
+  left: var(--space-md);
+  bottom: -2px;
+  width: 46px;
+  height: 2px;
+  background: var(--accent);
 }
 
 .section-header__title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.45rem;
   color: var(--wpr-ink);
   letter-spacing: -0.01em;
 }
@@ -290,8 +302,8 @@ body {
 /* CSS columns give masonry-like packing — each card keeps its natural
    height and flows into the next available slot without gray gaps. */
 .gauges-grid {
-  columns: 320px;
-  column-gap: var(--space-md);
+  columns: 340px;
+  column-gap: var(--space-lg);
   margin: 0 var(--space-md);
 }
 
@@ -299,10 +311,10 @@ body {
   background: white;
   padding: var(--space-lg);
   position: relative;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   display: block;
   width: 100%;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
   border: 1px solid var(--wpr-rule);
   border-radius: var(--radius);
   /* Don't split a card across columns */
@@ -313,6 +325,8 @@ body {
 
 .gauge-card:hover {
   background: #fefdfb;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--wpr-rule));
+  box-shadow: 0 3px 14px rgba(28, 25, 23, 0.08);
 }
 
 .gauge-card--action {
@@ -354,7 +368,7 @@ body {
 .gauge-card__name {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.16rem;
   color: var(--wpr-ink);
   line-height: 1.2;
 }
@@ -363,7 +377,7 @@ body {
   font-family: var(--font-body);
   font-size: 0.78rem;
   color: var(--wpr-ink-muted);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .gauge-card__status-badge {
@@ -1891,11 +1905,11 @@ body {
 
 .gauge-filter__chip {
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 0.35rem 0.85rem;
+  padding: 0.42rem 1rem;
   border-radius: 999px;
   border: 1px solid var(--wpr-rule);
   background: transparent;
@@ -2804,12 +2818,13 @@ body {
   position: sticky;
   z-index: 90; /* below the chrome bar (100); maps are isolated below both */
   display: flex;
-  gap: 2px;
+  gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
   background: var(--wpr-cream);
   border-bottom: 1px solid var(--wpr-rule);
-  padding: var(--space-xs) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  box-shadow: 0 2px 6px rgba(28, 25, 23, 0.06);
 }
 
 .section-nav::-webkit-scrollbar {
@@ -2818,21 +2833,37 @@ body {
 
 .section-nav__link {
   font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--wpr-ink-light);
   text-decoration: none;
-  padding: 4px 12px;
+  padding: 7px 16px;
   border-radius: 999px;
+  border: 1px solid var(--wpr-rule);
+  background: white;
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .section-nav__link:hover,
 .section-nav__link:focus-visible {
   background: var(--accent-light);
+  border-color: var(--accent);
   color: var(--accent-dark);
+}
+
+/* The section currently in view */
+.section-nav__link--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.section-nav__link--active:hover,
+.section-nav__link--active:focus-visible {
+  background: var(--accent-dark);
+  color: #fff;
 }
 
 /* Anchored sections stop below the two sticky bars */
@@ -2842,7 +2873,7 @@ body {
 #map,
 #reservoirs,
 .gauge-card-anchor {
-  scroll-margin-top: 96px;
+  scroll-margin-top: 112px;
 }
 
 /* ==========================================================================
@@ -2898,7 +2929,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   align-self: start;
 }
 
@@ -2935,10 +2966,10 @@ body {
 }
 
 .glance__row td {
-  padding: 3px var(--space-sm);
+  padding: 5px 10px;
   border-bottom: 1px solid var(--wpr-cream-dark);
   vertical-align: middle;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .glance__row:last-child td {
@@ -2946,7 +2977,7 @@ body {
 }
 
 .glance__name {
-  font-weight: 600;
+  font-weight: 650;
   color: var(--wpr-ink);
 }
 
@@ -3010,9 +3041,9 @@ body {
 
 .gauge-card__trend {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin-top: var(--space-xs);
+  margin-top: 8px;
 }
 
 .gauge-card__trend--rising  { color: var(--status-action); }
@@ -3054,9 +3085,9 @@ body {
 /* NWM forecast summary line on the card */
 .gauge-card__nwm {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin-top: 2px;
+  margin-top: 5px;
   display: flex;
   align-items: center;
   gap: 6px;
