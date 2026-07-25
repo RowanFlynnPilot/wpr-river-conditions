@@ -568,6 +568,134 @@ FISHING_REFERENCE = {
         ],
         "dnr_url": "https://dnr.wisconsin.gov/topic/Fishing",
     },
+    # --- Eight-county expansion waters (researched + source-verified 2026-07;
+    #     regulations reflect the 2026-27 season) ---
+    "04077400": {  # Wolf River near Shawano
+        "species": ["Walleye", "White Bass", "Smallmouth Bass", "Channel Catfish", "Northern Pike"],
+        "trout_class": None,
+        "tips": {
+            "Walleye": "Winnebago-system walleye push upriver to the Shawano dam in April — but the dam-to-County-M reach is a posted no-fishing refuge Apr 1–May 1. Drift jig-and-minnow along current seams downstream of the County M bridge until it reopens.",
+            "White Bass": "The famous run follows the walleye — May, classically peaking around Mother's Day. Small white jigs or inline spinners below the dam and off the Sturgeon Park pier.",
+            "Smallmouth Bass": "DNR-designated smallmouth water through town — float it in summer, working tubes and topwater around boulders and wood.",
+            "Channel Catfish": "Summer nights on cut bait or crawlers in the deeper holes below town; the river below the dam is open year-round for most species.",
+            "Northern Pike": "Work spoons and large minnows along the weedy margins of the millpond above the dam in spring and fall.",
+        },
+        "regulations": [
+            {"species": "Walleye", "rule": "Winnebago-system rules below the dam — 3 daily with new-for-2026 slot protection; check DNR for your reach"},
+            {"species": "Sturgeon", "rule": "Closed to fishing on the river — the spring spawning run at the dam is watch-only"},
+            {"species": "All species", "rule": "No fishing from the dam down to the Cty M bridge, Apr 1 until the Friday before the general opener (spring refuge)"},
+            {"species": "Bass", "rule": '14" min, 5 daily (special smallmouth rules on some stretches — check DNR)'},
+        ],
+        "season_notes": [
+            "Lake sturgeon spawn below the Shawano dam in the second half of April — thousands come to watch at Sturgeon Park. Look, don't cast.",
+            "Spring walleye run late March–April; white bass peak mid-May; catfish take the deep holes June–August",
+        ],
+        "access_points": [
+            {"name": "Sturgeon Park", "directions": "801 S. Water St., Shawano — east bank below the dam; accessible fishing pier", "lat": 44.7745, "lng": -88.6192},
+            {"name": "Huckleberry Harbor", "directions": "220 N. Sawyer St., Shawano — main city landing above the dam; 4 ramps", "lat": 44.7849, "lng": -88.6087},
+            {"name": "Judd Park", "directions": "1121 S. Water St., Shawano — small landing below the dam (city launch permit)", "lat": 44.7706, "lng": -88.6199},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/fisheriesmanagement/Public/LakeRegulation/Details?WBIC=241300&WBIC_NAME=Wolf+River",
+    },
+    "04077630": {  # Red River at Morgan Road near Gresham
+        "species": ["Brook Trout", "Smallmouth Bass", "Panfish"],
+        "trout_class": "Class II (mainstem at the gauge; West Branch nearby is Class I)",
+        "tips": {
+            "Brook Trout": "Wild brookies through this reach — small inline spinners or attractor dries through the pockets. Harvest is allowed from opening day under the new season structure.",
+            "Smallmouth Bass": "The Morgan Road area doubles as DNR-designated wadable smallmouth water — wade small craws and topwater through pocketwater after the May 2 opener.",
+            "Panfish": "The Gresham millponds (Upper and Lower Red lakes) a few miles downstream hold bluegill, crappie, bass, and pike with public landings.",
+        },
+        "regulations": [
+            {"species": "Trout", "rule": "5 daily, any length (county base rule) · season Apr 4 – Oct 15"},
+            {"species": "Bass", "rule": '14" min, 5 daily'},
+            {"species": "Sturgeon", "rule": "Closed — no fishing"},
+        ],
+        "season_notes": [
+            "Below Gresham the river turns into a Class I–III whitewater paddling run (Monastery Falls, Ziemer's Falls) — the trout-and-smallmouth water is upstream, around the gauge",
+        ],
+        "access_points": [
+            {"name": "Morgan Road bridge", "directions": "Road crossing at the gauge, ~5 mi NW of Gresham — carry-in/wade access; stay in the streambed", "lat": 44.8980, "lng": -88.8443},
+            {"name": "Lower Red Lake Dam landing", "directions": "Off Lower Lake Rd, Gresham — parking, sandy put-in below the dam; carry-in", "lat": 44.8416, "lng": -88.7607},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/fisheriesmanagement/Public/LakeRegulation/Details?WBIC=326600&WBIC_NAME=Red+River",
+    },
+    "04078500": {  # Embarrass River near Embarrass
+        "species": ["Smallmouth Bass", "Northern Pike", "Freshwater Drum"],
+        "trout_class": None,
+        "tips": {
+            "Smallmouth Bass": "The boulder gardens from the Pella dam down past Range Line Road are classic wade-and-float smallmouth water — tubes, craws, and topwater in summer low flows.",
+            "Northern Pike": "After the May 2 opener, throw spinnerbaits and large minnows through the slower sloughs and deeper outside bends between the rapids.",
+            "Freshwater Drum": "Underrated scrap on light tackle — bottom-fish crawlers in the deeper holes in summer.",
+        },
+        "regulations": [
+            {"species": "All species", "rule": "No fishing from the Cty M bridge down to Rangeline Rd (the gauge), Apr 1 until the Friday before the general opener (spring refuge)"},
+            {"species": "Walleye", "rule": "3 daily; minimum length varies by stretch — check DNR for your reach"},
+            {"species": "Sturgeon", "rule": "Closed — no fishing; Winnebago sturgeon run the Embarrass in spring and are watch-only"},
+        ],
+        "season_notes": [
+            "The reach just upstream of the gauge is a posted spring refuge protecting spawners (Apr 1 – May 1)",
+            "Trout live in the cold tributaries (Beaver Creek Class I, Mill Creek Class II), not the mainstem here",
+        ],
+        "access_points": [
+            {"name": "Old Mill Park at Pella Dam", "directions": "Island between the millrace and dam at Pella Pond, ~3.5 mi upstream of the gauge; carry-in", "lat": 44.7395, "lng": -88.8043},
+            {"name": "Hayman Falls County Park", "directions": "N4386 Hayman Falls Ln, Town of Pella — 54-acre county park with rapids, trails, restroom", "lat": 44.7457, "lng": -88.8443},
+            {"name": "East Range Line Road bridge", "directions": "Crossing at the gauge — informal carry-in via the path NW of the bridge", "lat": 44.7247, "lng": -88.7361},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/fisheriesmanagement/Public/LakeRegulation/Details?WBIC=291900&WBIC_NAME=Embarrass+River",
+    },
+    "05363600": {  # NF Yellow River near Perkinstown → Chequamegon Waters Flowage
+        "species": ["Largemouth Bass", "Northern Pike", "Panfish", "Walleye"],
+        "trout_class": None,
+        "tips": {
+            "Largemouth Bass": "The nearby Chequamegon Waters Flowage is largemouth-first water — work weedlines and wild-rice bay edges with soft plastics or spinnerbaits.",
+            "Northern Pike": "Pike are the flowage's top predator (DNR surveys found no musky) — larger baits along weed edges, and the bite holds through the ice season.",
+            "Panfish": "Bluegill and crappie are the flowage's bread and butter — shallow wood early in the season, weed edges in summer.",
+            "Walleye": "DNR calls walleye here a rare bonus fish — the few caught tend to be large.",
+        },
+        "regulations": [
+            {"species": "Panfish", "rule": "25 daily in total, no size limit (Chequamegon Waters Flowage)"},
+            {"species": "Largemouth Bass", "rule": '14" min, 5 daily'},
+            {"species": "Northern Pike", "rule": "No size limit, 5 daily"},
+            {"species": "Walleye", "rule": '15" min with 20–24" protected slot, 3 daily'},
+        ],
+        "season_notes": [
+            "The gauge stream itself is not DNR-classified trout water — the local fishery is Chequamegon Waters Flowage (Miller Dam), ~8 miles southwest",
+            "Ice fishing is popular on the flowage; an aeration system runs Jan–March near the Yellow River inlet",
+        ],
+        "access_points": [
+            {"name": "Chippewa Recreation Area (USFS)", "directions": "East shore of Chequamegon Waters Flowage via CTH M and Forest Rd 1417 — ramp, campground, fish-cleaning station", "lat": 45.2225, "lng": -90.7056},
+            {"name": "Miller Dam boat landing", "directions": "County ramp at the Miller Dam outlet (rebuilt 2024)", "lat": 45.2006, "lng": -90.7110},
+            {"name": "Yellow River Road bridge", "directions": "Informal carry-in/wading access at the gauge crossing on national forest land", "lat": 45.2986, "lng": -90.5965},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/lakes/lakepages/LakeDetail.aspx?wbic=2160700",
+    },
+    "05391000": {  # Wisconsin River at Rainbow Lake / Rainbow Flowage
+        "species": ["Walleye", "Musky", "Smallmouth Bass", "Northern Pike", "Panfish"],
+        "trout_class": None,
+        "tips": {
+            "Walleye": "May is the peak month by DNR creel data — work sand flats and drop-offs early; most keepers run 15–17 inches.",
+            "Musky": "Dark-stained water warms early, making Rainbow a strong early-season pick — and with a special 50-inch minimum it fishes as trophy catch-and-release water.",
+            "Smallmouth Bass": "July is the busiest smallmouth month here; DNR netting found most adults over 14 inches. Catch-and-release only until June 19.",
+            "Northern Pike": "Pike action holds through the ice — January is the peak month. Tip-ups with large shiners over weed flats.",
+            "Panfish": "Crappie are the most-sought panfish and genuinely quality-sized (11-inch average in the last creel survey) — wood and creek arms after ice-out.",
+        },
+        "regulations": [
+            {"species": "Musky", "rule": '50" min on Rainbow Flowage (special — statewide is 40"), 1 daily'},
+            {"species": "Walleye", "rule": '15" min, 20–24" protected slot (one over 24"), 3 daily'},
+            {"species": "Bass", "rule": 'Catch-and-release until June 19, then 14" min, 5 daily'},
+            {"species": "Panfish", "rule": "25 daily in total, no size limit"},
+        ],
+        "season_notes": [
+            "WVIC storage reservoir: drawn down to minimum pool by late March, then refilled with snowmelt — expect low water and mudflats in early spring",
+            "Fishable ice typically forms mid-December; winter creel shows strong pike, perch, and walleye effort",
+        ],
+        "access_points": [
+            {"name": "Rainbow Dam Recreation Area (WVIC)", "directions": "At the dam on the southeast corner — landing, restrooms, shore fishing; the USGS gauge is here", "lat": 45.8305, "lng": -89.5524},
+            {"name": "County D Landing", "directions": "Off CTH D on the southeast shore, just east of the D/E intersection", "lat": 45.8355, "lng": -89.5476},
+            {"name": "Stormy Camp landing", "directions": "Northwest shore at the end of Stormy Landing Rd (primitive; location approximate)", "lat": 45.8680, "lng": -89.5900},
+        ],
+        "dnr_url": "https://apps.dnr.wi.gov/lakes/lakepages/LakeDetail.aspx?wbic=1595300",
+    },
 }
 
 # Upcoming local events — manually updated as events are announced
