@@ -3,14 +3,7 @@ import Sparkline from './Sparkline';
 import GaugeMap from './GaugeMap';
 import LureSuggestions from './LureSuggestions';
 import { computeTrend, trendText, TREND_ARROWS } from '../utils/trend';
-
-function getTempStyle(tempF) {
-  if (tempF < 40) return { color: '#78716c', label: 'Cold' };
-  if (tempF < 55) return { color: '#2563eb', label: 'Cool' };
-  if (tempF < 70) return { color: '#0d7377', label: 'Moderate' };
-  if (tempF < 80) return { color: '#ea580c', label: 'Warm' };
-  return { color: '#dc2626', label: 'Hot' };
-}
+import { tempStyle } from '../utils/waterTemp';
 
 const REC_STATUS = {
   ideal:     { label: 'Ideal', css: 'ideal' },
@@ -186,16 +179,22 @@ export default function GaugeCard({ gauge }) {
               </div>
             )}
             {current.water_temp_f != null && (() => {
-              const tempStyle = getTempStyle(current.water_temp_f);
+              const ts = tempStyle(current.water_temp_f);
+              const fromWvic = current.water_temp_source === 'wvic';
+              const tip = fromWvic
+                ? `Daily reading from WVIC (provisional)${current.water_temp_date ? `, ${current.water_temp_date}` : ''}`
+                : undefined;
               return (
-                <div className="gauge-card__reading">
-                  <div className="gauge-card__reading-label">Water Temp</div>
-                  <div className="gauge-card__reading-value" style={{ color: tempStyle.color }}>
+                <div className="gauge-card__reading" title={tip}>
+                  <div className="gauge-card__reading-label">
+                    Water Temp{fromWvic ? ' (daily)' : ''}
+                  </div>
+                  <div className="gauge-card__reading-value" style={{ color: ts.color }}>
                     {formatNumber(current.water_temp_f, 1)}
                     <span className="gauge-card__reading-unit">&deg;F</span>
                   </div>
-                  <div className="gauge-card__temp-context" style={{ color: tempStyle.color }}>
-                    {tempStyle.label}
+                  <div className="gauge-card__temp-context" style={{ color: ts.color }}>
+                    {ts.label}
                   </div>
                 </div>
               );

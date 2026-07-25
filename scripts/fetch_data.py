@@ -1126,6 +1126,69 @@ def fetch_wvic_reservoirs() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# WVIC: Daily water temperatures (Flow-Temperature Summary)
+# ---------------------------------------------------------------------------
+
+WVIC_TEMP_URL = "https://wvic.com/tridentxml/FlowTempSummary/FlowTempSummary.html"
+
+# Data-row cell layout (11 cells, first empty):
+# [_, day, Rhinelander flow, temp, Tomahawk flow, Grandmother flow, temp,
+#  Rothschild flow, temp, Wisconsin Rapids flow, temp]
+WVIC_TEMP_COLUMNS = {8: "05398000", 10: "05400760"}  # temp cell → USGS gauge
+
+_MONTHS = {m: i for i, m in enumerate(
+    ["January", "February", "March", "April", "May", "June", "July",
+     "August", "September", "October", "November", "December"], start=1)}
+
+
+def fetch_wvic_water_temp() -> dict:
+    """
+    Daily water temperatures from WVIC's Flow-Temperature Summary page —
+    the only water-temp source in the basin (USGS operates no active temp
+    gauges here). The page is a static month-to-date HTML table; the last
+    populated row is the most recent daily reading.
+
+    Returns {usgs_gauge_id: {"temp_f": float, "date": "YYYY-MM-DD"}}.
+    Provisional data — attribute WVIC wherever it surfaces.
+    """
+    html = fetch_text(WVIC_TEMP_URL)
+    if not html:
+        return {}
+
+    # The header text is split across nested tags in the raw source —
+    # strip markup before searching for e.g. "July - 2026".
+    text = re.sub(r"<[^>]+>|&nbsp;?", " ", html)
+    m = re.search(r"(January|February|March|April|May|June|July|August|"
+                  r"September|October|November|December)\s*-\s*(\d{4})", text)
+    if not m:
+        log.warning("WVIC temp page: month header not found")
+        return {}
+    month, year = _MONTHS[m.group(1)], int(m.group(2))
+
+    latest: dict = {}
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S | re.I):
+        cells = [re.sub(r"<[^>]+>|&nbsp;?", " ", c).strip()
+                 for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.S | re.I)]
+        if len(cells) < 11:
+            continue
+        try:
+            day = int(cells[1])
+        except ValueError:
+            continue
+        for idx, gid in WVIC_TEMP_COLUMNS.items():
+            try:
+                temp = float(cells[idx].replace(",", ""))
+            except ValueError:
+                continue
+            if 32.0 <= temp <= 95.0:  # physical sanity for °F river water
+                latest[gid] = {
+                    "temp_f": temp,
+                    "date": f"{year}-{month:02d}-{day:02d}",
+                }
+    return latest
+
+
+# ---------------------------------------------------------------------------
 # Fishing conditions: Weather, Sun, Solunar
 # ---------------------------------------------------------------------------
 
@@ -2177,11 +2240,26 @@ def main():
     log.info("Starting WPR River Conditions data fetch...")
     now = datetime.now(timezone.utc).isoformat()
 
+    # Daily WVIC water temps (one fetch covers Rothschild + Wisconsin Rapids)
+    log.info("Fetching WVIC water temperatures...")
+    wvic_temps = fetch_wvic_water_temp()
+    if wvic_temps:
+        log.info("  " + ", ".join(
+            f"{gid}: {v['temp_f']:.0f}F ({v['date']})" for gid, v in wvic_temps.items()))
+
     # Fetch gauge data
     gauges_data = []
     for gauge in GAUGES:
         log.info(f"Fetching USGS data for {gauge['name']} ({gauge['id']})...")
         current = fetch_usgs_current(gauge["id"])
+
+        # WVIC's daily reading fills the water-temp gap where USGS has no
+        # sensor — set before lure suggestions so they use the real temp.
+        wt = wvic_temps.get(gauge["id"])
+        if wt and current.get("water_temp_f") is None:
+            current["water_temp_f"] = wt["temp_f"]
+            current["water_temp_source"] = "wvic"
+            current["water_temp_date"] = wt["date"]
         history = fetch_usgs_history(gauge["id"], days=7)
         normal_flow = fetch_usgs_normal_flow(gauge["id"], current.get("streamflow_cfs"))
         if normal_flow:
@@ -2272,6 +2350,13 @@ def main():
         **sun,
         **solunar,
     } if (weather or sun or solunar) else None
+
+    # Surface the Rothschild water temp on the fishing panel too.
+    if fishing_conditions is not None and wvic_temps.get("05398000"):
+        wt = wvic_temps["05398000"]
+        fishing_conditions["water_temp_f"] = wt["temp_f"]
+        fishing_conditions["water_temp_station"] = "Wisconsin River at Rothschild"
+        fishing_conditions["water_temp_date"] = wt["date"]
 
     # Fetch weather forecast
     log.info("Fetching 5-day weather forecast...")

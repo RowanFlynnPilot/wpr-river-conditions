@@ -2001,6 +2001,62 @@ body {
   line-height: 1;
 }
 
+.overview-map-legend__radar {
+  color: #2563eb;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+/* Replay scrubber — 7 days of history on the pins */
+.map-replay {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-md);
+  background: var(--wpr-cream);
+  border-top: 1px solid var(--wpr-rule);
+}
+
+.map-replay__btn,
+.map-replay__live {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid var(--wpr-rule);
+  background: white;
+  color: var(--accent);
+  border-radius: var(--radius);
+  padding: 3px 9px;
+  cursor: pointer;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.map-replay__btn:hover,
+.map-replay__live:hover {
+  background: var(--accent-light);
+}
+
+.map-replay__slider {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.map-replay__label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--wpr-ink-light);
+  min-width: 62px;
+  text-align: right;
+}
+
+.map-tip__fcst {
+  display: block;
+  color: #9ddfe2;
+}
+
 /* Map hover tooltips — dark tip, same voice as the Cleanup Ledger's */
 .leaflet-tooltip.map-tip {
   background: var(--wpr-ink);

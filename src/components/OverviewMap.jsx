@@ -51,10 +51,41 @@ function gaugeTipHtml(gauge) {
   }
   const trend = computeTrend(gauge.history);
   const trendStr = trend ? ` · ${TREND_ARROWS[trend.dir]} ${trendText(trend)}` : '';
+
+  // National Water Model outlook, when the payload carries one.
+  const nwm = gauge.nwm_forecast;
+  let fcstLine = '';
+  if (nwm?.next24h_pct != null) {
+    const arrow = TREND_ARROWS[nwm.class] || '→';
+    const text = nwm.class === 'steady'
+      ? 'holding steady'
+      : `${nwm.next24h_pct > 0 ? '+' : ''}${nwm.next24h_pct}% next ${nwm.horizon_h || 24}h`;
+    fcstLine = `<span class="map-tip__sub map-tip__fcst">Forecast: ${arrow} ${escapeHtml(text)}</span>`;
+  }
+
   return (
     `<span class="map-tip__name">${escapeHtml(gauge.short_name)}</span>` +
-    `<span class="map-tip__sub">${escapeHtml(parts.join(' · ') || 'No current data')}${escapeHtml(trendStr)}</span>`
+    `<span class="map-tip__sub">${escapeHtml(parts.join(' · ') || 'No current data')}${escapeHtml(trendStr)}</span>` +
+    fcstLine
   );
+}
+
+// Flood status from a historical stage reading — same thresholds the
+// scraper applies to the live reading (used by the replay scrubber).
+function statusFromHeight(ht, stages) {
+  if (!stages || ht == null) return 'normal';
+  if (ht >= stages.major) return 'major';
+  if (ht >= stages.moderate) return 'moderate';
+  if (ht >= stages.minor) return 'minor';
+  if (ht >= stages.action) return 'action';
+  return 'normal';
+}
+
+function fmtReplayTime(ms) {
+  return new Date(ms).toLocaleString('en-US', {
+    weekday: 'short',
+    hour: 'numeric',
+  });
 }
 
 export default function OverviewMap({
@@ -72,14 +103,20 @@ export default function OverviewMap({
   const riverLayerRef = useRef(null);
   const boundaryRef = useRef(null);
   const haloRef = useRef(null);
+  const radarLayerRef = useRef(null);
+  const markersByIdRef = useRef({});
 
   const [shownStatuses, setShownStatuses] = useState({
     normal: true, action: true, minor: true, moderate: true, major: true,
   });
   const [showReservoirs, setShowReservoirs] = useState(true);
   const [showLaunches, setShowLaunches] = useState(false);
+  const [showRadar, setShowRadar] = useState(false);
   const [countiesGeo, setCountiesGeo] = useState(null);
   const [riversGeo, setRiversGeo] = useState(null);
+  // Replay scrubber: null = live; otherwise an index into the timeline.
+  const [replayIdx, setReplayIdx] = useState(null);
+  const [playing, setPlaying] = useState(false);
 
   const validGauges = useMemo(
     () => gauges.filter((g) => g.lat && g.lon),
@@ -140,7 +177,10 @@ export default function OverviewMap({
       pane: 'labels',
     }).addTo(map);
 
-    // Stacking: boundary (350) < rivers (360) < overlayPane markers (400).
+    // Stacking: radar (330) < boundary (350) < rivers (360) < markers (400).
+    map.createPane('radar');
+    map.getPane('radar').style.zIndex = 330;
+    map.getPane('radar').style.pointerEvents = 'none';
     map.createPane('boundary');
     map.getPane('boundary').style.zIndex = 350;
     map.createPane('rivers');
@@ -289,6 +329,7 @@ export default function OverviewMap({
     const group = gaugeLayerRef.current;
     if (!map || !group) return;
     group.clearLayers();
+    markersByIdRef.current = {};
 
     const ordered = [...validGauges].sort(
       (a, b) =>
@@ -316,8 +357,9 @@ export default function OverviewMap({
       marker.on('click', () => onGaugeClick?.(g.id));
 
       // Gauges at action stage or above get a pulsing attention ring.
+      let ring = null;
       if (key !== 'normal') {
-        L.circleMarker([g.lat, g.lon], {
+        ring = L.circleMarker([g.lat, g.lon], {
           radius: radiusFor(key, map.getZoom()) + 5,
           color: conf.color,
           weight: 2,
@@ -329,8 +371,140 @@ export default function OverviewMap({
       }
 
       marker.addTo(group);
+      markersByIdRef.current[g.id] = { marker, ring, key };
     }
   }, [validGauges, shownStatuses, onGaugeClick]);
+
+  // --- Replay scrubber: 7 days of history on the pins ---
+  // Timeline at 2h steps spanning every gauge's history.
+  const timeline = useMemo(() => {
+    let min = Infinity;
+    let max = -Infinity;
+    for (const g of gauges) {
+      for (const h of g.history || []) {
+        const t = Date.parse(h.timestamp);
+        if (!Number.isNaN(t)) {
+          if (t < min) min = t;
+          if (t > max) max = t;
+        }
+      }
+    }
+    if (!Number.isFinite(min) || max - min < 12 * 3600e3) return [];
+    const steps = [];
+    for (let t = min; t <= max; t += 2 * 3600e3) steps.push(t);
+    return steps;
+  }, [gauges]);
+
+  const replaySeries = useMemo(() => {
+    const out = {};
+    for (const g of gauges) {
+      const pts = (g.history || [])
+        .map((h) => ({ t: Date.parse(h.timestamp), ht: h.gage_height_ft, cfs: h.streamflow_cfs }))
+        .filter((p) => !Number.isNaN(p.t));
+      const flows = pts.map((p) => p.cfs).filter((v) => v != null);
+      out[g.id] = {
+        pts,
+        lo: flows.length ? Math.min(...flows) : null,
+        hi: flows.length ? Math.max(...flows) : null,
+      };
+    }
+    return out;
+  }, [gauges]);
+
+  // Restyle pins in place for the selected replay step (or restore live).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const zoom = map.getZoom();
+    for (const g of validGauges) {
+      const entry = markersByIdRef.current[g.id];
+      if (!entry) continue;
+
+      if (replayIdx == null) {
+        const conf = STATUS_COLORS[entry.key];
+        entry.marker.setStyle({ fillColor: conf.color, fillOpacity: 0.92 });
+        entry.marker.setRadius(radiusFor(entry.key, zoom));
+        if (entry.ring) entry.ring.setStyle({ opacity: 1 });
+        continue;
+      }
+
+      // Pulse rings describe *now* — hide them while time-traveling.
+      if (entry.ring) entry.ring.setStyle({ opacity: 0 });
+
+      const t = timeline[replayIdx];
+      const s = replaySeries[g.id];
+      let best = null;
+      let bestD = Infinity;
+      for (const p of s?.pts || []) {
+        const d = Math.abs(p.t - t);
+        if (d < bestD) {
+          bestD = d;
+          best = p;
+        }
+      }
+      if (!best || bestD > 90 * 60 * 1000) {
+        entry.marker.setStyle({ fillColor: '#9ca3af', fillOpacity: 0.55 });
+        entry.marker.setRadius(4);
+        continue;
+      }
+
+      const st = statusFromHeight(best.ht, g.flood_stages);
+      let r = radiusFor(st, zoom);
+      // Size tracks that gauge's own flow range for the week, so small
+      // trout streams move visibly too.
+      if (best.cfs != null && s.hi != null && s.hi > s.lo) {
+        const pct = (best.cfs - s.lo) / (s.hi - s.lo);
+        r = 4.5 + 5 * pct + (st !== 'normal' ? 1.5 : 0);
+      }
+      entry.marker.setStyle({ fillColor: STATUS_COLORS[st].color, fillOpacity: 0.92 });
+      entry.marker.setRadius(r);
+    }
+  }, [replayIdx, timeline, replaySeries, validGauges, shownStatuses]);
+
+  // Advance the playhead while playing.
+  useEffect(() => {
+    if (!playing) return undefined;
+    const iv = setInterval(() => {
+      setReplayIdx((i) => {
+        const next = i == null ? 0 : i + 1;
+        if (next >= timeline.length) {
+          setPlaying(false);
+          return timeline.length - 1;
+        }
+        return next;
+      });
+    }, 300);
+    return () => clearInterval(iv);
+  }, [playing, timeline.length]);
+
+  // --- Radar overlay (RainViewer latest frame) ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return undefined;
+    if (radarLayerRef.current) {
+      radarLayerRef.current.remove();
+      radarLayerRef.current = null;
+    }
+    if (!showRadar) return undefined;
+    const ac = new AbortController();
+    fetch('https://api.rainviewer.com/public/weather-maps.json', { signal: ac.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const frames = d?.radar?.past || [];
+        const last = frames[frames.length - 1];
+        if (!last || !d.host || !mapRef.current || radarLayerRef.current) return;
+        radarLayerRef.current = L.tileLayer(
+          `${d.host}${last.path}/256/{z}/{x}/{y}/4/1_1.png`,
+          {
+            pane: 'radar',
+            opacity: 0.6,
+            attribution: '<a href="https://www.rainviewer.com/">RainViewer</a>',
+          }
+        ).addTo(mapRef.current);
+      })
+      .catch(() => {});
+    return () => ac.abort();
+  }, [showRadar]);
 
   // --- Reservoir diamonds (toggleable overlay) ---
   useEffect(() => {
@@ -431,6 +605,53 @@ export default function OverviewMap({
         role="region"
         aria-label="Map of central Wisconsin river gauges, reservoirs, and boat launches"
       />
+      {timeline.length > 8 && (
+        <div className="map-replay">
+          <button
+            type="button"
+            className="map-replay__btn"
+            aria-label={playing ? 'Pause replay' : 'Replay the past 7 days'}
+            onClick={() => {
+              if (playing) {
+                setPlaying(false);
+                return;
+              }
+              if (replayIdx == null || replayIdx >= timeline.length - 1) setReplayIdx(0);
+              setPlaying(true);
+              trackEvent('map_replay', { action: 'play' });
+            }}
+          >
+            {playing ? '❚❚' : '▶'}
+          </button>
+          <input
+            type="range"
+            className="map-replay__slider"
+            min="0"
+            max={timeline.length - 1}
+            value={replayIdx == null ? timeline.length - 1 : replayIdx}
+            aria-label="Scrub through the past 7 days"
+            onChange={(e) => {
+              setPlaying(false);
+              setReplayIdx(Number(e.target.value));
+            }}
+          />
+          <span className="map-replay__label" aria-live="polite">
+            {replayIdx == null ? 'Live' : fmtReplayTime(timeline[replayIdx])}
+          </span>
+          {replayIdx != null && (
+            <button
+              type="button"
+              className="map-replay__live"
+              onClick={() => {
+                setPlaying(false);
+                setReplayIdx(null);
+              }}
+            >
+              Back to live
+            </button>
+          )}
+        </div>
+      )}
       <div className="overview-map-legend">
         {legendStatuses.map(([key, { color, label }]) => (
           <label key={key} className="overview-map-legend__toggle">
@@ -474,6 +695,18 @@ export default function OverviewMap({
             Boat launches · {launchCount}
           </label>
         )}
+        <label className="overview-map-legend__toggle" title="Latest radar frame from RainViewer">
+          <input
+            type="checkbox"
+            checked={showRadar}
+            onChange={(e) => {
+              setShowRadar(e.target.checked);
+              trackEvent('map_layer_toggle', { layer: 'radar', on: e.target.checked });
+            }}
+          />
+          <span className="overview-map-legend__radar" aria-hidden="true">◍</span>
+          Radar
+        </label>
       </div>
     </div>
   );
