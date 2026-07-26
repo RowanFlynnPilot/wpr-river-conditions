@@ -222,7 +222,9 @@ export default function GaugeCard({ gauge }) {
             const dir = f.class || 'steady';
             const tip = `NOAA National Water Model flow forecast${
               f.issued ? `, issued ${formatCrestTime(f.issued)}` : ''
-            }${f.baseline === 'model' ? ' (vs. the model’s own current estimate)' : ''}`;
+            }${f.carried_forward ? ` — latest run available (${f.age_h}h old)` : ''}${
+              f.baseline === 'model' ? ' (vs. the model’s own current estimate)' : ''
+            }`;
             return (
               <div className={`gauge-card__nwm gauge-card__nwm--${dir}`} title={tip}>
                 <span className="gauge-card__nwm-label">Forecast</span>

@@ -281,6 +281,19 @@ NWS_ZONES = [
     "WIC141",  # Wood
 ]
 
+# County FIPS (the SAME codes on an alert) → our county zone. Zone-based
+# alerts carry forecast zones in UGC, so this is how they map to counties.
+NWS_ZONE_BY_FIPS = {
+    "055067": "WIC067",  # Langlade
+    "055069": "WIC069",  # Lincoln
+    "055073": "WIC073",  # Marathon
+    "055085": "WIC085",  # Oneida
+    "055097": "WIC097",  # Portage
+    "055115": "WIC115",  # Shawano
+    "055119": "WIC119",  # Taylor
+    "055141": "WIC141",  # Wood
+}
+
 # WVIC reservoirs to track (scraped from wvic.com).
 # lat/lon are the NWS NWPS gauge locations at each impoundment
 # (LTKW3, WILW3, SPDW3, EPLW3, RRVW3) \u2014 used for the overview-map pins.
@@ -1040,8 +1053,17 @@ def fetch_nws_alerts() -> list[dict]:
 
             # County zones this alert covers (drives map shading) — only
             # the counties we monitor, from the alert's UGC geocodes.
-            ugc = (props.get("geocode") or {}).get("UGC") or []
-            zones = [z for z in ugc if z in NWS_ZONES]
+            geocode = props.get("geocode") or {}
+            ugc = geocode.get("UGC") or []
+            same = geocode.get("SAME") or []
+            # Flood warnings are issued for county zones (WIC…), but heat,
+            # winter, and severe alerts are issued for *forecast* zones
+            # (WIZ…) that don't match our county list — their SAME/FIPS
+            # codes are the reliable cross-walk. Use both.
+            zones = sorted(
+                {z for z in ugc if z in NWS_ZONES}
+                | {NWS_ZONE_BY_FIPS[s] for s in same if s in NWS_ZONE_BY_FIPS}
+            )
 
             alerts.append({
                 "event": props.get("event"),
@@ -1211,7 +1233,88 @@ def _parse_iso(t: str):
 # load), don't burn 15s × 22 calls of cron time — after two gauges fail
 # completely, skip the rest of this run. Resets on any success.
 _NWM_CONSECUTIVE_FAILURES = 0
-_NWM_BREAKER_LIMIT = 2
+# Each failure now costs one 8s timeout instead of two 15s ones, so the
+# breaker can be more patient — more gauges get a fresh forecast on a
+# partly-degraded cycle, and the carry-forward covers the rest.
+_NWM_BREAKER_LIMIT = 4
+
+
+def _nwm_summary(points: list[dict], current_flow) -> dict:
+    """
+    Card summary from forecast points: % change at the farthest point
+    within 24h, measured against the current observed flow — or, for
+    gauges with no live flow (Wolf at Shawano, discontinued sites),
+    against the model's own next point. Thresholds match the
+    observed-trend math.
+
+    Anchored on *now* rather than the series start, so a forecast carried
+    forward from an earlier run stays accurate as it ages.
+    """
+    now = datetime.now(timezone.utc)
+    future = []
+    for p in points:
+        dt = _parse_iso(p.get("t"))
+        if dt and dt > now and p.get("cfs") is not None:
+            future.append((dt, float(p["cfs"])))
+    if not future:
+        return {}
+
+    if current_flow is not None and current_flow > 0:
+        baseline, baseline_kind = current_flow, "observed"
+    elif future[0][1] > 0:
+        baseline, baseline_kind = future[0][1], "model"
+    else:
+        return {}
+
+    best = None
+    for dt, f in future:
+        if dt - now <= timedelta(hours=24):
+            best = (dt, f)
+    if not best:
+        return {}
+
+    pct = (best[1] - baseline) / baseline * 100
+    return {
+        "next24h_pct": round(pct),
+        "horizon_h": max(1, round((best[0] - now).total_seconds() / 3600)),
+        "class": "rising" if pct > 15 else "falling" if pct < -15 else "steady",
+        "baseline": baseline_kind,
+    }
+
+
+def carry_forward_nwm(prev_forecast: dict | None, current_flow,
+                      max_age_h: int = 12) -> dict | None:
+    """
+    Reuse the previous run's forecast when NOAA is unreachable. The NWPS
+    reaches endpoint is intermittently down for whole scrape cycles, which
+    would otherwise blank the forecast for every gauge; a model run a few
+    hours old still carries real signal. The summary is recomputed against
+    the current flow and the current clock, and future points are trimmed
+    to what's still ahead.
+    """
+    if not prev_forecast:
+        return None
+
+    issued = _parse_iso(prev_forecast.get("issued"))
+    now = datetime.now(timezone.utc)
+    if issued and now - issued > timedelta(hours=max_age_h):
+        return None
+
+    points = [
+        p for p in (prev_forecast.get("points") or [])
+        if (_parse_iso(p.get("t")) or now) > now
+    ]
+    summary = _nwm_summary(points, current_flow)
+    if not summary:
+        return None
+
+    carried = dict(prev_forecast)
+    carried["points"] = points
+    carried.update(summary)
+    carried["carried_forward"] = True
+    if issued:
+        carried["age_h"] = max(1, round((now - issued).total_seconds() / 3600))
+    return carried
 
 
 def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
@@ -1231,9 +1334,13 @@ def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
     if _NWM_CONSECUTIVE_FAILURES >= _NWM_BREAKER_LIMIT:
         return None
 
+    # NOAA answers in well under a second when healthy and hangs when not,
+    # so a short timeout costs nothing real and keeps a bad cycle cheap.
+    # Skip medium_range when short_range already failed — same host, so
+    # it's almost certainly down too, and the carry-forward covers us.
     base = f"https://api.water.noaa.gov/nwps/v1/reaches/{reach_id}/streamflow?series="
-    short = fetch_json(base + "short_range", timeout=15)
-    medium = fetch_json(base + "medium_range", timeout=15)
+    short = fetch_json(base + "short_range", timeout=8)
+    medium = fetch_json(base + "medium_range", timeout=8) if short is not None else None
 
     if short is None and medium is None:
         _NWM_CONSECUTIVE_FAILURES += 1
@@ -1291,35 +1398,7 @@ def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
         "peak_cfs": round(peak_f, 1),
         "peak_time": peak_t,
     }
-
-    # Card summary: % change at the farthest forecast point within 24h,
-    # against the current observed flow — or, for gauges with no live flow
-    # (Wolf at Shawano, discontinued sites), against the model's own first
-    # point. Thresholds match the observed-trend math.
-    baseline = None
-    baseline_kind = None
-    if current_flow is not None and current_flow > 0:
-        baseline = current_flow
-        baseline_kind = "observed"
-    elif merged[0][1] > 0:
-        baseline = merged[0][1]
-        baseline_kind = "model"
-
-    if baseline and t0:
-        best = None
-        for t, f in merged:
-            dt = _parse_iso(t)
-            if dt and dt - t0 <= timedelta(hours=24):
-                best = (dt, f)
-        if best:
-            pct = (best[1] - baseline) / baseline * 100
-            result["next24h_pct"] = round(pct)
-            result["horizon_h"] = max(1, round((best[0] - t0).total_seconds() / 3600))
-            result["class"] = (
-                "rising" if pct > 15 else "falling" if pct < -15 else "steady"
-            )
-            result["baseline"] = baseline_kind
-
+    result.update(_nwm_summary(result["points"], current_flow))
     return result
 
 
@@ -2521,9 +2600,56 @@ def generate_daily_summary(
 # Main: Assemble and write JSON
 # ---------------------------------------------------------------------------
 
+PUBLISHED_DATA_URL = (
+    "https://rowanflynnpilot.github.io/wpr-river-conditions/data/river-data.json"
+)
+
+
+def fetch_published_gauges() -> dict:
+    """
+    The previous run's gauge records, used to carry forward values from
+    upstreams that are intermittently unreachable.
+
+    Primary source is the published payload — in CI that *is* the last
+    successful run, since src/data/river-data.json is gitignored and never
+    checked out. The local file fills any gaps so repeated local runs
+    behave the same way (a no-op in CI, where it doesn't exist).
+
+    Returns {gauge_id: gauge_record}.
+    """
+    out = {}
+    data = fetch_json(PUBLISHED_DATA_URL, timeout=20)
+    if data:
+        out = {g["id"]: g for g in data.get("gauges", []) if g.get("id")}
+
+    local_path = Path(__file__).parent.parent / "src" / "data" / "river-data.json"
+    if local_path.exists():
+        try:
+            local = json.loads(local_path.read_text(encoding="utf-8"))
+            for g in local.get("gauges", []):
+                gid = g.get("id")
+                if not gid:
+                    continue
+                if gid not in out:
+                    out[gid] = g
+                elif not out[gid].get("nwm_forecast") and g.get("nwm_forecast"):
+                    # Published record exists but lost its forecast — keep
+                    # the local one so a good run isn't discarded.
+                    out[gid] = {**out[gid], "nwm_forecast": g["nwm_forecast"]}
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    if not out:
+        log.info("  No previous payload available (first run)")
+    return out
+
+
 def main():
     log.info("Starting WPR River Conditions data fetch...")
     now = datetime.now(timezone.utc).isoformat()
+
+    log.info("Loading last published payload (fallback source)...")
+    published = fetch_published_gauges()
 
     # Daily WVIC water temps (one fetch covers Rothschild + Wisconsin Rapids)
     log.info("Fetching WVIC water temperatures...")
@@ -2579,8 +2705,20 @@ def main():
         # signal (the NWS crest forecast above only appears in high water).
         nwm_forecast = None
         if gauge.get("nwm_reach"):
-            nwm_forecast = fetch_nwm_forecast(gauge["nwm_reach"], current.get("streamflow_cfs"))
-            if nwm_forecast and nwm_forecast.get("next24h_pct") is not None:
+            flow_now = current.get("streamflow_cfs")
+            nwm_forecast = fetch_nwm_forecast(gauge["nwm_reach"], flow_now)
+            if nwm_forecast is None:
+                # NOAA unreachable this cycle — reuse the last published
+                # model run rather than blanking the forecast entirely.
+                nwm_forecast = carry_forward_nwm(
+                    (published.get(gauge["id"]) or {}).get("nwm_forecast"), flow_now
+                )
+                if nwm_forecast:
+                    log.info(
+                        f"  NWM: carried forward ({nwm_forecast.get('age_h', '?')}h old), "
+                        f"{nwm_forecast.get('next24h_pct', 0):+d}%"
+                    )
+            elif nwm_forecast.get("next24h_pct") is not None:
                 log.info(
                     f"  NWM: {nwm_forecast['next24h_pct']:+d}% over next "
                     f"{nwm_forecast['horizon_h']}h"
