@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T03:09:51.361212+00:00",
+  "generated_at": "2026-07-26T03:37:24.564076+00:00",
   "region": "Central Wisconsin",
   "gauges": [
     {
@@ -23,22 +23,6 @@
       "nws_forecast": null,
       "nwm_forecast": {
         "points": [
-          {
-            "t": "2026-07-26T00:00:00Z",
-            "cfs": 981.4
-          },
-          {
-            "t": "2026-07-26T01:00:00Z",
-            "cfs": 1084.5
-          },
-          {
-            "t": "2026-07-26T02:00:00Z",
-            "cfs": 1198.6
-          },
-          {
-            "t": "2026-07-26T03:00:00Z",
-            "cfs": 1310.9
-          },
           {
             "t": "2026-07-26T04:00:00Z",
             "cfs": 1410.5
@@ -100,9 +84,11 @@
         "peak_cfs": 1660.5,
         "peak_time": "2026-07-26T17:00:00Z",
         "next24h_pct": 99,
-        "horizon_h": 14,
+        "horizon_h": 13,
         "class": "rising",
-        "baseline": "observed"
+        "baseline": "observed",
+        "carried_forward": true,
+        "age_h": 5
       },
       "current": {
         "timestamp": "2026-07-25T21:05:00.000-05:00",
@@ -114,7 +100,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:10:00.000-05:00",
+          "timestamp": "2026-07-18T22:40:00.000-05:00",
           "streamflow_cfs": 1150.0,
           "gage_height_ft": 12.48
         },
@@ -541,6 +527,12 @@
         "years": "1945\u20132025",
         "count": 81
       },
+      "upstream_rain": {
+        "basin": "wausau",
+        "label": "Wausau-area basins",
+        "inches": 0.35,
+        "pop_pct": 11
+      },
       "fishing": {
         "species": [
           "Walleye",
@@ -635,12 +627,12 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
-        "gage_height_ft": 10.49
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
+        "gage_height_ft": 10.48
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:40:00.000-05:00",
           "gage_height_ft": 10.32
         },
         {
@@ -973,10 +965,20 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "gage_height_ft": 10.49
+          "gage_height_ft": 10.48
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "gage_height_ft": 10.48
         }
       ],
       "normal_flow": null,
+      "upstream_rain": {
+        "basin": "wausau",
+        "label": "Wausau-area basins",
+        "inches": 0.35,
+        "pop_pct": 11
+      },
       "fishing": {
         "species": [
           "Walleye",
@@ -1063,18 +1065,6 @@
       "nwm_forecast": {
         "points": [
           {
-            "t": "2026-07-26T01:00:00Z",
-            "cfs": 53.0
-          },
-          {
-            "t": "2026-07-26T02:00:00Z",
-            "cfs": 53.0
-          },
-          {
-            "t": "2026-07-26T03:00:00Z",
-            "cfs": 53.3
-          },
-          {
             "t": "2026-07-26T04:00:00Z",
             "cfs": 53.3
           },
@@ -1139,9 +1129,11 @@
         "peak_cfs": 53.3,
         "peak_time": "2026-07-26T03:00:00Z",
         "next24h_pct": 37,
-        "horizon_h": 15,
+        "horizon_h": 14,
         "class": "rising",
-        "baseline": "observed"
+        "baseline": "observed",
+        "carried_forward": true,
+        "age_h": 4
       },
       "current": {
         "timestamp": "2026-07-25T08:00:00.000-05:00",
@@ -1150,7 +1142,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:40:00.000-05:00",
           "streamflow_cfs": 39.4,
           "gage_height_ft": 1.97
         },
@@ -1547,6 +1539,12 @@
         "years": "1925\u20132025",
         "count": 49
       },
+      "upstream_rain": {
+        "basin": "wausau",
+        "label": "Wausau-area basins",
+        "inches": 0.35,
+        "pop_pct": 11
+      },
       "fishing": {
         "species": [
           "Brook Trout",
@@ -1628,6 +1626,12 @@
       },
       "history": [],
       "normal_flow": null,
+      "upstream_rain": {
+        "basin": "wausau",
+        "label": "Wausau-area basins",
+        "inches": 0.35,
+        "pop_pct": 11
+      },
       "fishing": {
         "species": [
           "Brook Trout"
@@ -1753,21 +1757,21 @@
         "issued": "2026-07-26T00:00:00Z",
         "peak_cfs": 177.6,
         "peak_time": "2026-07-26T17:00:00Z",
-        "next24h_pct": 113,
-        "horizon_h": 15,
+        "next24h_pct": 118,
+        "horizon_h": 14,
         "class": "rising",
         "baseline": "observed",
         "carried_forward": true,
-        "age_h": 3
+        "age_h": 4
       },
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
-        "streamflow_cfs": 83.5,
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
+        "streamflow_cfs": 81.6,
         "gage_height_ft": 0.38
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 90.8,
           "gage_height_ft": 0.42
         },
@@ -2183,16 +2187,27 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "streamflow_cfs": 83.5,
+          "streamflow_cfs": 81.6,
+          "gage_height_ft": 0.38
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 81.6,
           "gage_height_ft": 0.38
         }
       ],
       "normal_flow": {
         "median_cfs": 104,
         "class": "normal",
-        "pct_of_median": 80,
+        "pct_of_median": 78,
         "years": "1914\u20132025",
         "count": 99
+      },
+      "upstream_rain": {
+        "basin": "wausau",
+        "label": "Wausau-area basins",
+        "inches": 0.35,
+        "pop_pct": 11
       },
       "fishing": {
         "species": [
@@ -2282,14 +2297,14 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
         "precip_24h_in": 0.0,
         "streamflow_cfs": 5.3,
         "gage_height_ft": 2.18
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:40:00.000-05:00",
           "streamflow_cfs": 8.6,
           "gage_height_ft": 2.27
         },
@@ -2707,6 +2722,11 @@
           "timestamp": "2026-07-25T20:00:00.000-05:00",
           "streamflow_cfs": 5.3,
           "gage_height_ft": 2.18
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 5.3,
+          "gage_height_ft": 2.18
         }
       ],
       "normal_flow": {
@@ -2715,6 +2735,12 @@
         "pct_of_median": 41,
         "years": "1914\u20132025",
         "count": 101
+      },
+      "upstream_rain": {
+        "basin": "eau-pleine",
+        "label": "Big Eau Pleine basin",
+        "inches": 0.17,
+        "pop_pct": 15
       },
       "fishing": {
         "species": [
@@ -2799,13 +2825,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:15:00.000-05:00",
-        "streamflow_cfs": 101.0,
+        "timestamp": "2026-07-25T22:15:00.000-05:00",
+        "streamflow_cfs": 102.0,
         "gage_height_ft": 1.97
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 105.0,
           "gage_height_ft": 1.99
         },
@@ -3221,16 +3247,27 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "streamflow_cfs": 101.0,
+          "streamflow_cfs": 102.0,
+          "gage_height_ft": 1.97
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 102.0,
           "gage_height_ft": 1.97
         }
       ],
       "normal_flow": {
         "median_cfs": 101,
         "class": "normal",
-        "pct_of_median": 100,
+        "pct_of_median": 101,
         "years": "1914\u20132025",
         "count": 104
+      },
+      "upstream_rain": {
+        "basin": "upper-wisconsin",
+        "label": "Upper Wisconsin headwaters",
+        "inches": 0.55,
+        "pop_pct": 16
       },
       "fishing": {
         "species": [
@@ -3315,13 +3352,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
-        "streamflow_cfs": 1160.0,
-        "gage_height_ft": 4.13
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
+        "streamflow_cfs": 1140.0,
+        "gage_height_ft": 4.11
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:40:00.000-05:00",
           "streamflow_cfs": 1350.0,
           "gage_height_ft": 4.31
         },
@@ -3737,16 +3774,27 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "streamflow_cfs": 1160.0,
-          "gage_height_ft": 4.13
+          "streamflow_cfs": 1130.0,
+          "gage_height_ft": 4.11
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 1140.0,
+          "gage_height_ft": 4.11
         }
       ],
       "normal_flow": {
         "median_cfs": 1830,
         "class": "below",
-        "pct_of_median": 63,
+        "pct_of_median": 62,
         "years": "1903\u20132025",
         "count": 122
+      },
+      "upstream_rain": {
+        "basin": "upper-wisconsin",
+        "label": "Upper Wisconsin headwaters",
+        "inches": 0.55,
+        "pop_pct": 16
       },
       "fishing": {
         "species": [
@@ -3836,8 +3884,8 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:30:00.000-05:00",
-        "streamflow_cfs": 2290.0,
+        "timestamp": "2026-07-25T22:30:00.000-05:00",
+        "streamflow_cfs": 2310.0,
         "gage_height_ft": 2.75,
         "water_temp_f": 76.0,
         "water_temp_source": "wvic",
@@ -3845,7 +3893,7 @@
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:40:00.000-05:00",
           "streamflow_cfs": 2680.0,
           "gage_height_ft": 2.88
         },
@@ -4263,6 +4311,11 @@
           "timestamp": "2026-07-25T20:00:00.000-05:00",
           "streamflow_cfs": 2290.0,
           "gage_height_ft": 2.75
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 2310.0,
+          "gage_height_ft": 2.75
         }
       ],
       "normal_flow": {
@@ -4271,6 +4324,12 @@
         "pct_of_median": 81,
         "years": "1914\u20132025",
         "count": 104
+      },
+      "upstream_rain": {
+        "basin": "wausau",
+        "label": "Wausau-area basins",
+        "inches": 0.35,
+        "pop_pct": 11
       },
       "fishing": {
         "species": [
@@ -4362,13 +4421,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
         "streamflow_cfs": 215.0,
         "gage_height_ft": 7.55
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 251.0,
           "gage_height_ft": 7.65
         },
@@ -4786,6 +4845,11 @@
           "timestamp": "2026-07-25T20:00:00.000-05:00",
           "streamflow_cfs": 215.0,
           "gage_height_ft": 7.55
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 215.0,
+          "gage_height_ft": 7.55
         }
       ],
       "normal_flow": {
@@ -4794,6 +4858,12 @@
         "pct_of_median": 76,
         "years": "1966\u20132025",
         "count": 59
+      },
+      "upstream_rain": {
+        "basin": "wolf",
+        "label": "Wolf River basin",
+        "inches": 0.13,
+        "pop_pct": 10
       },
       "fishing": {
         "species": [
@@ -4884,13 +4954,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
         "streamflow_cfs": 3.8,
         "gage_height_ft": 3.0
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 4.2,
           "gage_height_ft": 3.04
         },
@@ -5308,6 +5378,11 @@
           "timestamp": "2026-07-25T20:00:00.000-05:00",
           "streamflow_cfs": 3.8,
           "gage_height_ft": 3.0
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 3.8,
+          "gage_height_ft": 3.0
         }
       ],
       "normal_flow": {
@@ -5316,6 +5391,12 @@
         "pct_of_median": 67,
         "years": "2014\u20132025",
         "count": 12
+      },
+      "upstream_rain": {
+        "basin": "central-sands",
+        "label": "Central Sands streams",
+        "inches": 0.7,
+        "pop_pct": 10
       },
       "fishing": {
         "species": [
@@ -5384,13 +5465,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
-        "streamflow_cfs": 23.2,
-        "gage_height_ft": 8.49
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
+        "streamflow_cfs": 23.7,
+        "gage_height_ft": 8.5
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 24.2,
           "gage_height_ft": 8.51
         },
@@ -5808,14 +5889,25 @@
           "timestamp": "2026-07-25T20:00:00.000-05:00",
           "streamflow_cfs": 23.2,
           "gage_height_ft": 8.49
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 23.7,
+          "gage_height_ft": 8.5
         }
       ],
       "normal_flow": {
         "median_cfs": 28,
         "class": "normal",
-        "pct_of_median": 83,
+        "pct_of_median": 85,
         "years": "1993\u20132025",
         "count": 15
+      },
+      "upstream_rain": {
+        "basin": "central-sands",
+        "label": "Central Sands streams",
+        "inches": 0.7,
+        "pop_pct": 10
       },
       "fishing": {
         "species": [
@@ -5899,8 +5991,8 @@
       },
       "history": [
         {
-          "timestamp": "2026-07-19T03:15:00Z",
-          "gage_height_ft": 2.32
+          "timestamp": "2026-07-19T03:45:00Z",
+          "gage_height_ft": 2.3
         },
         {
           "timestamp": "2026-07-19T04:00:00Z",
@@ -6240,6 +6332,12 @@
         }
       ],
       "normal_flow": null,
+      "upstream_rain": {
+        "basin": "wolf",
+        "label": "Wolf River basin",
+        "inches": 0.13,
+        "pop_pct": 10
+      },
       "fishing": {
         "species": [
           "Walleye",
@@ -6343,15 +6441,15 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
-        "water_temp_f": 67.8,
-        "water_temp_c": 19.9,
-        "streamflow_cfs": 109.0,
-        "gage_height_ft": 5.77
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
+        "water_temp_f": 67.6,
+        "water_temp_c": 19.8,
+        "streamflow_cfs": 107.0,
+        "gage_height_ft": 5.76
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 114.0,
           "gage_height_ft": 5.8
         },
@@ -6767,16 +6865,27 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "streamflow_cfs": 109.0,
-          "gage_height_ft": 5.77
+          "streamflow_cfs": 106.0,
+          "gage_height_ft": 5.75
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 107.0,
+          "gage_height_ft": 5.76
         }
       ],
       "normal_flow": {
         "median_cfs": 100,
         "class": "normal",
-        "pct_of_median": 109,
+        "pct_of_median": 107,
         "years": "1993\u20132025",
         "count": 33
+      },
+      "upstream_rain": {
+        "basin": "wolf",
+        "label": "Wolf River basin",
+        "inches": 0.13,
+        "pop_pct": 10
       },
       "fishing": {
         "species": [
@@ -6869,13 +6978,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
         "streamflow_cfs": 143.0,
         "gage_height_ft": 2.81
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 169.0,
           "gage_height_ft": 2.89
         },
@@ -7293,6 +7402,11 @@
           "timestamp": "2026-07-25T20:00:00.000-05:00",
           "streamflow_cfs": 143.0,
           "gage_height_ft": 2.81
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 143.0,
+          "gage_height_ft": 2.81
         }
       ],
       "normal_flow": {
@@ -7301,6 +7415,12 @@
         "pct_of_median": 93,
         "years": "1919\u20132025",
         "count": 99
+      },
+      "upstream_rain": {
+        "basin": "wolf",
+        "label": "Wolf River basin",
+        "inches": 0.13,
+        "pop_pct": 10
       },
       "fishing": {
         "species": [
@@ -7390,13 +7510,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
         "precip_24h_in": 0.0,
-        "gage_height_ft": 7.73
+        "gage_height_ft": 7.72
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": null,
           "gage_height_ft": 7.85
         },
@@ -7750,10 +7870,20 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "gage_height_ft": 7.73
+          "gage_height_ft": 7.72
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "gage_height_ft": 7.72
         }
       ],
       "normal_flow": null,
+      "upstream_rain": {
+        "basin": "eau-pleine",
+        "label": "Big Eau Pleine basin",
+        "inches": 0.17,
+        "pop_pct": 15
+      },
       "fishing": {
         "species": [
           "Largemouth Bass",
@@ -7855,13 +7985,13 @@
       "nws_forecast": null,
       "nwm_forecast": null,
       "current": {
-        "timestamp": "2026-07-25T21:00:00.000-05:00",
-        "streamflow_cfs": 473.0,
+        "timestamp": "2026-07-25T22:00:00.000-05:00",
+        "streamflow_cfs": 471.0,
         "gage_height_ft": 1.53
       },
       "history": [
         {
-          "timestamp": "2026-07-18T22:15:00.000-05:00",
+          "timestamp": "2026-07-18T22:45:00.000-05:00",
           "streamflow_cfs": 444.0,
           "gage_height_ft": 1.44
         },
@@ -8277,7 +8407,12 @@
         },
         {
           "timestamp": "2026-07-25T20:00:00.000-05:00",
-          "streamflow_cfs": 473.0,
+          "streamflow_cfs": 472.0,
+          "gage_height_ft": 1.53
+        },
+        {
+          "timestamp": "2026-07-25T22:00:00.000-05:00",
+          "streamflow_cfs": 471.0,
           "gage_height_ft": 1.53
         }
       ],
@@ -8287,6 +8422,12 @@
         "pct_of_median": 82,
         "years": "1936\u20132025",
         "count": 90
+      },
+      "upstream_rain": {
+        "basin": "upper-wisconsin",
+        "label": "Upper Wisconsin headwaters",
+        "inches": 0.55,
+        "pop_pct": 16
       },
       "fishing": {
         "species": [
@@ -8378,13 +8519,13 @@
     {
       "event": "Heat Advisory",
       "category": "heat",
-      "headline": "Heat Advisory issued July 25 at 12:41PM CDT until July 26 at 9:00PM CDT by NWS La Crosse WI",
+      "headline": "Heat Advisory issued July 25 at 10:11PM CDT until July 26 at 9:00PM CDT by NWS La Crosse WI",
       "severity": "Moderate",
       "urgency": "Expected",
-      "description": "* WHAT...Heat index values up to 103 expected.\n\n* WHERE...Adams, Juneau, and Taylor Counties.\n\n* WHEN...From noon to 9 PM CDT Sunday.\n\n* IMPACTS...Hot temperatures and high humidity may cause heat\nillnesses.",
+      "description": "* WHAT...Heat index values up to 102 expected.\n\n* WHERE...Adams, Clark, Juneau, and Taylor Counties.\n\n* WHEN...From noon to 9 PM CDT Sunday.\n\n* IMPACTS...Hot temperatures and high humidity may cause heat\nillnesses.",
       "onset": "2026-07-26T12:00:00-05:00",
-      "expires": "2026-07-25T22:00:00-05:00",
-      "url": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1f13f45a41203c14901ff6e776e310e4a11a6228.005.1",
+      "expires": "2026-07-26T09:00:00-05:00",
+      "url": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d31e8ea8fc84a94d81878e30f4cca3a545ce4bcf.003.1",
       "zones": [
         "WIC119"
       ]
@@ -8400,7 +8541,7 @@
       "feet_below_max": -4.0,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-07-26T03:10:54.488769+00:00"
+      "last_updated": "2026-07-26T03:38:09.596248+00:00"
     },
     {
       "name": "Willow Reservoir",
@@ -8411,7 +8552,7 @@
       "feet_below_max": -3.93,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-07-26T03:10:54.488769+00:00"
+      "last_updated": "2026-07-26T03:38:09.596248+00:00"
     },
     {
       "name": "Spirit Reservoir",
@@ -8422,7 +8563,7 @@
       "feet_below_max": -2.72,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-07-26T03:10:54.488769+00:00"
+      "last_updated": "2026-07-26T03:38:09.596248+00:00"
     },
     {
       "name": "Eau Pleine Reservoir",
@@ -8433,7 +8574,7 @@
       "feet_below_max": -1.95,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-07-26T03:10:54.488769+00:00"
+      "last_updated": "2026-07-26T03:38:09.596248+00:00"
     },
     {
       "name": "Rice Reservoir",
@@ -8444,7 +8585,7 @@
       "feet_below_max": -2.95,
       "has_data": true,
       "source_url": "https://wvic.com/Content/Data--Reports.cfm",
-      "last_updated": "2026-07-26T03:10:54.488769+00:00"
+      "last_updated": "2026-07-26T03:38:09.596248+00:00"
     },
     {
       "name": "Lake Wausau",
@@ -8458,6 +8599,75 @@
       "last_updated": null
     }
   ],
+  "lakes": [
+    {
+      "lid": "DUBW3",
+      "name": "Lake DuBay",
+      "description": "Wisconsin River impoundment below Mosinee",
+      "lat": 44.665,
+      "lon": -89.6508,
+      "elevation_ft": 1088.27,
+      "valid_time": "2026-07-26T00:10:00Z",
+      "url": "https://water.noaa.gov/gauges/dubw3"
+    },
+    {
+      "lid": "WUUW3",
+      "name": "Wisconsin River below Wausau Dam",
+      "description": "Tailwater elevation in downtown Wausau",
+      "lat": 44.9603,
+      "lon": -89.6344,
+      "elevation_ft": 1164.29,
+      "valid_time": "2026-07-26T03:10:00Z",
+      "url": "https://water.noaa.gov/gauges/wuuw3"
+    }
+  ],
+  "drought": {
+    "map_date": "2026-07-21",
+    "any_drought": true,
+    "worst_class": "D1",
+    "worst_label": "moderate drought",
+    "worst_counties": [
+      "Oneida"
+    ],
+    "counties": [
+      {
+        "name": "Oneida",
+        "class": "D1",
+        "pct": 48
+      },
+      {
+        "name": "Lincoln",
+        "class": "D0",
+        "pct": 100
+      },
+      {
+        "name": "Taylor",
+        "class": "D0",
+        "pct": 95
+      },
+      {
+        "name": "Langlade",
+        "class": "D0",
+        "pct": 90
+      },
+      {
+        "name": "Portage",
+        "class": "D0",
+        "pct": 12
+      },
+      {
+        "name": "Shawano",
+        "class": "D0",
+        "pct": 7
+      },
+      {
+        "name": "Marathon",
+        "class": "D0",
+        "pct": 2
+      }
+    ],
+    "source_url": "https://droughtmonitor.unl.edu/"
+  },
   "fishing_conditions": {
     "pressure_hpa": 1012.9,
     "pressure_trend": "steady",
@@ -8583,7 +8793,7 @@
     }
   ],
   "conditions_summary": [
-    "Flows dropping on WI River \u2014 Rothschild (-24%), Embarrass River (-19%) \u2014 clarity improving.",
+    "Flows dropping on WI River \u2014 Rothschild (-24%), Embarrass River (-18%) \u2014 clarity improving.",
     "Flows steady on the other 11 gauges."
   ],
   "community_links": {

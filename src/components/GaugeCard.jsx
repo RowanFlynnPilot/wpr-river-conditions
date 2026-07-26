@@ -236,6 +236,16 @@ export default function GaugeCard({ gauge }) {
             );
           })()}
 
+          {gauge.upstream_rain?.inches >= 0.1 && (
+            <div
+              className={`gauge-card__rain${gauge.upstream_rain.inches >= 0.75 ? ' gauge-card__rain--heavy' : ''}`}
+              title={`24-hour rainfall forecast for the ${gauge.upstream_rain.label}, upstream of this gauge`}
+            >
+              <span aria-hidden="true">🌧️</span> {gauge.upstream_rain.inches.toFixed(2)} in
+              forecast upstream (24h)
+            </div>
+          )}
+
           {current.precip_24h_in != null && current.precip_24h_in > 0 && (
             <div className="gauge-card__precip">
               💧 Last 24h precip:{' '}

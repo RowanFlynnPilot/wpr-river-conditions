@@ -1953,14 +1953,16 @@ body {
   isolation: isolate;
 }
 
+/* Tall enough that fitBounds isn't height-starved — the coverage area is
+   nearly square, so a short/wide box forces the camera to zoom way out. */
 .overview-map {
-  height: 360px;
+  height: 440px;
   width: 100%;
 }
 
 @media (max-width: 480px) {
   .overview-map {
-    height: 300px;
+    height: 380px;
   }
 }
 
@@ -3080,6 +3082,74 @@ body {
   stroke-width: 1.5;
   stroke-dasharray: 3 3;
   opacity: 0.75;
+}
+
+/* Region-wide context chips (upstream rain, drought) */
+.region-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-md) var(--space-md) 0;
+}
+
+.region-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--wpr-ink-light);
+  background: white;
+  border: 1px solid var(--wpr-rule);
+  border-radius: 999px;
+  padding: 6px 14px;
+  text-decoration: none;
+}
+
+.region-chip strong {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--wpr-ink);
+}
+
+.region-chip--rain {
+  border-color: color-mix(in srgb, #2563eb 35%, var(--wpr-rule));
+  background: #f5f9ff;
+}
+
+.region-chip--rain-heavy {
+  border-color: #2563eb;
+  background: #eaf2ff;
+}
+
+.region-chip--drought {
+  border-color: color-mix(in srgb, var(--status-action) 40%, var(--wpr-rule));
+  background: var(--status-action-bg);
+}
+
+.region-chip--drought:hover {
+  border-color: var(--status-action);
+}
+
+@media (max-width: 480px) {
+  .region-chips {
+    margin: var(--space-sm) var(--space-sm) 0;
+  }
+  .region-chip {
+    font-size: 0.76rem;
+  }
+}
+
+/* Upstream-rain line on a gauge card */
+.gauge-card__rain {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: #2563eb;
+  margin-top: 6px;
+}
+
+.gauge-card__rain--heavy {
+  font-weight: 650;
 }
 
 /* NWM forecast summary line on the card */
