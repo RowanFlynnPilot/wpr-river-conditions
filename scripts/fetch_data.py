@@ -1602,17 +1602,39 @@ def fetch_drought() -> dict | None:
 
     order = [label for _, label, _ in DROUGHT_CLASSES]
     counties.sort(key=lambda c: (order.index(c["class"]), -c["pct"]))
-    worst_class = counties[0]["class"]
+
+    # The headline class must cover meaningful ground — at least 10% of
+    # some county. Without this, a 2% sliver of D3 in one corner of Oneida
+    # headlines "extreme drought" while the actual regional story is seven
+    # counties wall-to-wall in D1 (bit us 2026-08-22).
+    SIGNIFICANT_PCT = 10
+    worst_class = next(
+        (label for _, label, _ in DROUGHT_CLASSES
+         if any(c["class"] == label and c["pct"] >= SIGNIFICANT_PCT for c in counties)),
+        counties[0]["class"],  # nothing significant anywhere — fall back to the literal worst
+    )
     worst_label = next(text for _, label, text in DROUGHT_CLASSES if label == worst_class)
+    headline_rank = order.index(worst_class)
+
+    # A sliver *worse* than the headline still deserves a footnote (shown
+    # in the chip tooltip), just not the headline itself.
+    sliver = next((c for c in counties if order.index(c["class"]) < headline_rank), None)
 
     return {
         "map_date": map_date,
         "any_drought": True,
         "worst_class": worst_class,
         "worst_label": worst_label,
-        # Counties actually at the worst class — the UI names these, so it
-        # can't imply a milder county is in the more severe category.
-        "worst_counties": [c["name"] for c in counties if c["class"] == worst_class],
+        # Counties at (or worse than) the headline class — the UI names
+        # these, so it can't imply a milder county is in a worse category.
+        "worst_counties": [
+            c["name"] for c in counties if order.index(c["class"]) <= headline_rank
+        ],
+        "sliver_note": (
+            f"{sliver['class']} ({next(t for _, l, t in DROUGHT_CLASSES if l == sliver['class'])}) "
+            f"touches {sliver['pct']}% of {sliver['name']} County"
+            if sliver else None
+        ),
         "counties": counties,
         "source_url": "https://droughtmonitor.unl.edu/",
     }

@@ -63,8 +63,18 @@
   <body>
     <div id="root"><!-- SEO:PRERENDER --></div>
     <script type="module" src="/src/main.jsx"></script>
-    <!-- Cloudflare Web Analytics -->
-    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "bf2a64bffc704ba3955e187571628430"}'></script>
+    <!-- Cloudflare Web Analytics (skipped on localhost, like GA4 above) -->
+    <script>
+      (function () {
+        var h = location.hostname;
+        if (h === 'localhost' || h === '127.0.0.1') return;
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+        s.setAttribute('data-cf-beacon', '{"token": "bf2a64bffc704ba3955e187571628430"}');
+        document.body.appendChild(s);
+      })();
+    </script>
     <!-- End Cloudflare Web Analytics -->
   </body>
 </html>

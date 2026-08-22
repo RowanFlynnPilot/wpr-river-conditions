@@ -15,8 +15,8 @@ export default function RegionChips({ gauges, drought }) {
   const showDrought = drought?.any_drought && drought.counties?.length;
   if (!showRain && !showDrought) return null;
 
-  // Name only the counties actually at the worst class, then count the
-  // rest — so a D0 county is never implied to be in D1.
+  // Name only the counties at (or worse than) the headline class, then
+  // count the rest — so a D0 county is never implied to be in D1.
   const atWorst = drought?.worst_counties || [];
   const others = showDrought ? drought.counties.length - atWorst.length : 0;
   const droughtNames =
@@ -42,7 +42,9 @@ export default function RegionChips({ gauges, drought }) {
           href={drought.source_url || 'https://droughtmonitor.unl.edu/'}
           target="_blank"
           rel="noopener noreferrer"
-          title={`U.S. Drought Monitor, map dated ${drought.map_date}. Produced by NDMC, USDA and NOAA.`}
+          title={`U.S. Drought Monitor, map dated ${drought.map_date}.${
+            drought.sliver_note ? ` ${drought.sliver_note}.` : ''
+          } Produced by NDMC, USDA and NOAA.`}
         >
           <span aria-hidden="true">🌾</span>
           <strong>{drought.worst_class}</strong> {drought.worst_label} · {droughtNames}
