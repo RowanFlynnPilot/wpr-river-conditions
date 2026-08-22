@@ -154,6 +154,12 @@ export default function OverviewMap({
       center: FALLBACK_CENTER,
       zoom: 9,
       minZoom: 7,
+      // Quarter-step zoom. fitBounds FLOORS to the nearest snap, so with
+      // Leaflet's default integer snapping our coverage area (which wants
+      // z7.75 in this container) drops all the way to z7 — showing half
+      // the upper Midwest. Quarter steps keep the camera on the counties.
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
       // Scroll-zoom stays off until the reader clicks in, so the widget
       // never hijacks the page scroll inside the 900px embed.
       scrollWheelZoom: false,
@@ -224,12 +230,21 @@ export default function OverviewMap({
     };
   }, []);
 
-  // Camera frames the gauges once at mount.
+  // Camera frames the gauges once at mount, as tightly as the container
+  // allows. Pixel padding (not a bounds pad) so the framing doesn't loosen
+  // as the roster grows.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || validGauges.length === 0) return;
     const bounds = L.latLngBounds(validGauges.map((g) => [g.lat, g.lon]));
-    if (bounds.isValid()) map.fitBounds(bounds.pad(0.12), { maxZoom: 10 });
+    // animate:false — this is the opening framing, so there's nothing to
+    // animate from, and a zoom animation depends on animation frames that
+    // never run while the document is hidden. The widget lazy-mounts inside
+    // a backgrounded iframe often enough that an animated fit can strand
+    // the map at its constructor zoom.
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [18, 18], maxZoom: 11, animate: false });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -270,9 +285,9 @@ export default function OverviewMap({
       },
     }).addTo(map);
     boundaryRef.current = boundary;
-    // Keep panning in the neighborhood (padded so the northern reservoirs
-    // stay reachable).
-    map.setMaxBounds(boundary.getBounds().pad(0.6));
+    // Keep panning near the coverage area (a little slack so the northern
+    // reservoirs and the map's own edges stay reachable).
+    map.setMaxBounds(boundary.getBounds().pad(0.25));
   }, [countiesGeo, alerts]);
 
   // --- The living river layer ---

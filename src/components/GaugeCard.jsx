@@ -222,7 +222,9 @@ export default function GaugeCard({ gauge }) {
             const dir = f.class || 'steady';
             const tip = `NOAA National Water Model flow forecast${
               f.issued ? `, issued ${formatCrestTime(f.issued)}` : ''
-            }${f.baseline === 'model' ? ' (vs. the model’s own current estimate)' : ''}`;
+            }${f.carried_forward ? ` — latest run available (${f.age_h}h old)` : ''}${
+              f.baseline === 'model' ? ' (vs. the model’s own current estimate)' : ''
+            }`;
             return (
               <div className={`gauge-card__nwm gauge-card__nwm--${dir}`} title={tip}>
                 <span className="gauge-card__nwm-label">Forecast</span>
@@ -233,6 +235,16 @@ export default function GaugeCard({ gauge }) {
               </div>
             );
           })()}
+
+          {gauge.upstream_rain?.inches >= 0.1 && (
+            <div
+              className={`gauge-card__rain${gauge.upstream_rain.inches >= 0.75 ? ' gauge-card__rain--heavy' : ''}`}
+              title={`24-hour rainfall forecast for the ${gauge.upstream_rain.label}, upstream of this gauge`}
+            >
+              <span aria-hidden="true">🌧️</span> {gauge.upstream_rain.inches.toFixed(2)} in
+              forecast upstream (24h)
+            </div>
+          )}
 
           {current.precip_24h_in != null && current.precip_24h_in > 0 && (
             <div className="gauge-card__precip">

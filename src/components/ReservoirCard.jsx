@@ -43,6 +43,36 @@ function LevelBar({ feetBelowMax }) {
   );
 }
 
+// Pool/tailwater elevation from an NWPS gauge. These read in feet above
+// sea level, not gage height, so they're never compared to flood stages.
+export function LakeCard({ lake }) {
+  return (
+    <div className="reservoir-card">
+      <div className="reservoir-card__name">{lake.name}</div>
+      {lake.description && (
+        <div className="reservoir-card__description">{lake.description}</div>
+      )}
+      <div className="reservoir-card__reading">
+        <span className="reservoir-card__reading-value">
+          {lake.elevation_ft.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </span>
+        <span className="reservoir-card__reading-unit">ft elevation</span>
+      </div>
+      <div className="reservoir-card__timestamp">
+        <span>{formatTimestamp(lake.valid_time)}</span>
+        <a
+          className="reservoir-card__source-link"
+          href={lake.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          NWS
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function ReservoirCard({ reservoir }) {
   const { name, description, feet_below_max, has_data, source_url, last_updated } = reservoir;
 

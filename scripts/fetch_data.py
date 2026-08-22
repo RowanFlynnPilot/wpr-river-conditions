@@ -281,6 +281,19 @@ NWS_ZONES = [
     "WIC141",  # Wood
 ]
 
+# County FIPS (the SAME codes on an alert) → our county zone. Zone-based
+# alerts carry forecast zones in UGC, so this is how they map to counties.
+NWS_ZONE_BY_FIPS = {
+    "055067": "WIC067",  # Langlade
+    "055069": "WIC069",  # Lincoln
+    "055073": "WIC073",  # Marathon
+    "055085": "WIC085",  # Oneida
+    "055097": "WIC097",  # Portage
+    "055115": "WIC115",  # Shawano
+    "055119": "WIC119",  # Taylor
+    "055141": "WIC141",  # Wood
+}
+
 # WVIC reservoirs to track (scraped from wvic.com).
 # lat/lon are the NWS NWPS gauge locations at each impoundment
 # (LTKW3, WILW3, SPDW3, EPLW3, RRVW3) \u2014 used for the overview-map pins.
@@ -1040,8 +1053,17 @@ def fetch_nws_alerts() -> list[dict]:
 
             # County zones this alert covers (drives map shading) — only
             # the counties we monitor, from the alert's UGC geocodes.
-            ugc = (props.get("geocode") or {}).get("UGC") or []
-            zones = [z for z in ugc if z in NWS_ZONES]
+            geocode = props.get("geocode") or {}
+            ugc = geocode.get("UGC") or []
+            same = geocode.get("SAME") or []
+            # Flood warnings are issued for county zones (WIC…), but heat,
+            # winter, and severe alerts are issued for *forecast* zones
+            # (WIZ…) that don't match our county list — their SAME/FIPS
+            # codes are the reliable cross-walk. Use both.
+            zones = sorted(
+                {z for z in ugc if z in NWS_ZONES}
+                | {NWS_ZONE_BY_FIPS[s] for s in same if s in NWS_ZONE_BY_FIPS}
+            )
 
             alerts.append({
                 "event": props.get("event"),
@@ -1211,7 +1233,88 @@ def _parse_iso(t: str):
 # load), don't burn 15s × 22 calls of cron time — after two gauges fail
 # completely, skip the rest of this run. Resets on any success.
 _NWM_CONSECUTIVE_FAILURES = 0
-_NWM_BREAKER_LIMIT = 2
+# Each failure now costs one 8s timeout instead of two 15s ones, so the
+# breaker can be more patient — more gauges get a fresh forecast on a
+# partly-degraded cycle, and the carry-forward covers the rest.
+_NWM_BREAKER_LIMIT = 4
+
+
+def _nwm_summary(points: list[dict], current_flow) -> dict:
+    """
+    Card summary from forecast points: % change at the farthest point
+    within 24h, measured against the current observed flow — or, for
+    gauges with no live flow (Wolf at Shawano, discontinued sites),
+    against the model's own next point. Thresholds match the
+    observed-trend math.
+
+    Anchored on *now* rather than the series start, so a forecast carried
+    forward from an earlier run stays accurate as it ages.
+    """
+    now = datetime.now(timezone.utc)
+    future = []
+    for p in points:
+        dt = _parse_iso(p.get("t"))
+        if dt and dt > now and p.get("cfs") is not None:
+            future.append((dt, float(p["cfs"])))
+    if not future:
+        return {}
+
+    if current_flow is not None and current_flow > 0:
+        baseline, baseline_kind = current_flow, "observed"
+    elif future[0][1] > 0:
+        baseline, baseline_kind = future[0][1], "model"
+    else:
+        return {}
+
+    best = None
+    for dt, f in future:
+        if dt - now <= timedelta(hours=24):
+            best = (dt, f)
+    if not best:
+        return {}
+
+    pct = (best[1] - baseline) / baseline * 100
+    return {
+        "next24h_pct": round(pct),
+        "horizon_h": max(1, round((best[0] - now).total_seconds() / 3600)),
+        "class": "rising" if pct > 15 else "falling" if pct < -15 else "steady",
+        "baseline": baseline_kind,
+    }
+
+
+def carry_forward_nwm(prev_forecast: dict | None, current_flow,
+                      max_age_h: int = 12) -> dict | None:
+    """
+    Reuse the previous run's forecast when NOAA is unreachable. The NWPS
+    reaches endpoint is intermittently down for whole scrape cycles, which
+    would otherwise blank the forecast for every gauge; a model run a few
+    hours old still carries real signal. The summary is recomputed against
+    the current flow and the current clock, and future points are trimmed
+    to what's still ahead.
+    """
+    if not prev_forecast:
+        return None
+
+    issued = _parse_iso(prev_forecast.get("issued"))
+    now = datetime.now(timezone.utc)
+    if issued and now - issued > timedelta(hours=max_age_h):
+        return None
+
+    points = [
+        p for p in (prev_forecast.get("points") or [])
+        if (_parse_iso(p.get("t")) or now) > now
+    ]
+    summary = _nwm_summary(points, current_flow)
+    if not summary:
+        return None
+
+    carried = dict(prev_forecast)
+    carried["points"] = points
+    carried.update(summary)
+    carried["carried_forward"] = True
+    if issued:
+        carried["age_h"] = max(1, round((now - issued).total_seconds() / 3600))
+    return carried
 
 
 def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
@@ -1231,9 +1334,13 @@ def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
     if _NWM_CONSECUTIVE_FAILURES >= _NWM_BREAKER_LIMIT:
         return None
 
+    # NOAA answers in well under a second when healthy and hangs when not,
+    # so a short timeout costs nothing real and keeps a bad cycle cheap.
+    # Skip medium_range when short_range already failed — same host, so
+    # it's almost certainly down too, and the carry-forward covers us.
     base = f"https://api.water.noaa.gov/nwps/v1/reaches/{reach_id}/streamflow?series="
-    short = fetch_json(base + "short_range", timeout=15)
-    medium = fetch_json(base + "medium_range", timeout=15)
+    short = fetch_json(base + "short_range", timeout=8)
+    medium = fetch_json(base + "medium_range", timeout=8) if short is not None else None
 
     if short is None and medium is None:
         _NWM_CONSECUTIVE_FAILURES += 1
@@ -1291,35 +1398,7 @@ def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
         "peak_cfs": round(peak_f, 1),
         "peak_time": peak_t,
     }
-
-    # Card summary: % change at the farthest forecast point within 24h,
-    # against the current observed flow — or, for gauges with no live flow
-    # (Wolf at Shawano, discontinued sites), against the model's own first
-    # point. Thresholds match the observed-trend math.
-    baseline = None
-    baseline_kind = None
-    if current_flow is not None and current_flow > 0:
-        baseline = current_flow
-        baseline_kind = "observed"
-    elif merged[0][1] > 0:
-        baseline = merged[0][1]
-        baseline_kind = "model"
-
-    if baseline and t0:
-        best = None
-        for t, f in merged:
-            dt = _parse_iso(t)
-            if dt and dt - t0 <= timedelta(hours=24):
-                best = (dt, f)
-        if best:
-            pct = (best[1] - baseline) / baseline * 100
-            result["next24h_pct"] = round(pct)
-            result["horizon_h"] = max(1, round((best[0] - t0).total_seconds() / 3600))
-            result["class"] = (
-                "rising" if pct > 15 else "falling" if pct < -15 else "steady"
-            )
-            result["baseline"] = baseline_kind
-
+    result.update(_nwm_summary(result["points"], current_flow))
     return result
 
 
@@ -1451,6 +1530,253 @@ def fetch_wvic_water_temp() -> dict:
                     "date": f"{year}-{month:02d}-{day:02d}",
                 }
     return latest
+
+
+# ---------------------------------------------------------------------------
+# U.S. Drought Monitor: county drought status (weekly)
+# ---------------------------------------------------------------------------
+
+USDM_URL = "https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent"
+
+# Worst-first, so the summary can name the most severe class present.
+DROUGHT_CLASSES = [
+    ("d4", "D4", "exceptional drought"),
+    ("d3", "D3", "extreme drought"),
+    ("d2", "D2", "severe drought"),
+    ("d1", "D1", "moderate drought"),
+    ("d0", "D0", "abnormally dry"),
+]
+
+COUNTY_NAMES = {
+    "055067": "Langlade", "055069": "Lincoln", "055073": "Marathon",
+    "055085": "Oneida", "055097": "Portage", "055115": "Shawano",
+    "055119": "Taylor", "055141": "Wood",
+}
+
+
+def fetch_drought() -> dict | None:
+    """
+    Drought status for the coverage area from the U.S. Drought Monitor.
+    Published weekly (map dated Tuesday, released Thursday), so this is
+    context rather than live data — it matters most in the low-water
+    months when readers are asking why the rivers are down.
+
+    Returns {map_date, worst_class, worst_label, counties:[{name, class,
+    pct}], any_drought} or None. Attribution required: the USDM is
+    produced by NDMC, USDA, and NOAA.
+    """
+    today = datetime.now()
+    start = (today - timedelta(days=21)).strftime("%m/%d/%Y")
+    end = today.strftime("%m/%d/%Y")
+
+    counties = []
+    map_date = None
+    for same_code, name in COUNTY_NAMES.items():
+        # Keys are SAME codes ("055073"); the USDM wants plain 5-digit FIPS.
+        fips = same_code.lstrip("0")
+        url = f"{USDM_URL}?aoi={fips}&startdate={start}&enddate={end}&statisticsType=1"
+        rows = fetch_json(url, timeout=20)
+        if not rows or not isinstance(rows, list):
+            continue
+        # Rows come newest-first; take the most recent map.
+        row = rows[0]
+        map_date = map_date or (row.get("mapDate") or "")[:10]
+        worst = None
+        pct = 0.0
+        for key, label, _ in DROUGHT_CLASSES:
+            try:
+                value = float(row.get(key) or 0)
+            except (TypeError, ValueError):
+                value = 0.0
+            # Below 1% of county area is noise, not a condition worth
+            # telling readers about.
+            if value >= 1.0:
+                worst, pct = label, value
+                break
+        if worst:
+            counties.append({"name": name, "class": worst, "pct": round(pct)})
+
+    if not counties:
+        # Every county fully "none" — no drought worth reporting.
+        return {"map_date": map_date, "any_drought": False} if map_date else None
+
+    order = [label for _, label, _ in DROUGHT_CLASSES]
+    counties.sort(key=lambda c: (order.index(c["class"]), -c["pct"]))
+
+    # The headline class must cover meaningful ground — at least 10% of
+    # some county. Without this, a 2% sliver of D3 in one corner of Oneida
+    # headlines "extreme drought" while the actual regional story is seven
+    # counties wall-to-wall in D1 (bit us 2026-08-22).
+    SIGNIFICANT_PCT = 10
+    worst_class = next(
+        (label for _, label, _ in DROUGHT_CLASSES
+         if any(c["class"] == label and c["pct"] >= SIGNIFICANT_PCT for c in counties)),
+        counties[0]["class"],  # nothing significant anywhere — fall back to the literal worst
+    )
+    worst_label = next(text for _, label, text in DROUGHT_CLASSES if label == worst_class)
+    headline_rank = order.index(worst_class)
+
+    # A sliver *worse* than the headline still deserves a footnote (shown
+    # in the chip tooltip), just not the headline itself.
+    sliver = next((c for c in counties if order.index(c["class"]) < headline_rank), None)
+
+    return {
+        "map_date": map_date,
+        "any_drought": True,
+        "worst_class": worst_class,
+        "worst_label": worst_label,
+        # Counties at (or worse than) the headline class — the UI names
+        # these, so it can't imply a milder county is in a worse category.
+        "worst_counties": [
+            c["name"] for c in counties if order.index(c["class"]) <= headline_rank
+        ],
+        "sliver_note": (
+            f"{sliver['class']} ({next(t for _, l, t in DROUGHT_CLASSES if l == sliver['class'])}) "
+            f"touches {sliver['pct']}% of {sliver['name']} County"
+            if sliver else None
+        ),
+        "counties": counties,
+        "source_url": "https://droughtmonitor.unl.edu/",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Upstream rain: what's headed for each basin in the next 24 hours
+# ---------------------------------------------------------------------------
+
+# One representative headwater point per basin, and the gauges each one
+# speaks for. Rain here is what shows up at those gauges tomorrow.
+RAIN_BASINS = [
+    {
+        "key": "upper-wisconsin", "label": "Upper Wisconsin headwaters",
+        "lat": 45.83, "lon": -89.55,
+        "gauges": ["05391000", "05395000", "05394500"],
+    },
+    {
+        "key": "wausau", "label": "Wausau-area basins",
+        "lat": 45.05, "lon": -89.70,
+        "gauges": ["05398000", "05398100", "05396000", "05396500", "05397500", "05400760"],
+    },
+    {
+        "key": "eau-pleine", "label": "Big Eau Pleine basin",
+        "lat": 44.88, "lon": -90.08,
+        "gauges": ["05399500", "05363600"],
+    },
+    {
+        "key": "wolf", "label": "Wolf River basin",
+        "lat": 45.27, "lon": -88.73,
+        "gauges": ["04074950", "04077400", "04077630", "04078500"],
+    },
+    {
+        "key": "central-sands", "label": "Central Sands streams",
+        "lat": 44.50, "lon": -89.40,
+        "gauges": ["05400625", "04080798"],
+    },
+]
+
+MM_PER_INCH = 25.4
+
+
+def fetch_upstream_rain() -> dict:
+    """
+    Next-24h rainfall forecast for each basin's headwaters (Open-Meteo,
+    one multi-point call). Answers the question the gauge readings can't:
+    *why* the river is about to rise.
+
+    Returns {gauge_id: {basin, label, inches, pop_pct}}.
+    """
+    lats = ",".join(str(b["lat"]) for b in RAIN_BASINS)
+    lons = ",".join(str(b["lon"]) for b in RAIN_BASINS)
+    url = (
+        f"https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}"
+        f"&hourly=precipitation,precipitation_probability&forecast_days=2&timezone=UTC"
+    )
+    data = fetch_json(url, timeout=25)
+    if not data:
+        return {}
+    locations = data if isinstance(data, list) else [data]
+    if len(locations) != len(RAIN_BASINS):
+        log.warning("Upstream rain: unexpected location count — skipping")
+        return {}
+
+    now = datetime.now(timezone.utc)
+    out = {}
+    for basin, loc in zip(RAIN_BASINS, locations):
+        hourly = loc.get("hourly") or {}
+        times = hourly.get("time") or []
+        precip = hourly.get("precipitation") or []
+        pops = hourly.get("precipitation_probability") or []
+
+        total_mm = 0.0
+        peak_pop = 0
+        for i, t in enumerate(times):
+            dt = _parse_iso(t if t.endswith("Z") else f"{t}:00Z" if len(t) == 13 else t + "Z")
+            if not dt or dt < now or dt > now + timedelta(hours=24):
+                continue
+            try:
+                total_mm += float(precip[i] or 0)
+            except (IndexError, TypeError, ValueError):
+                pass
+            try:
+                peak_pop = max(peak_pop, int(pops[i] or 0))
+            except (IndexError, TypeError, ValueError):
+                pass
+
+        inches = round(total_mm / MM_PER_INCH, 2)
+        for gid in basin["gauges"]:
+            out[gid] = {
+                "basin": basin["key"],
+                "label": basin["label"],
+                "inches": inches,
+                "pop_pct": peak_pop,
+            }
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Lake & pool levels (NWPS elevation gauges)
+# ---------------------------------------------------------------------------
+
+# Pool-elevation gauges. NB: their flood categories reference a different
+# datum than the observed pool reading, which makes floodCategory read
+# nonsense (Lake DuBay has reported a bogus "major") — we only ever show
+# the elevation.
+# Deliberately excludes EPLW3 (Big Eau Pleine pool): WVIC already reports
+# that reservoir as "feet below maximum", and showing the same water twice
+# with two different numbers just confuses readers.
+LAKE_GAUGES = [
+    {"lid": "DUBW3", "name": "Lake DuBay",
+     "description": "Wisconsin River impoundment below Mosinee", "lat": 44.6650, "lon": -89.6508},
+    {"lid": "WUUW3", "name": "Wisconsin River below Wausau Dam",
+     "description": "Tailwater elevation in downtown Wausau", "lat": 44.9603, "lon": -89.6344},
+]
+
+
+def fetch_lake_levels() -> list[dict]:
+    """
+    Pool/tailwater elevations from NWPS. These read in feet above sea
+    level (NGVD29), not gage height, so they are presented as elevations
+    and never compared to the rivers' flood stages.
+    """
+    results = []
+    for lake in LAKE_GAUGES:
+        data = fetch_json(f"https://api.water.noaa.gov/nwps/v1/gauges/{lake['lid']}", timeout=20)
+        observed = ((data or {}).get("status") or {}).get("observed") or {}
+        value = observed.get("primary")
+        unit = (observed.get("primaryUnit") or "").lower()
+        if value is None or value <= -999 or not unit.startswith("ft"):
+            continue
+        results.append({
+            "lid": lake["lid"],
+            "name": lake["name"],
+            "description": lake["description"],
+            "lat": lake["lat"],
+            "lon": lake["lon"],
+            "elevation_ft": round(float(value), 2),
+            "valid_time": observed.get("validTime"),
+            "url": f"https://water.noaa.gov/gauges/{lake['lid'].lower()}",
+        })
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -2521,9 +2847,62 @@ def generate_daily_summary(
 # Main: Assemble and write JSON
 # ---------------------------------------------------------------------------
 
+PUBLISHED_DATA_URL = (
+    "https://rowanflynnpilot.github.io/wpr-river-conditions/data/river-data.json"
+)
+
+
+def fetch_published_gauges() -> dict:
+    """
+    The previous run's gauge records, used to carry forward values from
+    upstreams that are intermittently unreachable.
+
+    Primary source is the published payload — in CI that *is* the last
+    successful run, since src/data/river-data.json is gitignored and never
+    checked out. The local file fills any gaps so repeated local runs
+    behave the same way (a no-op in CI, where it doesn't exist).
+
+    Returns {gauge_id: gauge_record}.
+    """
+    out = {}
+    data = fetch_json(PUBLISHED_DATA_URL, timeout=20)
+    if data:
+        out = {g["id"]: g for g in data.get("gauges", []) if g.get("id")}
+
+    local_path = Path(__file__).parent.parent / "src" / "data" / "river-data.json"
+    if local_path.exists():
+        try:
+            local = json.loads(local_path.read_text(encoding="utf-8"))
+            for g in local.get("gauges", []):
+                gid = g.get("id")
+                if not gid:
+                    continue
+                if gid not in out:
+                    out[gid] = g
+                elif not out[gid].get("nwm_forecast") and g.get("nwm_forecast"):
+                    # Published record exists but lost its forecast — keep
+                    # the local one so a good run isn't discarded.
+                    out[gid] = {**out[gid], "nwm_forecast": g["nwm_forecast"]}
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    if not out:
+        log.info("  No previous payload available (first run)")
+    return out
+
+
 def main():
     log.info("Starting WPR River Conditions data fetch...")
     now = datetime.now(timezone.utc).isoformat()
+
+    log.info("Loading last published payload (fallback source)...")
+    published = fetch_published_gauges()
+
+    log.info("Fetching upstream rain forecast...")
+    upstream_rain = fetch_upstream_rain()
+    if upstream_rain:
+        wettest = max(upstream_rain.values(), key=lambda r: r["inches"])
+        log.info(f"  Max basin: {wettest['label']} {wettest['inches']}in / 24h")
 
     # Daily WVIC water temps (one fetch covers Rothschild + Wisconsin Rapids)
     log.info("Fetching WVIC water temperatures...")
@@ -2579,8 +2958,20 @@ def main():
         # signal (the NWS crest forecast above only appears in high water).
         nwm_forecast = None
         if gauge.get("nwm_reach"):
-            nwm_forecast = fetch_nwm_forecast(gauge["nwm_reach"], current.get("streamflow_cfs"))
-            if nwm_forecast and nwm_forecast.get("next24h_pct") is not None:
+            flow_now = current.get("streamflow_cfs")
+            nwm_forecast = fetch_nwm_forecast(gauge["nwm_reach"], flow_now)
+            if nwm_forecast is None:
+                # NOAA unreachable this cycle — reuse the last published
+                # model run rather than blanking the forecast entirely.
+                nwm_forecast = carry_forward_nwm(
+                    (published.get(gauge["id"]) or {}).get("nwm_forecast"), flow_now
+                )
+                if nwm_forecast:
+                    log.info(
+                        f"  NWM: carried forward ({nwm_forecast.get('age_h', '?')}h old), "
+                        f"{nwm_forecast.get('next24h_pct', 0):+d}%"
+                    )
+            elif nwm_forecast.get("next24h_pct") is not None:
                 log.info(
                     f"  NWM: {nwm_forecast['next24h_pct']:+d}% over next "
                     f"{nwm_forecast['horizon_h']}h"
@@ -2626,6 +3017,7 @@ def main():
             "current": current,
             "history": history,
             "normal_flow": normal_flow,
+            "upstream_rain": upstream_rain.get(gauge["id"]),
             "fishing": FISHING_REFERENCE.get(gauge["id"]),
             "recreation": compute_recreation_status(gauge["id"], current.get("streamflow_cfs")),
             "water_clarity": estimate_water_clarity(current.get("streamflow_cfs"), history),
@@ -2646,6 +3038,16 @@ def main():
     # Fetch WVIC reservoirs
     log.info("Fetching WVIC reservoir data...")
     reservoirs = fetch_wvic_reservoirs()
+
+    log.info("Fetching lake & pool elevations...")
+    lakes = fetch_lake_levels()
+    log.info(f"  {len(lakes)}/{len(LAKE_GAUGES)} reporting")
+
+    log.info("Fetching drought monitor status...")
+    drought = fetch_drought()
+    if drought and drought.get("any_drought"):
+        log.info(f"  {drought['worst_class']} ({drought['worst_label']}) in "
+                 f"{len(drought['counties'])} county(ies)")
 
     # Fetch fishing conditions
     log.info("Fetching fishing conditions...")
@@ -2693,6 +3095,8 @@ def main():
         "gauges": gauges_data,
         "alerts": alerts,
         "reservoirs": reservoirs,
+        "lakes": lakes,
+        "drought": drought,
         "fishing_conditions": fishing_conditions,
         "weather_forecast": weather_forecast,
         "seasonal_activity": seasonal,

@@ -1,7 +1,8 @@
 import React, { lazy, Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import GaugeCard from './components/GaugeCard';
 import AlertBanner from './components/AlertBanner';
-import ReservoirCard from './components/ReservoirCard';
+import ReservoirCard, { LakeCard } from './components/ReservoirCard';
+import RegionChips from './components/RegionChips';
 import FishingConditions from './components/FishingConditions';
 import FishingReference from './components/FishingReference';
 import WeatherForecast from './components/WeatherForecast';
@@ -287,6 +288,9 @@ export default function App() {
       {/* Sticky in-widget navigation (the WP embed is a 900px window) */}
       <SectionNav sections={navSections} />
 
+      {/* Region-wide context: rain headed for the basins, drought status */}
+      <RegionChips gauges={data.gauges} drought={data.drought} />
+
       {/* Answer-first summary: every reporting gauge in one screen */}
       <GlanceTable gauges={reportingGauges} onSelect={scrollToGauge} />
 
@@ -366,19 +370,23 @@ export default function App() {
       {/* Upcoming Events */}
       <EventsCalendar events={data.upcoming_events} />
 
-      {/* Reservoirs */}
-      {reservoirsReporting.length > 0 && (
+      {/* Reservoirs & lakes */}
+      {(reservoirsReporting.length > 0 || (data.lakes || []).length > 0) && (
         <>
           <div className="section-header" id="reservoirs" style={{ marginTop: 'var(--space-lg)' }}>
-            <h2 className="section-header__title">Reservoirs</h2>
+            <h2 className="section-header__title">Reservoirs &amp; Lakes</h2>
             <span className="section-header__subtitle">
-              {reservoirsReporting.length} of {data.reservoirs.length} reporting · WVIC System
+              {reservoirsReporting.length} WVIC reservoirs
+              {(data.lakes || []).length > 0 && ` · ${data.lakes.length} lake levels (NWS)`}
             </span>
           </div>
 
           <div className="reservoirs-grid">
             {reservoirsReporting.map((reservoir) => (
               <ReservoirCard key={reservoir.slug} reservoir={reservoir} />
+            ))}
+            {(data.lakes || []).map((lake) => (
+              <LakeCard key={lake.lid} lake={lake} />
             ))}
           </div>
         </>
@@ -412,6 +420,10 @@ export default function App() {
           {' · '}
           <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
             Open-Meteo
+          </a>
+          {' · '}
+          <a href="https://droughtmonitor.unl.edu/" target="_blank" rel="noopener noreferrer">
+            U.S. Drought Monitor (NDMC/USDA/NOAA)
           </a>
           {' · '}
           <a href="https://solunar.org/" target="_blank" rel="noopener noreferrer">
