@@ -216,9 +216,34 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
+  // The brand bar renders in every branch — without it, first load shows a
+  // bare cream page until the data arrives and the header pops in.
+  const chromeBar = (
+    <div className="chrome-bar">
+      <a
+        className="chrome-bar__brand"
+        href="https://wausaupilotandreview.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {/* Decorative: the adjacent text already carries the name. */}
+        <img className="chrome-bar__logo-img" src={logoUrl} alt="" />
+        <span className="chrome-bar__logo">Wausau Pilot & Review</span>
+        <span className="chrome-bar__divider" />
+        <span className="chrome-bar__section-name">River Conditions</span>
+      </a>
+      {data?.generated_at && (
+        <span className="chrome-bar__updated">
+          Updated {formatUpdatedAt(data.generated_at)}
+        </span>
+      )}
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="widget-container">
+        {chromeBar}
         <SkeletonPage />
       </div>
     );
@@ -227,8 +252,20 @@ export default function App() {
   if (error || !data) {
     return (
       <div className="widget-container">
+        {chromeBar}
         <div className="error-state">
-          Unable to load river data. Please try again later.
+          <p className="error-state__msg">Unable to load river data.</p>
+          <button
+            type="button"
+            className="error-state__retry"
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              fetchData(false);
+            }}
+          >
+            Try again
+          </button>
         </div>
       </div>
     );
@@ -260,23 +297,7 @@ export default function App() {
   return (
     <div className="widget-container" style={wrapperStyle}>
       {/* Chrome Bar */}
-      <div className="chrome-bar">
-        <a
-          className="chrome-bar__brand"
-          href="https://wausaupilotandreview.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {/* Decorative: the adjacent text already carries the name. */}
-          <img className="chrome-bar__logo-img" src={logoUrl} alt="" />
-          <span className="chrome-bar__logo">Wausau Pilot & Review</span>
-          <span className="chrome-bar__divider" />
-          <span className="chrome-bar__section-name">River Conditions</span>
-        </a>
-        <span className="chrome-bar__updated">
-          {formatUpdatedAt(data.generated_at)}
-        </span>
-      </div>
+      {chromeBar}
 
       {/* Data-freshness warning — shown only if the feed pipeline stalls */}
       {isStale && (
