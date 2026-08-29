@@ -1752,6 +1752,31 @@ body {
   font-family: var(--font-body);
 }
 
+.error-state__msg {
+  margin: 0 0 var(--space-sm);
+}
+
+.error-state__retry {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  background: var(--accent);
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 22px;
+  cursor: pointer;
+}
+
+.error-state__retry:hover {
+  opacity: 0.9;
+}
+
+.error-state__retry:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 /* ==========================================================================
    Responsive
    ========================================================================== */
@@ -1815,8 +1840,8 @@ body {
   color: var(--wpr-ink);
 }
 
-.hero-status--action   { border-left-color: var(--status-action-text);   background: var(--status-action-bg); }
-.hero-status--minor    { border-left-color: var(--status-minor-text);    background: var(--status-minor-bg); }
+.hero-status--action   { border-left-color: var(--status-action);   background: var(--status-action-bg); }
+.hero-status--minor    { border-left-color: var(--status-minor);    background: var(--status-minor-bg); }
 .hero-status--moderate { border-left-color: var(--status-moderate); background: var(--status-moderate-bg); }
 .hero-status--major    { border-left-color: var(--status-major);    background: var(--status-major-bg); }
 
@@ -1878,16 +1903,12 @@ body {
   gap: var(--space-md);
 }
 
-.skeleton-page__weather {
-  height: 72px;
-}
-
 .skeleton-page__hero {
   height: 96px;
 }
 
-.skeleton-page__map {
-  height: 260px;
+.skeleton-page__table {
+  height: 320px;
 }
 
 .skeleton-page__gauges {
@@ -2485,8 +2506,15 @@ body {
    Alert severity colors (when NWS alerts include non-flood types)
    ========================================================================== */
 
-.alert-banner--minor    { background: var(--status-action-bg);   border-color: var(--status-action-text); }
-.alert-banner--moderate { background: var(--status-minor-bg);    border-color: var(--status-minor-text); }
+.alert-banner--minor    { background: var(--status-action-bg);   border-color: var(--status-action); }
+.alert-banner--moderate { background: var(--status-minor-bg);    border-color: var(--status-minor); }
+
+/* Match the label + pulsing dot to the banner's severity — a Minor winter
+   advisory shouldn't carry an urgent red pulse in an amber box. */
+.alert-banner--minor .alert-banner__label            { color: var(--status-action-text); }
+.alert-banner--minor .alert-banner__label::before    { background: var(--status-action); }
+.alert-banner--moderate .alert-banner__label         { color: var(--status-minor-text); }
+.alert-banner--moderate .alert-banner__label::before { background: var(--status-minor); }
 .alert-banner--severe   { background: var(--status-moderate-bg); border-color: var(--status-moderate); }
 .alert-banner--extreme  { background: var(--status-major-bg);    border-color: var(--status-major); }
 
@@ -2909,6 +2937,12 @@ body {
   overflow: hidden;
 }
 
+/* On very narrow screens the nowrap columns can exceed the card width —
+   scroll the tables instead of silently clipping the Status column. */
+.glance__cols {
+  overflow-x: auto;
+}
+
 .glance__head {
   display: flex;
   align-items: baseline;
@@ -3164,7 +3198,7 @@ body {
 }
 
 .region-chip--drought:hover {
-  border-color: var(--status-action-text);
+  border-color: var(--status-action);
 }
 
 @media (max-width: 480px) {

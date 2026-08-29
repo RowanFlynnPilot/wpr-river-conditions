@@ -223,16 +223,19 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': graph,
 };
-const jsonLdScript = `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
+// Escape "<" so content can never form a premature </script> inside the tag.
+const jsonLdScript = `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
 
 // --- Rewrite dist/index.html ----------------------------------------------
 let html = readFileSync(DIST_HTML, 'utf8');
 
 // Rewrite the dynamic meta tags by name/property.
+// Replacer functions throughout: replacement *strings* treat $&, $', $`
+// as patterns, which would corrupt output if a headline ever contains "$".
 function setMetaContent(attr, value, escaped) {
   const re = new RegExp(`(<meta ${attr}[^>]*\\bdata-seo="dynamic"[^>]*\\bcontent=")[^"]*(")`);
   if (re.test(html)) {
-    html = html.replace(re, `$1${escaped}$2`);
+    html = html.replace(re, (_, p1, p2) => p1 + escaped + p2);
   } else {
     console.warn(`[inject-seo] dynamic meta not found for ${attr}=${value}`);
   }
@@ -245,9 +248,13 @@ setMetaContent('property="og:description"', dynamicDescription, descAttr);
 setMetaContent('name="twitter:title"', dynamicTitle, titleAttr);
 setMetaContent('name="twitter:description"', dynamicDescription, descAttr);
 
+// The <title> element is what search results show — og:/twitter: alone
+// only reach social shares, so the live flood status belongs here too.
+html = html.replace(/<title>[^<]*<\/title>/, () => `<title>${escapeHtml(dynamicTitle)}</title>`);
+
 // Inject JSON-LD and the prerendered snapshot at their anchors.
-html = html.replace('<!-- SEO:JSONLD -->', jsonLdScript);
-html = html.replace('<!-- SEO:PRERENDER -->', prerender);
+html = html.replace('<!-- SEO:JSONLD -->', () => jsonLdScript);
+html = html.replace('<!-- SEO:PRERENDER -->', () => prerender);
 
 writeFileSync(DIST_HTML, html, 'utf8');
 

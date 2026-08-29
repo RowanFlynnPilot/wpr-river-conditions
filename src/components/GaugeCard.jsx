@@ -232,9 +232,20 @@ export default function GaugeCard({ gauge }) {
               <div className={`gauge-card__nwm gauge-card__nwm--${dir}`} title={tip}>
                 <span className="gauge-card__nwm-label">Forecast</span>
                 <span aria-hidden="true">{TREND_ARROWS[dir]}</span>{' '}
-                {dir === 'steady'
-                  ? 'Holding steady'
-                  : `${f.next24h_pct > 0 ? '+' : ''}${f.next24h_pct}% next ${f.horizon_h || 24}h`}
+                {(() => {
+                  if (dir === 'steady') return 'Holding steady';
+                  const horizon = f.horizon_h || 24;
+                  // Percentages off a tiny base read as alarming ("+245%" on
+                  // a 4 cfs trout stream is a 10 cfs ripple) — show the
+                  // absolute target instead on very low flows.
+                  const flow = current.streamflow_cfs;
+                  const cfsVals = (f.points || []).map((p) => p.cfs).filter((v) => v != null);
+                  if (flow != null && flow < 25 && cfsVals.length) {
+                    const target = f.next24h_pct > 0 ? Math.max(...cfsVals) : Math.min(...cfsVals);
+                    return `to ~${Math.round(target)} cfs next ${horizon}h`;
+                  }
+                  return `${f.next24h_pct > 0 ? '+' : ''}${f.next24h_pct}% next ${horizon}h`;
+                })()}
                 {f.carried_forward && (
                   <span className="gauge-card__nwm-age"> · model run {f.age_h}h old</span>
                 )}
