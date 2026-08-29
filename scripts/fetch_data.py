@@ -3148,8 +3148,11 @@ def main():
         conditions_summary, upcoming_events, seasonal
     )
 
-    # Write summary as standalone HTML snippet
+    # Write summary as standalone HTML snippet. mkdir first: every file in
+    # src/data/ is generated and gitignored, so the directory itself doesn't
+    # exist in a fresh CI checkout.
     summary_path = Path(__file__).parent.parent / "src" / "data" / "daily-summary.html"
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(daily_summary, encoding="utf-8")
     log.info(f"Wrote daily summary ({summary_path.stat().st_size:,} bytes)")
 
