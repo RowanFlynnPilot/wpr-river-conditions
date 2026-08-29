@@ -859,7 +859,8 @@ def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
             ts_str = latest.get("dateTime")
             if ts_str and (result["timestamp"] is None or ts_str > result["timestamp"]):
                 result["timestamp"] = ts_str
-    except (KeyError, IndexError, TypeError) as e:
+    except (KeyError, IndexError, TypeError, ValueError) as e:
+        # ValueError: USGS emits non-numeric values ("Ice", "***") in winter.
         log.warning(f"Error parsing USGS data for {gauge_id}: {e}")
 
     # Lagged reporter: nothing in the last 24h — widen to a week. (Only
@@ -913,7 +914,8 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
                     by_hour[hour_key]["gage_height_ft"] = round(val, 2) if val is not None else None
                 elif var_code == PARAM_STREAMFLOW:
                     by_hour[hour_key]["streamflow_cfs"] = round(val, 1) if val is not None else None
-    except (KeyError, IndexError, TypeError) as e:
+    except (KeyError, IndexError, TypeError, ValueError) as e:
+        # ValueError: USGS emits non-numeric values ("Ice", "***") in winter.
         log.warning(f"Error parsing USGS history for {gauge_id}: {e}")
 
     return sorted(by_hour.values(), key=lambda x: x["timestamp"])
@@ -3146,6 +3148,18 @@ def main():
         f"Done: {active_gauges}/{len(gauges_data)} gauges reporting, "
         f"{len(alerts)} active alerts"
     )
+
+    # Sanity gate: an (effectively) empty payload means an upstream outage,
+    # not calm rivers — flood_status would default to "normal" and the site
+    # would deploy an "All Clear" with no data behind it. Fail the run so CI
+    # keeps the previous good deploy live.
+    MIN_REPORTING_GAUGES = 5
+    if active_gauges < MIN_REPORTING_GAUGES:
+        log.error(
+            f"Only {active_gauges} gauges reporting (< {MIN_REPORTING_GAUGES}) — "
+            "refusing to publish a near-empty payload."
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
