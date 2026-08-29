@@ -85,7 +85,11 @@ export default function GaugeMapInner({ gauge }) {
       map.remove();
       mapRef.current = null;
     };
-  }, [gauge]);
+    // Key on the gauge id, not the object: every 30-min data refresh creates
+    // a new gauge object, and tearing the map down would lose the reader's
+    // pan/zoom and open popup. Everything drawn here is static per gauge.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gauge.id]);
 
   return <div ref={containerRef} className="gauge-map" />;
 }
