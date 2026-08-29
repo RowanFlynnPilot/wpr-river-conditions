@@ -7,9 +7,10 @@ const CATEGORY_CONFIG = {
 
 function formatEventDate(dateStr) {
   const d = new Date(dateStr + 'T12:00:00');
-  const now = new Date();
-  const diffMs = d - now;
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  // Compare calendar dates, not a raw time delta — ceiling a noon-anchored
+  // delta made today's events read "Tomorrow" every morning.
+  const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+  const diffDays = Math.round((startOfDay(d) - startOfDay(new Date())) / (1000 * 60 * 60 * 24));
 
   const formatted = d.toLocaleDateString('en-US', {
     weekday: 'short',

@@ -116,6 +116,8 @@ export default function OverviewMap({
   const [riversGeo, setRiversGeo] = useState(null);
   // Replay scrubber: null = live; otherwise an index into the timeline.
   const [replayIdx, setReplayIdx] = useState(null);
+  // Mirrored for the map's zoomend handler, which is bound once at creation.
+  const replayingRef = useRef(false);
   const [playing, setPlaying] = useState(false);
 
   const validGauges = useMemo(
@@ -197,8 +199,11 @@ export default function OverviewMap({
     reservoirLayerRef.current = L.layerGroup().addTo(map);
     launchLayerRef.current = L.layerGroup().addTo(map);
 
-    // Rescale gauge pins (and their pulse rings) in place on zoom.
+    // Rescale gauge pins (and their pulse rings) in place on zoom. Skipped
+    // during replay: pins there carry historical, flow-scaled radii, and
+    // resizing from live statusKey would silently break that encoding.
     map.on('zoomend', () => {
+      if (replayingRef.current) return;
       const zoom = map.getZoom();
       gaugeLayerRef.current?.eachLayer((m) => {
         if (m.options.statusKey) m.setRadius(radiusFor(m.options.statusKey, zoom));
@@ -426,8 +431,20 @@ export default function OverviewMap({
     return out;
   }, [gauges]);
 
+  // A 30-min data refresh rebuilds the timeline, which can come back shorter
+  // while the user is scrubbing near the end — clamp so timeline[replayIdx]
+  // can't dereference past it ("Invalid Date" label, all pins gray).
+  useEffect(() => {
+    setReplayIdx((i) => {
+      if (i == null) return i;
+      if (timeline.length === 0) return null;
+      return Math.min(i, timeline.length - 1);
+    });
+  }, [timeline.length]);
+
   // Restyle pins in place for the selected replay step (or restore live).
   useEffect(() => {
+    replayingRef.current = replayIdx != null;
     const map = mapRef.current;
     if (!map) return;
     const zoom = map.getZoom();

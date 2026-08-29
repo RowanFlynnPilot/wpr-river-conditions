@@ -93,8 +93,12 @@ export default function App() {
   const [, setClockTick] = useState(0); // re-renders relative timestamps
   const gaugeRefs = useRef({});
   const lastFetchRef = useRef(0);
+  const fetchSeqRef = useRef(0);
 
   const fetchData = useCallback((isRefresh = false) => {
+    // The interval refresh and the tab-return refresh can overlap; tag each
+    // fetch so a slow older response can't overwrite a newer one.
+    const seq = ++fetchSeqRef.current;
     // Cache-bust refreshes so GitHub Pages' edge cache can't pin old data.
     const dataUrl = isRefresh ? `${DATA_URL}?t=${Date.now()}` : DATA_URL;
     const jobs = [
@@ -108,6 +112,7 @@ export default function App() {
     }
     return Promise.all(jobs)
       .then(([d, s]) => {
+        if (seq !== fetchSeqRef.current) return; // superseded by a newer fetch
         lastFetchRef.current = Date.now();
         setData(d);
         if (!isRefresh) setSponsor(s);
@@ -181,22 +186,25 @@ export default function App() {
     }
   }, [loading, filter, sortedGauges, filteredGauges]);
 
-  const scrollToGauge = useCallback(
-    (gaugeId) => {
-      // Selection is shared with the overview map (halo + pan).
-      setSelectedGaugeId(gaugeId);
-      const doScroll = () =>
-        gaugeRefs.current[gaugeId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const visible = filteredGauges.some((g) => g.id === gaugeId);
-      if (!visible) {
-        setFilter('all');
-        setTimeout(doScroll, 120); // let the full grid render first
-      } else {
-        doScroll();
-      }
-    },
-    [filteredGauges]
-  );
+  // Mirror filteredGauges in a ref so scrollToGauge stays referentially
+  // stable — it's a dep of the overview map's pins effect, and a new
+  // identity per filter click rebuilt every marker, tooltip, and ring.
+  const filteredGaugesRef = useRef(filteredGauges);
+  filteredGaugesRef.current = filteredGauges;
+
+  const scrollToGauge = useCallback((gaugeId) => {
+    // Selection is shared with the overview map (halo + pan).
+    setSelectedGaugeId(gaugeId);
+    const doScroll = () =>
+      gaugeRefs.current[gaugeId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const visible = filteredGaugesRef.current.some((g) => g.id === gaugeId);
+    if (!visible) {
+      setFilter('all');
+      setTimeout(doScroll, 120); // let the full grid render first
+    } else {
+      doScroll();
+    }
+  }, []);
 
   // Deep links: #gauge-05398000 scrolls to that card (articles can link
   // straight to a river).
