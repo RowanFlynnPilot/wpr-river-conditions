@@ -22,6 +22,30 @@ from urllib.error import URLError, HTTPError
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
+
+def now_central() -> datetime:
+    """Current time in US Central (aware, DST-correct).
+
+    The CI runner is UTC, so naive datetime.now() makes "today" flip to
+    tomorrow at 7 PM reader time. zoneinfo has no tz database on Windows
+    without the third-party tzdata package, so compute the US DST rule
+    (2nd Sunday in March 2:00 → 1st Sunday in November 2:00) directly.
+    """
+    utc = datetime.now(timezone.utc)
+
+    def nth_sunday(month: int, n: int) -> datetime:
+        first = datetime(utc.year, month, 1, tzinfo=timezone.utc)
+        return first + timedelta(days=(6 - first.weekday()) % 7 + 7 * (n - 1))
+
+    # Transitions happen at 2 AM local: 08:00 UTC entering DST (from CST),
+    # 07:00 UTC leaving it (from CDT).
+    dst_start = nth_sunday(3, 2).replace(hour=8)
+    dst_end = nth_sunday(11, 1).replace(hour=7)
+    offset = -5 if dst_start <= utc < dst_end else -6
+    tz = timezone(timedelta(hours=offset), "CDT" if offset == -5 else "CST")
+    return utc.astimezone(tz)
+
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -959,7 +983,7 @@ def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
     if not text:
         return None
 
-    today = datetime.now()
+    today = now_central()
     header = None
     target = None
     for line in text.splitlines():
@@ -1032,7 +1056,10 @@ def fetch_nws_alerts() -> list[dict]:
     CATEGORY_RULES = [
         ("flood", ["flood", "flash flood", "river", "hydrologic"]),
         ("severe", ["tornado", "severe thunderstorm", "severe weather"]),
-        ("winter", ["winter storm", "blizzard", "ice storm", "winter weather", "freeze", "frost"]),
+        # "cold" catches the post-2024 names (Extreme Cold Warning, Cold
+        # Weather Advisory); "wind chill" catches the pre-2024 ones, and must
+        # live here so they don't fall through to the "wind" category.
+        ("winter", ["winter storm", "blizzard", "ice storm", "winter weather", "freeze", "frost", "cold", "wind chill"]),
         ("fire", ["red flag", "fire weather"]),
         ("wind", ["wind", "gale"]),
         ("heat", ["heat", "excessive heat"]),
@@ -1567,7 +1594,7 @@ def fetch_drought() -> dict | None:
     pct}], any_drought} or None. Attribution required: the USDM is
     produced by NDMC, USDA, and NOAA.
     """
-    today = datetime.now()
+    today = now_central()
     start = (today - timedelta(days=21)).strftime("%m/%d/%Y")
     end = today.strftime("%m/%d/%Y")
 
@@ -1828,7 +1855,8 @@ def fetch_open_meteo_uv() -> float | None:
         hourly = data["hourly"]
         times = hourly["time"]
         uvs = hourly.get("uv_index", [])
-        now_str = datetime.now().strftime("%Y-%m-%dT%H:00")
+        # Open-Meteo returned America/Chicago times — compare in Central too.
+        now_str = now_central().strftime("%Y-%m-%dT%H:00")
         idx = None
         for i, t in enumerate(times):
             if t <= now_str:
@@ -1947,9 +1975,12 @@ def fetch_weather_conditions() -> dict:
 
 def fetch_sun_times() -> dict:
     """Fetch sunrise/sunset from Sunrise-Sunset API (no API key)."""
+    # Explicit Central-date param: the API's "today" is server-side UTC,
+    # which is tomorrow from 7 PM reader time.
     url = (
         f"https://api.sunrise-sunset.org/json"
-        f"?lat={WAUSAU_LAT}&lng={WAUSAU_LON}&formatted=0&date=today"
+        f"?lat={WAUSAU_LAT}&lng={WAUSAU_LON}&formatted=0"
+        f"&date={now_central().strftime('%Y-%m-%d')}"
     )
     data = fetch_json(url)
     if not data or data.get("status") != "OK":
@@ -1960,13 +1991,8 @@ def fetch_sun_times() -> dict:
 
         def utc_to_local(iso_str):
             """Convert UTC ISO string to Central Time formatted string."""
-            # Parse the UTC timestamp
             dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
-            # Determine CDT (-5) vs CST (-6) using month heuristic
-            # CDT: roughly second Sun in Mar through first Sun in Nov
-            month = datetime.now().month
-            offset_hours = -5 if 3 <= month <= 10 else -6
-            local = dt + timedelta(hours=offset_hours)
+            local = dt.astimezone(now_central().tzinfo)
             # Format as "H:MM AM/PM"
             hour = local.hour % 12 or 12
             ampm = "AM" if local.hour < 12 else "PM"
@@ -2020,11 +2046,13 @@ def fetch_solunar() -> dict:
     The legacy solunar.org API used to provide these directly but has
     been offline; this computes them locally so the widget keeps working.
     """
-    now = datetime.now()
+    now = now_central()
     date_str = now.strftime("%Y-%m-%d")
-    # Central Time offset (CDT vs CST by month heuristic)
-    offset = -5 if 3 <= now.month <= 10 else -6
-    is_dst = "true" if 3 <= now.month <= 10 else "false"
+    # Give USNO our exact current UTC offset with dst=false — the offset
+    # already includes DST, and this sidesteps the API's own ambiguous
+    # "apply daylight correction" flag (no risk of double-shifting).
+    offset = int(now.utcoffset().total_seconds() // 3600)
+    is_dst = "false"
 
     url = (
         f"https://aa.usno.navy.mil/api/rstt/oneday"
@@ -2628,7 +2656,7 @@ def generate_daily_summary(
     Generate a concise AP-style daily fishing conditions summary as an
     HTML snippet. Sentence case headline, <=30 words. Body is 2-3 sentences.
     """
-    today = datetime.now()
+    today = now_central()
     date_str = f"{today.strftime('%B')} {today.day}, {today.year}"
 
     # --- Key data ---
@@ -3029,7 +3057,7 @@ def main():
         gauge_record["current_lures"] = compute_lure_suggestions(
             gauge_record,
             current.get("water_temp_f"),
-            datetime.now().month,
+            now_central().month,
         )
         gauges_data.append(gauge_record)
 
@@ -3080,14 +3108,14 @@ def main():
         fishing_conditions["best_time"] = best_time
 
     # Seasonal calendar for current month
-    current_month = datetime.now().month
+    current_month = now_central().month
     seasonal = SEASONAL_CALENDAR.get(current_month)
 
     # Auto-generated conditions summary
     conditions_summary = compute_conditions_summary(gauges_data)
 
     # Filter events to upcoming only (today and future)
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = now_central().strftime("%Y-%m-%d")
     upcoming_events = [e for e in LOCAL_EVENTS if e["date"] >= today_str]
 
     # Assemble output
