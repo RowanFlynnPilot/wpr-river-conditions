@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { scrollBehavior } from '../utils/motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { computeTrend, trendText, TREND_ARROWS } from '../utils/trend';
@@ -564,7 +565,7 @@ export default function OverviewMap({
         { className: 'map-tip', direction: 'top', offset: [0, -8] }
       );
       marker.on('click', () => {
-        document.getElementById('reservoirs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('reservoirs')?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
       });
       marker.addTo(group);
     }

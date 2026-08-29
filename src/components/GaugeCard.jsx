@@ -196,6 +196,9 @@ export default function GaugeCard({ gauge }) {
                   <div className="gauge-card__temp-context" style={{ color: ts.color }}>
                     {ts.label}
                   </div>
+                  {fromWvic && (
+                    <div className="gauge-card__reading-source">WVIC · provisional</div>
+                  )}
                 </div>
               );
             })()}
@@ -232,6 +235,9 @@ export default function GaugeCard({ gauge }) {
                 {dir === 'steady'
                   ? 'Holding steady'
                   : `${f.next24h_pct > 0 ? '+' : ''}${f.next24h_pct}% next ${f.horizon_h || 24}h`}
+                {f.carried_forward && (
+                  <span className="gauge-card__nwm-age"> · model run {f.age_h}h old</span>
+                )}
               </div>
             );
           })()}
@@ -248,7 +254,7 @@ export default function GaugeCard({ gauge }) {
 
           {current.precip_24h_in != null && current.precip_24h_in > 0 && (
             <div className="gauge-card__precip">
-              💧 Last 24h precip:{' '}
+              <span aria-hidden="true">💧</span> Last 24h precip:{' '}
               <span className="gauge-card__precip-value">
                 {formatNumber(current.precip_24h_in, 2)} in
               </span>

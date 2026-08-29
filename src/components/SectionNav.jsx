@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { scrollBehavior } from '../utils/motion';
 
 // Sticky in-widget navigation. Inside the fixed-height WordPress iframe the
 // page is many screens tall, so jump links replace scroll-past-everything.
@@ -48,7 +49,7 @@ export default function SectionNav({ sections }) {
 
   const go = (id) => (e) => {
     e.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(id)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
   };
 
   return (

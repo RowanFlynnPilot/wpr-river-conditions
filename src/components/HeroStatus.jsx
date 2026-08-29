@@ -57,7 +57,9 @@ export default function HeroStatus({ gauges }) {
   return (
     <div className={`hero-status hero-status--${conf.mod}`} role="status">
       <div className="hero-status__label">Current Status · Central Wisconsin</div>
-      <div className="hero-status__headline">{conf.label}</div>
+      {/* The page h1: the SEO prerender's heading is wiped when React
+          mounts, so this is the only top-level heading readers get. */}
+      <h1 className="hero-status__headline">{conf.label}</h1>
       <div className="hero-status__detail">{detail}</div>
     </div>
   );

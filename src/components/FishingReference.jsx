@@ -9,27 +9,27 @@ export default function FishingReference({ gauges }) {
 
   return (
     <div className="fishing-ref">
-      <div
-        className="section-header fishing-ref__header"
-        style={{ marginTop: 'var(--space-lg)', cursor: 'pointer' }}
-        onClick={() => setExpanded(!expanded)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setExpanded(!expanded);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-expanded={expanded}
-      >
-        <h2 className="section-header__title">Fishing Guide</h2>
-        <span className="section-header__subtitle">
-          {fishingGauges.length} waterways
-          <span className={`fishing-ref__chevron ${expanded ? 'fishing-ref__chevron--open' : ''}`}>
-            &#9662;
-          </span>
-        </span>
+      {/* The button lives inside the h2 (not around it): role=button on
+          the container made the heading presentational and erased it from
+          screen-reader heading navigation. */}
+      <div className="section-header fishing-ref__header" style={{ marginTop: 'var(--space-lg)' }}>
+        <h2 className="section-header__title">
+          <button
+            type="button"
+            className="fishing-ref__toggle"
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+          >
+            Fishing Guide
+            <span
+              className={`fishing-ref__chevron ${expanded ? 'fishing-ref__chevron--open' : ''}`}
+              aria-hidden="true"
+            >
+              &#9662;
+            </span>
+          </button>
+        </h2>
+        <span className="section-header__subtitle">{fishingGauges.length} waterways</span>
       </div>
 
       {expanded && (

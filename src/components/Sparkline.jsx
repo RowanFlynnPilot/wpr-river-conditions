@@ -67,7 +67,9 @@ export default function Sparkline({
   }
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+    // Decorative for AT: the visible label + range text beside the chart
+    // carry the same information without the path noise.
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
       <path className="gauge-card__sparkline-area" d={areaPath} />
       <path className="gauge-card__sparkline-line" d={linePath} />
       {fcstPath && (

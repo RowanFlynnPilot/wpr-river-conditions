@@ -50,6 +50,9 @@ export default function RegionChips({ gauges, drought }) {
           <strong>{drought.worst_class}</strong> {drought.worst_label} · {droughtNames}
         </a>
       )}
+      {showDrought && drought.sliver_note && (
+        <span className="region-chips__note">{drought.sliver_note}</span>
+      )}
     </div>
   );
 }

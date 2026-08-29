@@ -33,13 +33,6 @@ function shortTrend(t) {
 export default function GlanceTable({ gauges, onSelect }) {
   if (!gauges || gauges.length === 0) return null;
 
-  const handleKey = (id) => (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onSelect?.(id);
-    }
-  };
-
   const renderRows = (chunk) =>
     chunk.map((g) => {
       const cur = g.current || {};
@@ -49,16 +42,23 @@ export default function GlanceTable({ gauges, onSelect }) {
         cur.gage_height_ft != null && cur.streamflow_cfs != null
           ? `${Math.round(cur.streamflow_cfs).toLocaleString('en-US')} cfs`
           : null;
+      // The row stays clickable for mouse/touch, but the real control is
+      // the button on the river name: a focusable tr with an aria-label
+      // hides the cells from screen readers and has no visible focus.
       return (
-        <tr
-          key={g.id}
-          className="glance__row"
-          onClick={() => onSelect?.(g.id)}
-          onKeyDown={handleKey(g.id)}
-          tabIndex={0}
-          aria-label={`${g.short_name}: ${primaryReading(cur)}, ${conf.label}. Jump to details.`}
-        >
-          <td className="glance__name">{g.short_name}</td>
+        <tr key={g.id} className="glance__row" onClick={() => onSelect?.(g.id)}>
+          <td className="glance__name">
+            <button
+              type="button"
+              className="glance__name-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect?.(g.id);
+              }}
+            >
+              {g.short_name}
+            </button>
+          </td>
           <td className="glance__now">
             {primaryReading(cur)}
             {flow && <span className="glance__sub">{flow}</span>}
