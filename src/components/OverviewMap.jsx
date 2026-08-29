@@ -173,18 +173,26 @@ export default function OverviewMap({
 
     // Base tiles carry no labels; place labels render in their own pane
     // ABOVE the data, so "Wausau" stays readable over the pins.
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 19,
-    }).addTo(map);
+    // Esri Light Gray Canvas (base + reference): CARTO's basemaps now demand
+    // an API key and watermark the tiles without one. Esri serves the same
+    // muted base/labels split keylessly — note {z}/{y}/{x} order, max zoom 16.
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      {
+        attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
+        maxZoom: 16,
+      }
+    ).addTo(map);
     map.createPane('labels');
     map.getPane('labels').style.zIndex = 650;
     map.getPane('labels').style.pointerEvents = 'none';
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      pane: 'labels',
-    }).addTo(map);
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 16,
+        pane: 'labels',
+      }
+    ).addTo(map);
 
     // Stacking: radar (330) < boundary (350) < rivers (360) < markers (400).
     map.createPane('radar');
