@@ -2,7 +2,8 @@ import React from 'react';
 
 export default function SkeletonPage() {
   return (
-    <div className="skeleton-page" aria-busy="true" aria-label="Loading river conditions">
+    <div className="skeleton-page" aria-busy="true" role="status">
+      <span className="visually-hidden">Loading river conditions</span>
       <div className="skeleton skeleton-page__weather" />
       <div className="skeleton skeleton-page__hero" />
       <div className="skeleton skeleton-page__map" />

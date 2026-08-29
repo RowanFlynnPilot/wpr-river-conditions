@@ -33,8 +33,10 @@ export default function GaugeFilter({ gauges, active, onChange }) {
     return acc;
   }, {});
 
+  // These are toggle filters, not tabs — tab roles promise arrow-key
+  // navigation and tabpanels that don't exist here.
   return (
-    <div className="gauge-filter" role="tablist" aria-label="Filter gauges">
+    <div className="gauge-filter" role="group" aria-label="Filter gauges">
       {FILTERS.map((f) => {
         const isActive = active === f.key;
         const isEmpty = counts[f.key] === 0 && f.key !== 'all';
@@ -42,8 +44,7 @@ export default function GaugeFilter({ gauges, active, onChange }) {
         return (
           <button
             key={f.key}
-            role="tab"
-            aria-selected={isActive}
+            aria-pressed={isActive}
             className={`gauge-filter__chip ${isActive ? 'gauge-filter__chip--active' : ''}`}
             onClick={() => onChange(f.key)}
           >
@@ -52,6 +53,9 @@ export default function GaugeFilter({ gauges, active, onChange }) {
           </button>
         );
       })}
+      <span className="visually-hidden" aria-live="polite">
+        Showing {counts[active] ?? counts.all} of {gauges.length} gauges
+      </span>
     </div>
   );
 }

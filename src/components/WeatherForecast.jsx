@@ -47,7 +47,7 @@ export default function WeatherForecast({ forecast }) {
         {forecast.map((day, i) => (
           <div key={day.date} className="weather-strip__day">
             <div className="weather-strip__day-name">{formatDayName(day.date, i, day.high_f != null)}</div>
-            <div className="weather-strip__icon">{getWeatherIcon(day.weather_code)}</div>
+            <div className="weather-strip__icon" aria-hidden="true">{getWeatherIcon(day.weather_code)}</div>
             <div className="weather-strip__label">{getWeatherLabel(day.weather_code)}</div>
             <div className="weather-strip__temps">
               {day.high_f != null && <span className="weather-strip__high">{day.high_f}°</span>}
@@ -55,7 +55,8 @@ export default function WeatherForecast({ forecast }) {
             </div>
             {day.precip_pct > 0 && (
               <div className="weather-strip__precip">
-                {'\uD83D\uDCA7'} {day.precip_pct}%
+                <span aria-hidden="true">{'\uD83D\uDCA7'}</span> {day.precip_pct}%
+                <span className="visually-hidden">chance of precipitation</span>
               </div>
             )}
           </div>

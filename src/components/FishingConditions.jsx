@@ -94,7 +94,9 @@ export default function FishingConditions({ conditions }) {
     <div className="fishing-panel">
       {conditions.best_time && (
         <div className="fishing-panel__best-time">
-          <span className="fishing-panel__best-time-label">{'\uD83C\uDFA3'} Best Window Today</span>
+          <span className="fishing-panel__best-time-label">
+            <span aria-hidden="true">{'\uD83C\uDFA3'}</span> Best Window Today
+          </span>
           <span className="fishing-panel__best-time-value">
             {formatPeriod(conditions.best_time)}
           </span>
@@ -166,6 +168,7 @@ export default function FishingConditions({ conditions }) {
                     {ts.label}
                   </span>
                 </div>
+                <div className="fishing-panel__source-note">WVIC daily · provisional</div>
               </div>
             );
           })()}
@@ -179,12 +182,12 @@ export default function FishingConditions({ conditions }) {
               {conditions.sunrise && conditions.sunset ? (
                 <>
                   <span className="fishing-panel__sun-entry">
-                    <span className="fishing-panel__sun-emoji">{'\uD83C\uDF05'}</span>
+                    <span className="fishing-panel__sun-emoji" aria-hidden="true">{'\uD83C\uDF05'}</span>
                     {conditions.sunrise}
                   </span>
-                  <span className="fishing-panel__sun-divider">&mdash;</span>
+                  <span className="fishing-panel__sun-divider" aria-hidden="true">&mdash;</span>
                   <span className="fishing-panel__sun-entry">
-                    <span className="fishing-panel__sun-emoji">{'\uD83C\uDF07'}</span>
+                    <span className="fishing-panel__sun-emoji" aria-hidden="true">{'\uD83C\uDF07'}</span>
                     {conditions.sunset}
                   </span>
                 </>
@@ -194,7 +197,7 @@ export default function FishingConditions({ conditions }) {
           <div className="fishing-panel__item">
             <div className="fishing-panel__label">Moon Phase</div>
             <div className="fishing-panel__moon">
-              <span className="fishing-panel__moon-emoji">{getMoonEmoji(conditions.moon_phase)}</span>
+              <span className="fishing-panel__moon-emoji" aria-hidden="true">{getMoonEmoji(conditions.moon_phase)}</span>
               <span className="fishing-panel__moon-name">{conditions.moon_phase || '\u2014'}</span>
             </div>
           </div>

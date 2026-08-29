@@ -18,6 +18,7 @@ import GlanceTable from './components/GlanceTable';
 import SectionNav from './components/SectionNav';
 import LazyMount from './components/LazyMount';
 import { trackEvent } from './utils/analytics';
+import { scrollBehavior } from './utils/motion';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -196,7 +197,7 @@ export default function App() {
     // Selection is shared with the overview map (halo + pan).
     setSelectedGaugeId(gaugeId);
     const doScroll = () =>
-      gaugeRefs.current[gaugeId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      gaugeRefs.current[gaugeId]?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     const visible = filteredGaugesRef.current.some((g) => g.id === gaugeId);
     if (!visible) {
       setFilter('all');
@@ -266,7 +267,8 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img className="chrome-bar__logo-img" src={logoUrl} alt="Wausau Pilot & Review" />
+          {/* Decorative: the adjacent text already carries the name. */}
+          <img className="chrome-bar__logo-img" src={logoUrl} alt="" />
           <span className="chrome-bar__logo">Wausau Pilot & Review</span>
           <span className="chrome-bar__divider" />
           <span className="chrome-bar__section-name">River Conditions</span>
