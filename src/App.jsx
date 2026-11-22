@@ -311,7 +311,7 @@ export default function App() {
       <SponsorStrip sponsor={sponsor} />
 
       {/* Hero status (worst flood status across all gauges) */}
-      <HeroStatus gauges={data.gauges} />
+      <HeroStatus gauges={data.gauges} generatedAt={data.generated_at} />
 
       {/* NWS alerts (above the fold when active) */}
       <AlertBanner alerts={data.alerts} />

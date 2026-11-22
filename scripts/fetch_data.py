@@ -13,6 +13,7 @@ import json
 import logging
 import re
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from http.client import HTTPException  # IncompleteRead, BadStatusLine, …
 from pathlib import Path
@@ -780,33 +781,66 @@ LOCAL_EVENTS = [
 # API helpers
 # ---------------------------------------------------------------------------
 
+# USGS answers a burst of 503s for a minute or two and then recovers; without
+# a retry, one burst trips the minimum-gauges gate and costs a whole cycle.
+# Only USGS is retried — the NWM endpoint hangs rather than erroring and has
+# its own circuit breaker. The budget stops a real outage from stacking
+# retries until the job timeout.
+RETRY_HOSTS = ("usgs.gov",)
+RETRY_BACKOFF_S = (2, 6)
+_retry_budget = {"left": 12}
+
+
+def _is_transient(err: Exception) -> bool:
+    if isinstance(err, HTTPError):
+        return err.code in (429, 500, 502, 503, 504)
+    return isinstance(err, (URLError, HTTPException, TimeoutError, OSError))
+
+
+def _fetch_body(url: str, timeout: int, headers: dict) -> str | None:
+    retryable = any(h in url for h in RETRY_HOSTS)
+    attempt = 0
+    while True:
+        try:
+            with urlopen(Request(url, headers=headers), timeout=timeout) as resp:
+                return resp.read().decode("utf-8")
+        except (URLError, HTTPError, HTTPException, TimeoutError, OSError) as e:
+            can_retry = (
+                retryable
+                and attempt < len(RETRY_BACKOFF_S)
+                and _retry_budget["left"] > 0
+                and _is_transient(e)
+            )
+            if not can_retry:
+                log.error(f"Failed to fetch {url}: {e}")
+                return None
+            _retry_budget["left"] -= 1
+            delay = RETRY_BACKOFF_S[attempt]
+            log.warning(f"Transient error from {url}: {e} — retrying in {delay}s")
+            time.sleep(delay)
+            attempt += 1
+
+
 def fetch_json(url: str, timeout: int = 30) -> dict | list | None:
     """Fetch JSON from a URL with a User-Agent header (required by USGS/NWS)."""
-    headers = {
+    body = _fetch_body(url, timeout, {
         "User-Agent": "WPR-RiverConditions/1.0 (wausaupilotandreview.com)",
         "Accept": "application/json",
-    }
-    req = Request(url, headers=headers)
+    })
+    if body is None:
+        return None
     try:
-        with urlopen(req, timeout=timeout) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except (URLError, HTTPError, HTTPException, json.JSONDecodeError, TimeoutError, OSError) as e:
+        return json.loads(body)
+    except json.JSONDecodeError as e:
         log.error(f"Failed to fetch {url}: {e}")
         return None
 
 
 def fetch_text(url: str, timeout: int = 30) -> str | None:
     """Fetch raw text from a URL."""
-    headers = {
+    return _fetch_body(url, timeout, {
         "User-Agent": "WPR-RiverConditions/1.0 (wausaupilotandreview.com)",
-    }
-    req = Request(url, headers=headers)
-    try:
-        with urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode("utf-8")
-    except (URLError, HTTPError, HTTPException, TimeoutError, OSError) as e:
-        log.error(f"Failed to fetch {url}: {e}")
-        return None
+    })
 
 
 # ---------------------------------------------------------------------------

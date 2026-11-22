@@ -1869,6 +1869,14 @@ body {
 .hero-status--action .hero-status__headline   { color: var(--status-action-text); }
 .hero-status--normal .hero-status__headline   { color: var(--status-normal-text); }
 
+/* Data too old to claim any status: neutral, never green. */
+.hero-status--unknown {
+  border-left-color: var(--wpr-ink-muted);
+  background: var(--wpr-cream-dark);
+}
+.hero-status--unknown .hero-status__headline { color: var(--wpr-ink); }
+.hero-status--unknown a { color: var(--accent); font-weight: 600; }
+
 .hero-status__detail {
   font-family: var(--font-body);
   font-size: 0.95rem;
