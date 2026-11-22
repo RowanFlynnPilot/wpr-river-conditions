@@ -427,5 +427,98 @@ class Narrative(unittest.TestCase):
         self.assertEqual(summary, ["All gauges showing stable flows — consistent conditions."])
 
 
+def week(high, low, rain=0.0, snow=0.0, days=7):
+    return [{"date": f"2027-03-{10 + i:02d}", "high_f": high, "low_f": low, "rain_in": rain, "snow_in": snow}
+            for i in range(days)]
+
+
+class Snowpack(unittest.TestCase):
+    def test_identify_units_match_the_service_legend(self):
+        # Recorded at a Wyoming mountain pixel: 124 mm of water, 0.61 m deep.
+        # The service's own legend puts those in the 3.9-5.9 in and 20-39 in classes.
+        sample = f._parse_snow_identify(load("snow_identify.json"))
+        self.assertAlmostEqual(sample["swe_in"], 4.88, places=2)
+        self.assertAlmostEqual(sample["depth_in"], 24.0, places=1)
+        self.assertEqual(sample["valid"], "2026-11-22T12:00:00+00:00")
+
+    def test_nodata_pixel_is_not_a_zero(self):
+        data = {"results": [{"layerId": 7, "attributes": {"Service Pixel Value": "NoData"}}]}
+        self.assertIsNone(f._parse_snow_identify(data))
+        self.assertIsNone(f._parse_snow_identify(None))
+
+    def test_melt_classes(self):
+        self.assertEqual(f._melt_outlook(0.0, week(40, 30))["class"], "none")
+        self.assertEqual(f._melt_outlook(0.0, week(28, 15, snow=0.5))["class"], "building")
+        self.assertEqual(f._melt_outlook(3.0, week(25, 5))["class"], "holding")
+        self.assertEqual(f._melt_outlook(3.0, week(25, 5, snow=0.5))["class"], "building")
+        self.assertEqual(f._melt_outlook(3.0, week(36, 30))["class"], "melting")
+        self.assertEqual(f._melt_outlook(3.0, week(50, 34))["class"], "rapid")
+
+    def test_melt_never_exceeds_the_snow_that_is_there(self):
+        out = f._melt_outlook(0.8, week(60, 40))
+        self.assertEqual(out["melt_in"], 0.8)
+        self.assertEqual(out["thaw_days"], 7)
+        # 0.8 in is under the one-inch bar for "rapid", however warm it gets.
+        self.assertEqual(out["class"], "melting")
+
+    def test_rain_on_snow_escalates(self):
+        # 1.3 in of melt from a 4 in pack is under half of it, so it takes the rain to call it rapid.
+        self.assertEqual(f._melt_outlook(4.0, week(38, 32))["class"], "melting")
+        self.assertEqual(f._melt_outlook(4.0, week(38, 32, rain=0.15))["class"], "rapid")
+
+    def test_weather_parsing(self):
+        with mock.patch.object(f, "fetch_json", return_value=load("snow_weather.json")):
+            weather = f._fetch_snow_weather()
+        self.assertEqual(set(weather), {b["key"] for b in f.RAIN_BASINS})
+        first = weather["upper-wisconsin"]
+        self.assertEqual(len(first), 7)
+        self.assertEqual(set(first[0]), {"date", "high_f", "low_f", "rain_in", "snow_in"})
+
+    def test_weather_with_wrong_location_count_is_ignored(self):
+        with mock.patch.object(f, "fetch_json", return_value=load("snow_weather.json")[:2]):
+            self.assertEqual(f._fetch_snow_weather(), {})
+
+    def fetch(self, swe_in, days, today, depth_in=20):
+        sample = {"swe_in": swe_in, "depth_in": depth_in, "valid": "2027-03-10T12:00:00+00:00"}
+        weather = {b["key"]: days for b in f.RAIN_BASINS}
+        with mock.patch.object(f, "_fetch_snow_point", return_value=sample),                 mock.patch.object(f, "_fetch_snow_weather", return_value=weather):
+            return f.fetch_snowpack(today)
+
+    def test_payload_for_a_melting_pack(self):
+        snow = self.fetch(3.2, week(50, 34, rain=0.1), date(2027, 3, 10))
+        self.assertEqual(len(snow["basins"]), 5)
+        self.assertEqual((snow["max_swe_in"], snow["class"], snow["show"]), (3.2, "rapid", True))
+        self.assertEqual(snow["headline"], "Rapid snowmelt is possible this week")
+        self.assertIn("About 3.2 in of water", snow["detail"])
+        self.assertIn("release roughly 3.2 in of it there, with 0.7 in of rain on top", snow["detail"])
+        self.assertEqual(len(snow["week"]), 7)
+
+    def test_bare_ground_wording_depends_on_the_time_of_year(self):
+        self.assertEqual(self.fetch(0.0, week(35, 25), date(2026, 11, 22))["headline"], "No snowpack yet")
+        self.assertEqual(self.fetch(0.0, week(55, 35), date(2027, 4, 20))["headline"], "No snow left on the ground")
+
+    def test_panel_hides_in_may_unless_there_is_snow(self):
+        self.assertFalse(self.fetch(0.0, week(60, 40), date(2027, 5, 5))["show"])
+        self.assertTrue(self.fetch(1.0, week(30, 10), date(2027, 5, 5))["show"])
+
+    def test_summer_makes_no_requests(self):
+        with mock.patch.object(f, "fetch_json") as fetch:
+            self.assertIsNone(f.fetch_snowpack(date(2027, 7, 4)))
+        fetch.assert_not_called()
+
+    def test_gives_up_quickly_when_the_service_is_down(self):
+        with mock.patch.object(f, "_fetch_snow_point", return_value=None) as point,                 mock.patch.object(f, "_fetch_snow_weather", return_value={}):
+            self.assertIsNone(f.fetch_snowpack(date(2027, 1, 15)))
+        self.assertEqual(point.call_count, 3)
+
+    def test_works_without_the_weather_forecast(self):
+        sample = {"swe_in": 2.0, "depth_in": 12.0, "valid": None}
+        with mock.patch.object(f, "_fetch_snow_point", return_value=sample),                 mock.patch.object(f, "_fetch_snow_weather", return_value={}):
+            snow = f.fetch_snowpack(date(2027, 1, 15))
+        self.assertEqual(snow["headline"], "2 in of water is waiting in the snowpack")
+        self.assertNotIn("class", snow["basins"][0])
+        self.assertEqual(snow["week"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

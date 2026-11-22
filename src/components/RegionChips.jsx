@@ -2,8 +2,9 @@ import React from 'react';
 
 // Region-wide context that isn't tied to one gauge: how much rain is
 // headed for the basins, and where the Drought Monitor has the coverage
-// area. Both render only when they have something to say.
-export default function RegionChips({ gauges, drought }) {
+// area, and how much water is sitting in the snowpack. Each renders only
+// when it has something to say.
+export default function RegionChips({ gauges, drought, snowpack }) {
   // Wettest basin in the next 24h — the one that explains tomorrow.
   let wettest = null;
   for (const g of gauges || []) {
@@ -13,7 +14,11 @@ export default function RegionChips({ gauges, drought }) {
 
   const showRain = wettest && wettest.inches >= 0.1;
   const showDrought = drought?.any_drought && drought.counties?.length;
-  if (!showRain && !showDrought) return null;
+  // Half an inch of water is the point where the snowpack starts to matter
+  // to the rivers; below that the panel further down is enough.
+  const showSnow = snowpack?.show && snowpack.max_swe_in >= 0.5;
+  const snowActive = snowpack?.class === 'melting' || snowpack?.class === 'rapid';
+  if (!showRain && !showDrought && !showSnow) return null;
 
   // Name only the counties at (or worse than) the headline class, then
   // count the rest — so a D0 county is never implied to be in D1.
@@ -35,6 +40,17 @@ export default function RegionChips({ gauges, drought }) {
           <strong>{wettest.inches.toFixed(2)} in</strong> rain forecast upstream ·{' '}
           {wettest.label}
         </span>
+      )}
+      {showSnow && (
+        <a
+          className={`region-chip region-chip--snow${snowActive ? ' region-chip--snow-melting' : ''}`}
+          href="#snowpack"
+          title={`${snowpack.headline}. ${snowpack.detail}`}
+        >
+          <span aria-hidden="true">❄️</span>
+          <strong>{snowpack.max_swe_in.toFixed(1)} in</strong> of water in the snowpack
+          {snowActive ? ', melting' : ''} · {snowpack.max_basin}
+        </a>
       )}
       {showDrought && (
         <a
