@@ -3119,6 +3119,15 @@ body {
   white-space: nowrap;
 }
 
+/* Data too old to vouch for: the last known status, in neutral grey. */
+.glance__chip--stale,
+.gauge-card__status-badge.badge--stale {
+  background: var(--wpr-cream-dark);
+  color: var(--wpr-ink-muted);
+  border: 1px solid var(--wpr-rule);
+  animation: none;
+}
+
 .glance__chip--normal   { background: var(--status-normal-bg);   color: var(--status-normal-text); }
 .glance__chip--action   { background: var(--status-action-bg);   color: var(--status-action-text); }
 .glance__chip--minor    { background: var(--status-minor-bg);    color: var(--status-minor-text); }

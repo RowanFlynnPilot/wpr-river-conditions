@@ -1,5 +1,5 @@
 import React from 'react';
-import { computeTrend, TREND_ARROWS } from '../utils/trend';
+import { computeTrend, formatFlowChange, TREND_ARROWS } from '../utils/trend';
 
 const STATUS_CONFIG = {
   normal:   { label: 'Normal',      css: 'normal' },
@@ -22,7 +22,7 @@ function primaryReading(cur) {
 function shortTrend(t) {
   if (!t) return null;
   if (t.dir === 'steady') return 'steady';
-  if (t.key === 'streamflow_cfs') return `${t.pct > 0 ? '+' : ''}${t.pct}%`;
+  if (t.key === 'streamflow_cfs') return formatFlowChange(t.pct);
   return `${t.delta > 0 ? '+' : ''}${t.delta} ft`;
 }
 
@@ -30,7 +30,7 @@ function shortTrend(t) {
 // within the first screen of the 900px WordPress embed. Past 8 gauges
 // the roster splits into two side-by-side tables at wider widths so the
 // whole region still fits in one screen.
-export default function GlanceTable({ gauges, onSelect }) {
+export default function GlanceTable({ gauges, onSelect, statusUnknown = false }) {
   if (!gauges || gauges.length === 0) return null;
 
   const renderRows = (chunk) =>
@@ -74,7 +74,9 @@ export default function GlanceTable({ gauges, onSelect }) {
             )}
           </td>
           <td>
-            <span className={`glance__chip glance__chip--${conf.css}`}>{conf.label}</span>
+            <span className={`glance__chip glance__chip--${statusUnknown ? 'stale' : conf.css}`}>
+              {conf.label}
+            </span>
           </td>
         </tr>
       );
@@ -100,7 +102,7 @@ export default function GlanceTable({ gauges, onSelect }) {
                 <th scope="col">River</th>
                 <th scope="col">Now</th>
                 <th scope="col">24h</th>
-                <th scope="col">Status</th>
+                <th scope="col">{statusUnknown ? 'Last status' : 'Status'}</th>
               </tr>
             </thead>
             <tbody>{renderRows(chunk)}</tbody>

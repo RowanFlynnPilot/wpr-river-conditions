@@ -19,6 +19,7 @@ import SectionNav from './components/SectionNav';
 import LazyMount from './components/LazyMount';
 import { trackEvent } from './utils/analytics';
 import { scrollBehavior } from './utils/motion';
+import { isStatusUnknown } from './utils/freshness';
 
 import logoUrl from './assets/logo-32.png';
 
@@ -274,6 +275,7 @@ export default function App() {
   const activeCount = reportingGauges.length;
   const wrapperStyle = sponsorAccentStyle(sponsor);
   const reservoirsReporting = (data.reservoirs || []).filter((r) => r.has_data);
+  const statusUnknown = isStatusUnknown(data.generated_at);
   const isStale = data.generated_at && Date.now() - new Date(data.generated_at).getTime() > STALE_MS;
 
   const handleFilterChange = (key) => {
@@ -323,7 +325,7 @@ export default function App() {
       <RegionChips gauges={data.gauges} drought={data.drought} />
 
       {/* Answer-first summary: every reporting gauge in one screen */}
-      <GlanceTable gauges={reportingGauges} onSelect={scrollToGauge} />
+      <GlanceTable gauges={reportingGauges} onSelect={scrollToGauge} statusUnknown={statusUnknown} />
 
       {/* Stream Gauges */}
       <div className="section-header" id="gauges">
@@ -343,7 +345,7 @@ export default function App() {
             className="gauge-card-anchor"
             ref={(el) => { if (el) gaugeRefs.current[gauge.id] = el; }}
           >
-            <GaugeCard gauge={gauge} />
+            <GaugeCard gauge={gauge} statusUnknown={statusUnknown} />
           </div>
         ))}
       </div>

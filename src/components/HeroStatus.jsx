@@ -1,4 +1,5 @@
 import React from 'react';
+import { dataAgeMs, isStatusUnknown } from '../utils/freshness';
 
 const STATUS_CONFIG = {
   major: {
@@ -37,10 +38,6 @@ function worstStatus(gauges) {
   return 'normal';
 }
 
-// Past this age the readings can't support a status claim either way: an
-// "All Clear" over day-old data would stay green straight through a flood.
-const UNKNOWN_AFTER_MS = 6 * 60 * 60 * 1000;
-
 function formatAge(ms) {
   const hours = Math.round(ms / 3600000);
   if (hours < 48) return `${hours} hours`;
@@ -50,8 +47,8 @@ function formatAge(ms) {
 export default function HeroStatus({ gauges, generatedAt }) {
   if (!gauges || gauges.length === 0) return null;
 
-  const ageMs = generatedAt ? Date.now() - new Date(generatedAt).getTime() : 0;
-  if (ageMs > UNKNOWN_AFTER_MS) {
+  const ageMs = dataAgeMs(generatedAt);
+  if (isStatusUnknown(generatedAt)) {
     return (
       <div className="hero-status hero-status--unknown" role="status">
         <div className="hero-status__label">Current Status · Central Wisconsin</div>
