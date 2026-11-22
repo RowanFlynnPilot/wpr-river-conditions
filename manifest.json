@@ -1,0 +1,37 @@
+{
+  "updated": "2026-11-22T18:13Z",
+  "readings": [
+    "2026-11"
+  ],
+  "forecasts": [
+    "2026-11"
+  ],
+  "reservoirs": [
+    "2026"
+  ],
+  "bucket_hours": 2,
+  "fields": {
+    "readings": [
+      "bucket",
+      "gauge_id",
+      "timestamp",
+      "gage_height_ft",
+      "streamflow_cfs"
+    ],
+    "forecasts": [
+      "issued",
+      "gauge_id",
+      "archived_at",
+      "observed_cfs",
+      "horizon_h",
+      "forecast_pct",
+      "forecast_cfs",
+      "baseline"
+    ],
+    "reservoirs": [
+      "date",
+      "slug",
+      "feet_below_max"
+    ]
+  }
+}
