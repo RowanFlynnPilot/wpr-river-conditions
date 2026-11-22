@@ -115,6 +115,23 @@ class Archive(unittest.TestCase):
         archived = rows(self.root, "reservoirs/2026.csv")
         self.assertEqual(archived, [{"date": "2026-11-22", "slug": "rainbow", "feet_below_max": "-5.58"}])
 
+    def test_snowpack_keeps_one_row_per_basin_per_analysis_day(self):
+        def snow(swe):
+            data = payload()
+            data["snowpack"] = {"valid": "2027-01-15T12:00:00+00:00", "basins": [
+                {"key": "wolf", "swe_in": swe, "depth_in": 14},
+                {"key": "wausau", "swe_in": None, "depth_in": None}]}
+            return data
+        self.assertEqual(a.archive(snow(2.4), self.root)["snowpack"], 1)
+        self.assertEqual(a.archive(snow(2.4), self.root)["snowpack"], 0)
+        self.assertEqual(rows(self.root, "snowpack/2027.csv"),
+                         [{"date": "2027-01-15", "basin": "wolf", "swe_in": "2.4", "depth_in": "14"}])
+
+    def test_payload_without_snowpack_archives_none(self):
+        data = payload()
+        data["snowpack"] = None
+        self.assertEqual(a.archive(data, self.root)["snowpack"], 0)
+
     def test_manifest_lists_what_exists(self):
         a.archive(payload(history=[point("2026-11-22T16:00:00+00:00")]), self.root)
         manifest = json.loads((self.root / "manifest.json").read_text(encoding="utf-8"))

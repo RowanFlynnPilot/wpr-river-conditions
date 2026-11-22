@@ -2102,6 +2102,251 @@ def fetch_upstream_rain() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Snowpack: the water waiting upstream, and what the week's weather does to it
+# ---------------------------------------------------------------------------
+
+SNOW_IDENTIFY_URL = ("https://mapservices.weather.noaa.gov/raster/rest/services/snow/"
+                     "NOHRSC_Snow_Analysis/MapServer/identify")
+# Layer ids in that service: 2 = snow-depth footprint (carries the analysis
+# time), 3 = snow depth in metres, 7 = snow water equivalent in millimetres.
+# Units were confirmed against the service's own legend classes.
+SNOW_LAYER_FOOTPRINT, SNOW_LAYER_DEPTH, SNOW_LAYER_SWE = 2, 3, 7
+INCHES_PER_METRE = 39.3701
+
+# The analysis is a 1 km grid, so one pixel can be a plowed field or a shaded
+# cedar swamp. Three points per basin are averaged to steady the number.
+SNOW_POINTS = {
+    "upper-wisconsin": [(45.83, -89.55), (45.95, -89.25), (45.50, -89.65)],
+    "wausau": [(45.05, -89.70), (45.15, -90.10), (45.10, -89.30)],
+    "eau-pleine": [(44.88, -90.08), (44.98, -90.33), (45.18, -90.60)],
+    "wolf": [(45.27, -88.73), (45.42, -88.98), (44.85, -88.75)],
+    "central-sands": [(44.50, -89.40), (44.45, -89.52), (44.55, -89.28)],
+}
+
+# No point asking in summer.
+SNOW_SEASON_MONTHS = (10, 11, 12, 1, 2, 3, 4, 5)
+# Months the panel shows even with bare ground ("no snowpack yet" is news then).
+SNOW_PANEL_MONTHS = (11, 12, 1, 2, 3, 4)
+
+# Degree-day melt: inches of water released per °F that the day's mean
+# temperature sits above freezing. 0.06 is a common mid-range value for mixed
+# forest and open country; published factors run roughly 0.03 to 0.10, so the
+# result is a rough guide and is labelled as one everywhere it appears.
+MELT_IN_PER_DEGREE_DAY = 0.06
+SNOW_TRACE_IN = 0.1
+
+SNOW_CLASS_RANK = {"none": 0, "holding": 1, "building": 2, "melting": 3, "rapid": 4}
+
+
+def _snow_pixel(attributes: dict) -> float | None:
+    try:
+        return float(attributes.get("Service Pixel Value"))
+    except (TypeError, ValueError):
+        return None  # "NoData"
+
+
+def _parse_snow_identify(data: dict | None) -> dict | None:
+    """Pull SWE (in), depth (in) and the analysis time out of one identify
+    response. None if the pixel has no data."""
+    swe_mm = depth_m = valid = None
+    for result in (data or {}).get("results") or []:
+        attrs = result.get("attributes") or {}
+        layer = result.get("layerId")
+        if layer == SNOW_LAYER_SWE:
+            swe_mm = _snow_pixel(attrs)
+        elif layer == SNOW_LAYER_DEPTH:
+            depth_m = _snow_pixel(attrs)
+        elif layer == SNOW_LAYER_FOOTPRINT:
+            try:
+                valid = datetime.strptime(attrs.get("idp_validtime") or "", "%m/%d/%Y %I:%M:%S %p")
+                valid = valid.replace(tzinfo=timezone.utc).isoformat()
+            except ValueError:
+                valid = None
+    if swe_mm is None or swe_mm < 0:
+        return None
+    return {
+        "swe_in": swe_mm / MM_PER_INCH,
+        "depth_in": max(depth_m, 0) * INCHES_PER_METRE if depth_m is not None else None,
+        "valid": valid,
+    }
+
+
+def _fetch_snow_point(lat: float, lon: float) -> dict | None:
+    params = {
+        "f": "json", "geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "sr": 4326,
+        "layers": f"all:{SNOW_LAYER_FOOTPRINT},{SNOW_LAYER_DEPTH},{SNOW_LAYER_SWE}",
+        "tolerance": 1, "imageDisplay": "400,400,96", "returnGeometry": "false",
+        # The service answers NoData when the map extent is much coarser
+        # than the grid, so ask about a one-degree box around the point.
+        "mapExtent": f"{lon - 0.5},{lat - 0.5},{lon + 0.5},{lat + 0.5}",
+    }
+    return _parse_snow_identify(fetch_json(f"{SNOW_IDENTIFY_URL}?{urlencode(params)}", timeout=10))
+
+
+def _melt_outlook(swe_in: float, days: list[dict]) -> dict:
+    """What a week of forecast weather does to `swe_in` inches of snowpack."""
+    potential = sum(MELT_IN_PER_DEGREE_DAY * max(0.0, (d["high_f"] + d["low_f"]) / 2 - 32) for d in days)
+    melt = min(swe_in, potential)
+    rain = sum(d["rain_in"] for d in days)
+    new_snow = sum(d["snow_in"] for d in days)
+
+    if swe_in < SNOW_TRACE_IN:
+        cls = "building" if new_snow >= 2 else "none"
+        melt = 0.0
+    elif melt >= 1.0 and (melt >= 0.5 * swe_in or melt + rain >= 2.0):
+        cls = "rapid"
+    elif melt >= 0.3:
+        cls = "melting"
+    elif new_snow >= 3:
+        cls = "building"
+    else:
+        cls = "holding"
+    return {
+        "class": cls,
+        "melt_in": round(melt, 1),
+        "rain_in": round(rain, 2),
+        "new_snow_in": round(new_snow, 1),
+        "thaw_days": sum(1 for d in days if (d["high_f"] + d["low_f"]) / 2 > 32),
+    }
+
+
+def _fetch_snow_weather() -> dict[str, list[dict]]:
+    """Seven days of highs, lows, rain and snowfall per basin (Open-Meteo,
+    one multi-point call). {} if unavailable."""
+    lats = ",".join(str(b["lat"]) for b in RAIN_BASINS)
+    lons = ",".join(str(b["lon"]) for b in RAIN_BASINS)
+    url = (
+        f"https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}"
+        "&daily=temperature_2m_max,temperature_2m_min,rain_sum,snowfall_sum&forecast_days=7"
+        "&temperature_unit=fahrenheit&precipitation_unit=inch&timezone=America%2FChicago"
+    )
+    data = fetch_json(url, timeout=25)
+    locations = data if isinstance(data, list) else [data] if data else []
+    if len(locations) != len(RAIN_BASINS):
+        return {}
+    out = {}
+    for basin, loc in zip(RAIN_BASINS, locations):
+        daily = loc.get("daily") or {}
+        days = []
+        for i, day in enumerate(daily.get("time") or []):
+            try:
+                days.append({
+                    "date": day,
+                    "high_f": round(float(daily["temperature_2m_max"][i])),
+                    "low_f": round(float(daily["temperature_2m_min"][i])),
+                    "rain_in": round(float(daily["rain_sum"][i] or 0), 2),
+                    "snow_in": round(float(daily["snowfall_sum"][i] or 0), 1),
+                })
+            except (KeyError, IndexError, TypeError, ValueError):
+                continue
+        if days:
+            out[basin["key"]] = days
+    return out
+
+
+def _fmt_in(value: float) -> str:
+    """Inches for a sentence: 3.0 -> "3", 0.4 -> "0.4"."""
+    return f"{value:.1f}".rstrip("0").rstrip(".")
+
+
+def _snow_headline(basins: list[dict], month: int) -> tuple[str, str]:
+    """(headline, detail) for the panel, written from the basin holding the
+    most water and the basin whose week looks most active."""
+    deepest = max(basins, key=lambda b: b["swe_in"])
+    active = max(basins, key=lambda b: (SNOW_CLASS_RANK[b.get("class", "none")], b["swe_in"]))
+    cls = active.get("class", "none")
+    swe = _fmt_in(deepest["swe_in"])
+    held = f"About {swe} in of water is held in the snow in the {deepest['label']}, the most of any basin here."
+
+    if deepest["swe_in"] < SNOW_TRACE_IN:
+        headline = "No snowpack yet" if month in (10, 11, 12, 1) else "No snow left on the ground"
+        coming = max(b.get("new_snow_in") or 0 for b in basins)
+        detail = (f"Up to {_fmt_in(coming)} in of new snow is forecast over the next seven days."
+                  if coming >= 1 else "Nothing upstream to melt into the rivers.")
+        return headline, detail
+    # Don't name the same basin twice in one breath.
+    where = "there" if active["key"] == deepest["key"] else f"in the {active['label']}"
+    if cls == "rapid":
+        return ("Rapid snowmelt is possible this week",
+                f"{held} Forecast warmth could release roughly {_fmt_in(active['melt_in'])} in of it "
+                f"{where}" + (f", with {_fmt_in(active['rain_in'])} in of rain on top"
+                                        if active["rain_in"] >= 0.25 else "")
+                + ". Watch the river forecasts.")
+    if cls == "melting":
+        return ("The snowpack is melting",
+                f"{held} Roughly {_fmt_in(active['melt_in'])} in could melt {where} "
+                "over the next seven days.")
+    if cls == "building":
+        return ("The snowpack is building",
+                f"{held} About {_fmt_in(active['new_snow_in'])} in of new snow is forecast {where} "
+                "this week.")
+    return (f"{swe} in of water is waiting in the snowpack",
+            f"{held} Little melt is expected over the next seven days.")
+
+
+def fetch_snowpack(today: date | None = None) -> dict | None:
+    """
+    Snow water equivalent and depth per basin from NOAA's daily national
+    snow analysis (NOHRSC), with a seven-day melt estimate from forecast
+    temperatures. This is the water that reaches the gauges in spring.
+
+    Returns None outside snow season or when the analysis is unreachable.
+    """
+    today = today or now_central().date()
+    if today.month not in SNOW_SEASON_MONTHS:
+        return None
+
+    weather = _fetch_snow_weather()
+    basins, valid, failures = [], None, 0
+    for basin in RAIN_BASINS:
+        samples = []
+        for lat, lon in SNOW_POINTS[basin["key"]]:
+            if failures >= 3:
+                break  # the service is down; don't spend 15 timeouts finding out
+            sample = _fetch_snow_point(lat, lon)
+            if sample is None:
+                failures += 1
+                continue
+            failures = 0
+            samples.append(sample)
+            valid = sample["valid"] or valid
+        if not samples:
+            continue
+        depths = [s["depth_in"] for s in samples if s["depth_in"] is not None]
+        entry = {
+            "key": basin["key"], "label": basin["label"],
+            "swe_in": round(sum(s["swe_in"] for s in samples) / len(samples), 1),
+            "depth_in": round(sum(depths) / len(depths)) if depths else None,
+            "samples": len(samples),
+        }
+        days = weather.get(basin["key"])
+        if days:
+            entry.update(_melt_outlook(entry["swe_in"], days))
+        basins.append(entry)
+
+    if not basins:
+        return None
+
+    headline, detail = _snow_headline(basins, today.month)
+    deepest = max(basins, key=lambda b: b["swe_in"])
+    active = max(basins, key=lambda b: (SNOW_CLASS_RANK[b.get("class", "none")], b["swe_in"]))
+    return {
+        "valid": valid,
+        "basins": basins,
+        "max_swe_in": deepest["swe_in"],
+        "max_basin": deepest["label"],
+        "class": active.get("class"),
+        "headline": headline,
+        "detail": detail,
+        # The week's weather for the basin holding the most water.
+        "week": weather.get(deepest["key"]) or [],
+        "show": today.month in SNOW_PANEL_MONTHS or deepest["swe_in"] >= SNOW_TRACE_IN,
+        "source_url": "https://www.nohrsc.noaa.gov/nsa/",
+        "outlook_url": "https://water.noaa.gov/gauges/ROTW3",
+    }
+
+
+# ---------------------------------------------------------------------------
 # Lake & pool levels (NWPS elevation gauges)
 # ---------------------------------------------------------------------------
 
@@ -3500,6 +3745,12 @@ def main():
     lakes = fetch_lake_levels()
     log.info(f"  {len(lakes)}/{len(LAKE_GAUGES)} reporting")
 
+    log.info("Fetching snowpack analysis...")
+    snowpack = fetch_snowpack()
+    if snowpack:
+        log.info(f"  {snowpack['headline']} (max {snowpack['max_swe_in']} in SWE, "
+                 f"{len(snowpack['basins'])}/{len(RAIN_BASINS)} basins)")
+
     log.info("Fetching drought monitor status...")
     drought = fetch_drought()
     if drought and drought.get("any_drought"):
@@ -3540,6 +3791,9 @@ def main():
 
     # Auto-generated conditions summary
     conditions_summary = compute_conditions_summary(gauges_data)
+    # Snowmelt is the one thing upstream the gauges can't show yet.
+    if snowpack and snowpack.get("class") in ("melting", "rapid"):
+        conditions_summary.append(f"{snowpack['headline']}. {snowpack['detail']}")
 
     # Filter events to upcoming only (today and future)
     today_str = now_central().strftime("%Y-%m-%d")
@@ -3554,6 +3808,7 @@ def main():
         "reservoirs": reservoirs,
         "lakes": lakes,
         "drought": drought,
+        "snowpack": snowpack,
         "fishing_conditions": fishing_conditions,
         "weather_forecast": weather_forecast,
         "seasonal_activity": seasonal,
@@ -3565,6 +3820,7 @@ def main():
             "nws": "https://api.weather.gov/",
             "wvic": "https://wvic.com/",
             "open_meteo": "https://open-meteo.com/",
+            "nohrsc": "https://www.nohrsc.noaa.gov/nsa/",
             "solunar": "https://solunar.org/",
         },
     }

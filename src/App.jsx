@@ -3,6 +3,7 @@ import GaugeCard from './components/GaugeCard';
 import AlertBanner from './components/AlertBanner';
 import ReservoirCard, { LakeCard } from './components/ReservoirCard';
 import RegionChips from './components/RegionChips';
+import SnowpackPanel from './components/SnowpackPanel';
 import FishingConditions from './components/FishingConditions';
 import FishingReference from './components/FishingReference';
 import WeatherForecast from './components/WeatherForecast';
@@ -293,6 +294,7 @@ export default function App() {
     data.fishing_conditions ? { id: 'fishing', label: 'Fishing' } : null,
     data.weather_forecast?.length ? { id: 'weather', label: 'Weather' } : null,
     { id: 'map', label: 'Map' },
+    data.snowpack?.show ? { id: 'snowpack', label: 'Snowpack' } : null,
     reservoirsReporting.length > 0 ? { id: 'reservoirs', label: 'Reservoirs' } : null,
   ].filter(Boolean);
 
@@ -322,7 +324,7 @@ export default function App() {
       <SectionNav sections={navSections} />
 
       {/* Region-wide context: rain headed for the basins, drought status */}
-      <RegionChips gauges={data.gauges} drought={data.drought} />
+      <RegionChips gauges={data.gauges} drought={data.drought} snowpack={data.snowpack} />
 
       {/* Answer-first summary: every reporting gauge in one screen */}
       <GlanceTable gauges={reportingGauges} onSelect={scrollToGauge} statusUnknown={statusUnknown} />
@@ -403,6 +405,9 @@ export default function App() {
       {/* Upcoming Events */}
       <EventsCalendar events={data.upcoming_events} />
 
+      {/* Snowpack upstream and the week's melt weather (snow season only) */}
+      <SnowpackPanel snowpack={data.snowpack} />
+
       {/* Reservoirs & lakes */}
       {(reservoirsReporting.length > 0 || (data.lakes || []).length > 0) && (
         <>
@@ -453,6 +458,10 @@ export default function App() {
           {' · '}
           <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
             Open-Meteo
+          </a>
+          {' · '}
+          <a href="https://www.nohrsc.noaa.gov/nsa/" target="_blank" rel="noopener noreferrer">
+            NOAA Snow Analysis
           </a>
           {' · '}
           <a href="https://droughtmonitor.unl.edu/" target="_blank" rel="noopener noreferrer">

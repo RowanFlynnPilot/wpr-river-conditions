@@ -1,0 +1,306 @@
+[
+ {
+  "latitude": 45.84334,
+  "longitude": -89.549065,
+  "timezone": "America/Chicago",
+  "elevation": 487.0,
+  "daily_units": {
+   "time": "iso8601",
+   "temperature_2m_max": "\u00b0F",
+   "temperature_2m_min": "\u00b0F",
+   "rain_sum": "inch",
+   "snowfall_sum": "inch"
+  },
+  "daily": {
+   "time": [
+    "2026-11-22",
+    "2026-11-23",
+    "2026-11-24",
+    "2026-11-25",
+    "2026-11-26",
+    "2026-11-27",
+    "2026-11-28"
+   ],
+   "temperature_2m_max": [
+    44.1,
+    31.6,
+    31.0,
+    33.7,
+    36.8,
+    39.0,
+    35.1
+   ],
+   "temperature_2m_min": [
+    30.9,
+    20.1,
+    15.0,
+    27.1,
+    27.3,
+    29.2,
+    31.1
+   ],
+   "rain_sum": [
+    0.437,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.059
+   ],
+   "snowfall_sum": [
+    0.0,
+    0.303,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.461
+   ]
+  }
+ },
+ {
+  "latitude": 45.045357,
+  "longitude": -89.68502,
+  "timezone": "America/Chicago",
+  "elevation": 423.0,
+  "location_id": 1,
+  "daily_units": {
+   "time": "iso8601",
+   "temperature_2m_max": "\u00b0F",
+   "temperature_2m_min": "\u00b0F",
+   "rain_sum": "inch",
+   "snowfall_sum": "inch"
+  },
+  "daily": {
+   "time": [
+    "2026-11-22",
+    "2026-11-23",
+    "2026-11-24",
+    "2026-11-25",
+    "2026-11-26",
+    "2026-11-27",
+    "2026-11-28"
+   ],
+   "temperature_2m_max": [
+    52.1,
+    31.7,
+    31.4,
+    35.4,
+    39.6,
+    41.4,
+    37.3
+   ],
+   "temperature_2m_min": [
+    30.8,
+    24.4,
+    21.1,
+    24.8,
+    24.5,
+    26.6,
+    31.2
+   ],
+   "rain_sum": [
+    0.213,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.091
+   ],
+   "snowfall_sum": [
+    0.0,
+    0.193,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.827
+   ]
+  }
+ },
+ {
+  "latitude": 44.880547,
+  "longitude": -90.08442,
+  "timezone": "America/Chicago",
+  "elevation": 410.0,
+  "location_id": 2,
+  "daily_units": {
+   "time": "iso8601",
+   "temperature_2m_max": "\u00b0F",
+   "temperature_2m_min": "\u00b0F",
+   "rain_sum": "inch",
+   "snowfall_sum": "inch"
+  },
+  "daily": {
+   "time": [
+    "2026-11-22",
+    "2026-11-23",
+    "2026-11-24",
+    "2026-11-25",
+    "2026-11-26",
+    "2026-11-27",
+    "2026-11-28"
+   ],
+   "temperature_2m_max": [
+    51.9,
+    31.4,
+    31.5,
+    35.2,
+    39.3,
+    41.3,
+    39.1
+   ],
+   "temperature_2m_min": [
+    30.5,
+    26.9,
+    24.6,
+    24.4,
+    24.1,
+    26.3,
+    31.0
+   ],
+   "rain_sum": [
+    0.37,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.083
+   ],
+   "snowfall_sum": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.882
+   ]
+  }
+ },
+ {
+  "latitude": 45.281055,
+  "longitude": -88.73923,
+  "timezone": "America/Chicago",
+  "elevation": 453.0,
+  "location_id": 3,
+  "daily_units": {
+   "time": "iso8601",
+   "temperature_2m_max": "\u00b0F",
+   "temperature_2m_min": "\u00b0F",
+   "rain_sum": "inch",
+   "snowfall_sum": "inch"
+  },
+  "daily": {
+   "time": [
+    "2026-11-22",
+    "2026-11-23",
+    "2026-11-24",
+    "2026-11-25",
+    "2026-11-26",
+    "2026-11-27",
+    "2026-11-28"
+   ],
+   "temperature_2m_max": [
+    54.6,
+    31.5,
+    32.0,
+    34.1,
+    39.5,
+    41.6,
+    36.5
+   ],
+   "temperature_2m_min": [
+    31.0,
+    18.8,
+    17.7,
+    26.0,
+    26.5,
+    28.1,
+    30.1
+   ],
+   "rain_sum": [
+    0.287,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.024
+   ],
+   "snowfall_sum": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.24
+   ]
+  }
+ },
+ {
+  "latitude": 44.4903,
+  "longitude": -89.41157,
+  "timezone": "America/Chicago",
+  "elevation": 361.0,
+  "location_id": 4,
+  "daily_units": {
+   "time": "iso8601",
+   "temperature_2m_max": "\u00b0F",
+   "temperature_2m_min": "\u00b0F",
+   "rain_sum": "inch",
+   "snowfall_sum": "inch"
+  },
+  "daily": {
+   "time": [
+    "2026-11-22",
+    "2026-11-23",
+    "2026-11-24",
+    "2026-11-25",
+    "2026-11-26",
+    "2026-11-27",
+    "2026-11-28"
+   ],
+   "temperature_2m_max": [
+    56.4,
+    31.9,
+    32.0,
+    36.4,
+    38.9,
+    41.3,
+    40.4
+   ],
+   "temperature_2m_min": [
+    30.9,
+    27.2,
+    27.2,
+    25.8,
+    25.9,
+    27.1,
+    32.3
+   ],
+   "rain_sum": [
+    0.469,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.094
+   ],
+   "snowfall_sum": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.827
+   ]
+  }
+ }
+]

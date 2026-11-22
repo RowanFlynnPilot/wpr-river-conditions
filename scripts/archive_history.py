@@ -9,6 +9,8 @@ everything, as small CSV files on the repo's `data` branch:
   forecasts/YYYY-MM.csv   one row per gauge per model run: what the National
                           Water Model predicted, and the flow when it did
   reservoirs/YYYY.csv     one row per reservoir per day (feet below maximum)
+  snowpack/YYYY.csv       one row per basin per day: snow water equivalent and
+                          depth from NOAA's snow analysis
   manifest.json           what exists, for anything that reads the archive
 
 Merging is idempotent: running it twice on the same payload changes nothing,
@@ -29,6 +31,7 @@ READING_FIELDS = ["bucket", "gauge_id", "timestamp", "gage_height_ft", "streamfl
 FORECAST_FIELDS = ["issued", "gauge_id", "archived_at", "observed_cfs", "horizon_h",
                    "forecast_pct", "forecast_cfs", "baseline"]
 RESERVOIR_FIELDS = ["date", "slug", "feet_below_max"]
+SNOWPACK_FIELDS = ["date", "basin", "swe_in", "depth_in"]
 
 BUCKET_HOURS = 2
 
@@ -159,6 +162,16 @@ def reservoir_rows(payload: dict) -> list[dict]:
     return rows
 
 
+def snowpack_rows(payload: dict) -> list[dict]:
+    snow = payload.get("snowpack") or {}
+    valid = _utc(snow.get("valid"))
+    if valid is None:
+        return []
+    return [{"date": valid.strftime("%Y-%m-%d"), "basin": b["key"],
+             "swe_in": _num(b.get("swe_in")), "depth_in": _num(b.get("depth_in"))}
+            for b in snow.get("basins") or [] if b.get("swe_in") is not None]
+
+
 def write_manifest(root: Path) -> None:
     def listing(folder):
         return sorted(p.stem for p in (root / folder).glob("*.csv")) if (root / folder).exists() else []
@@ -168,8 +181,10 @@ def write_manifest(root: Path) -> None:
         "readings": listing("readings"),
         "forecasts": listing("forecasts"),
         "reservoirs": listing("reservoirs"),
+        "snowpack": listing("snowpack"),
         "bucket_hours": BUCKET_HOURS,
-        "fields": {"readings": READING_FIELDS, "forecasts": FORECAST_FIELDS, "reservoirs": RESERVOIR_FIELDS},
+        "fields": {"readings": READING_FIELDS, "forecasts": FORECAST_FIELDS, "reservoirs": RESERVOIR_FIELDS,
+                   "snowpack": SNOWPACK_FIELDS},
     }
     (root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
@@ -183,6 +198,7 @@ def archive(payload: dict, root: Path) -> dict:
         "forecasts": _merge(root, "forecasts", FORECAST_FIELDS, ["issued", "gauge_id"],
                             forecast_rows(payload), 7, keep_existing=True),
         "reservoirs": _merge(root, "reservoirs", RESERVOIR_FIELDS, ["date", "slug"], reservoir_rows(payload), 4),
+        "snowpack": _merge(root, "snowpack", SNOWPACK_FIELDS, ["date", "basin"], snowpack_rows(payload), 4),
     }
     if any(changed.values()):
         write_manifest(root)
