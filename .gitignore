@@ -7,3 +7,4 @@ src/data/daily-summary.json
 src/data/wp-report.html
 .DS_Store
 *.log
+_archive/

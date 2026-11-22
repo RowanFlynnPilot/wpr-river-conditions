@@ -144,6 +144,7 @@ wpr-river-conditions/
 - `npm run dev` — Start dev server (localhost:5173)
 - `npm run build` — Production build to `dist/`
 - `python3 scripts/fetch_data.py` — Fetch fresh data from all sources
+- `python3 scripts/archive_history.py <dir>` — Merge the current payload into a local copy of the archive
 - `python3 -m unittest discover -s tests` — Scraper tests (stdlib only; fixtures in `tests/fixtures` are trimmed real API responses)
 - `npm test` — Frontend utility tests (Node's built-in runner)
 
@@ -253,6 +254,17 @@ Publishes a crawlable **"Central Wisconsin River Levels & Fishing Report"** arti
    - *(optional)* `WP_POST_STATUS` = `draft` for a safe first run, then switch to `publish`
    - *(optional)* `WP_CATEGORY_ID` = numeric category ID to file the post under
 3. Trigger the Action (push or "Run workflow"). The post is created on the first run, updated thereafter. Until the secrets exist, the publish step logs a notice and no-ops.
+
+## History archive (`data` branch)
+
+The payload carries seven days of history; everything older lives as CSV on the orphan **`data`** branch, written by `scripts/archive_history.py` after each fetch (two best-effort steps in `deploy.yml`; they can never fail the deploy).
+
+- `readings/YYYY-MM.csv` — one row per gauge per 2-hour UTC bucket. Keyed on the bucket, so the still-filling newest bucket is replaced by later runs, and because every run re-reads the payload's seven days, gaps of up to a week between runs backfill themselves.
+- `forecasts/YYYY-MM.csv` — one row per gauge per National Water Model run (first sighting wins), with the observed flow at the time. This is the raw material for checking how accurate the forecasts are.
+- `reservoirs/YYYY.csv` — one row per reservoir per day.
+- `manifest.json` — which files exist. Readable at `https://raw.githubusercontent.com/RowanFlynnPilot/wpr-river-conditions/data/manifest.json`.
+
+About 300 KB of readings per month. Each run is one commit on `data`, so that branch's history grows quickly; it can be squashed at any time without losing data, since the files hold the full record. Nothing in the frontend reads the archive yet.
 
 ## Engagement Features
 
