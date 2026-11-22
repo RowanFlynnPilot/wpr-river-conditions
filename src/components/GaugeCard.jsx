@@ -151,7 +151,7 @@ function FloodStageBar({ gageHeight, stages }) {
 
 const TREND_LABELS = { rising: 'Rising', falling: 'Falling', steady: 'Steady' };
 
-export default function GaugeCard({ gauge }) {
+export default function GaugeCard({ gauge, statusUnknown = false }) {
   const { current, history, flood_status, flood_stages } = gauge;
   const hasData = current && (current.gage_height_ft != null || current.streamflow_cfs != null);
   const statusConf = STATUS_CONFIG[flood_status] || STATUS_CONFIG.normal;
@@ -171,7 +171,10 @@ export default function GaugeCard({ gauge }) {
           <div className="gauge-card__description">{gauge.description}</div>
         </div>
         {hasData && flood_stages && (
-          <span className={`gauge-card__status-badge badge--${statusConf.css}`}>
+          <span
+            className={`gauge-card__status-badge badge--${statusUnknown ? 'stale' : statusConf.css}`}
+            title={statusUnknown ? 'Last known status — this reading is more than 6 hours old' : undefined}
+          >
             {statusConf.label}
           </span>
         )}
@@ -259,10 +262,28 @@ export default function GaugeCard({ gauge }) {
                   // a 4 cfs trout stream is a 10 cfs ripple) — show the
                   // absolute target instead on very low flows.
                   const flow = current.streamflow_cfs;
-                  const cfsVals = (f.points || []).map((p) => p.cfs).filter((v) => v != null);
-                  if (flow != null && flow < 25 && cfsVals.length) {
-                    const target = f.next24h_pct > 0 ? Math.max(...cfsVals) : Math.min(...cfsVals);
-                    return `to ~${Math.round(target)} cfs next ${horizon}h`;
+                  // Same for swings past ±60%: after a storm spike the
+                  // model's "-96%" is true but says less than "to ~30 cfs".
+                  // next24h_pct is measured from the observed flow to the
+                  // forecast at `horizon`, so this recovers that forecast
+                  // value — not the extreme of the whole 3-day series.
+                  const bigSwing = Math.abs(f.next24h_pct) >= 60;
+                  if (flow != null && f.baseline !== 'model' && (flow < 25 || bigSwing)) {
+                    const target = flow * (1 + f.next24h_pct / 100);
+                    // The model recedes much faster than these rivers do
+                    // (it had Big Rib falling from 936 to 28 cfs in 16h, in
+                    // a week whose low was 72). A target under the week's
+                    // observed low isn't credible enough to print.
+                    const weekFlows = (gauge.history || [])
+                      .map((h) => h.streamflow_cfs)
+                      .filter((v) => v != null);
+                    if (weekFlows.length && target < Math.min(...weekFlows)) {
+                      return `Falling over the next ${horizon}h`;
+                    }
+                    const shown = target < 10
+                      ? Math.round(target * 10) / 10
+                      : Math.round(target).toLocaleString('en-US');
+                    return `to ~${shown} cfs in ${horizon}h`;
                   }
                   return `${f.next24h_pct > 0 ? '+' : ''}${f.next24h_pct}% next ${horizon}h`;
                 })()}

@@ -2780,6 +2780,19 @@ SEASONAL_CALENDAR = {
 }
 
 
+def _fmt_flow_change(pct: float) -> str:
+    """A rise that at least doubles the flow reads as a multiple ("9.7×"),
+    anything else as a signed percent. Mirrors formatFlowChange in
+    src/utils/trend.js."""
+    if pct >= 100:
+        ratio = 1 + pct / 100
+        # floor(x + 0.5), not round(): Python rounds halves to even and
+        # JavaScript rounds them up, and the two sides must agree.
+        shown = int(ratio + 0.5) if ratio >= 10 else int(ratio * 10 + 0.5) / 10
+        return f"{shown:g}×"
+    return f"{pct:+.0f}%"
+
+
 def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
     """
     Auto-generate a narrative summary of recent conditions based on
@@ -2848,7 +2861,7 @@ def compute_conditions_summary(gauges_data: list[dict]) -> list[str]:
         summaries.append("\u26a0\ufe0f " + "; ".join(flood_alerts) + ".")
 
     if rising:
-        parts = [f"{n} (+{p}%)" for n, p in rising]
+        parts = [f"{n} ({_fmt_flow_change(p)})" for n, p in rising]
         summaries.append(f"Flows rising on {name_list(parts)} \u2014 expect reduced clarity.")
 
     if falling:

@@ -48,12 +48,23 @@ export function computeTrend(history) {
   return { dir, key, delta: Math.round(delta * 10) / 10 };
 }
 
-// Short human string: "+12% / 24h", "+0.3 ft / 24h", or "steady".
+// A flow that at least doubles reads better as a multiple: "+871%" makes
+// readers do arithmetic, "9.7×" doesn't. Mirrors _fmt_flow_change in the
+// scraper so cards and the conditions narrative use the same wording.
+export function formatFlowChange(pct) {
+  if (pct >= 100) {
+    const ratio = 1 + pct / 100;
+    return `${ratio >= 10 ? Math.round(ratio) : Math.round(ratio * 10) / 10}×`;
+  }
+  return `${pct > 0 ? '+' : ''}${pct}%`;
+}
+
+// Short human string: "+12% / 24h", "9.7× in 24h", "+0.3 ft / 24h", or "steady".
 export function trendText(t) {
   if (!t) return null;
   if (t.dir === 'steady') return 'steady';
   if (t.key === 'streamflow_cfs') {
-    return `${t.pct > 0 ? '+' : ''}${t.pct}% / 24h`;
+    return t.pct >= 100 ? `${formatFlowChange(t.pct)} in 24h` : `${formatFlowChange(t.pct)} / 24h`;
   }
   return `${t.delta > 0 ? '+' : ''}${t.delta} ft / 24h`;
 }
