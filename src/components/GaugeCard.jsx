@@ -10,6 +10,7 @@ const REC_STATUS = {
   caution:   { label: 'Caution', css: 'caution' },
   dangerous: { label: 'Dangerous', css: 'dangerous' },
   low:       { label: 'Low Flow', css: 'low' },
+  cold:      { label: 'Cold water', css: 'cold', tip: 'Water is under 50°F — cold-shock risk. Dress for immersion.' },
 };
 
 const ACTIVITY_LABELS = {
@@ -42,9 +43,18 @@ const NORMAL_FLOW_CONFIG = {
   much_above: { label: 'Much above normal', css: 'much-above' },
 };
 
+// Flows under 10 cfs keep their decimal; larger ones get thousands separators.
+function fmtCfs(v) {
+  return v < 10 ? String(v) : Math.round(v).toLocaleString('en-US');
+}
+
+// The label is a percentile class, so it's paired with the range that class
+// is measured against. (It used to sit beside "% of median", and the two
+// disagreed on skewed days: "Near normal · 179%" next to "Much above · 178%".)
 function VsNormal({ normalFlow }) {
   if (!normalFlow || normalFlow.pct_of_median == null) return null;
   const conf = NORMAL_FLOW_CONFIG[normalFlow.class] || NORMAL_FLOW_CONFIG.normal;
+  const hasRange = normalFlow.typical_low_cfs != null && normalFlow.typical_high_cfs != null;
   const tip = normalFlow.years
     ? `${normalFlow.years} median for today: ${normalFlow.median_cfs.toLocaleString('en-US')} cfs`
       + (normalFlow.count ? ` (${normalFlow.count} years of record)` : '')
@@ -53,7 +63,17 @@ function VsNormal({ normalFlow }) {
     <div className={`gauge-card__vs-normal vs-normal--${conf.css}`} title={tip}>
       <span className="vs-normal__dot" aria-hidden="true" />
       <span className="vs-normal__text">
-        {conf.label} · <strong>{normalFlow.pct_of_median}%</strong> of normal flow for today
+        {conf.label} for this date
+        {hasRange ? (
+          <>
+            {' · typical '}
+            <strong>
+              {fmtCfs(normalFlow.typical_low_cfs)}–{fmtCfs(normalFlow.typical_high_cfs)} cfs
+            </strong>
+          </>
+        ) : (
+          <> · median <strong>{fmtCfs(normalFlow.median_cfs)} cfs</strong></>
+        )}
       </span>
     </div>
   );
@@ -272,6 +292,13 @@ export default function GaugeCard({ gauge }) {
             </div>
           )}
 
+          {current.ice_affected && (
+            <div className="gauge-card__ice">
+              <span aria-hidden="true">❄️</span> Ice-affected — USGS flags this reading as
+              unreliable. Ice backs water up, so the level can read high.
+            </div>
+          )}
+
           <VsNormal normalFlow={gauge.normal_flow} />
 
           <FloodStageBar gageHeight={current.gage_height_ft} stages={flood_stages} />
@@ -344,7 +371,7 @@ export default function GaugeCard({ gauge }) {
               {gauge.recreation && Object.entries(gauge.recreation).map(([activity, status]) => {
                 const conf = REC_STATUS[status] || REC_STATUS.caution;
                 return (
-                  <span key={activity} className={`gauge-card__rec-badge gauge-card__rec-badge--${conf.css}`}>
+                  <span key={activity} className={`gauge-card__rec-badge gauge-card__rec-badge--${conf.css}`} title={conf.tip}>
                     {ACTIVITY_LABELS[activity] || activity}: {conf.label}
                   </span>
                 );

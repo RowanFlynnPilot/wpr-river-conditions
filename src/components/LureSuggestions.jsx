@@ -14,6 +14,9 @@ export default function LureSuggestions({ lures }) {
             {l.why && (
               <div className="lure-suggestion__why">{l.why}</div>
             )}
+            {l.note && (
+              <div className="lure-suggestion__note">{l.note}</div>
+            )}
           </div>
         ))}
       </div>
