@@ -14,13 +14,12 @@ Same pattern as other WPR widgets (gas prices, weather radar, adopt widget):
 
 ## Data Sources
 
-### USGS Water Services API (primary — gauge readings)
-- **IV Endpoint**: `https://waterservices.usgs.gov/nwis/iv/` (instantaneous values, ~15 min intervals)
-- **DV Endpoint**: `https://waterservices.usgs.gov/nwis/dv/` (daily values for 7-day sparklines)
-- **Format**: JSON
-- **Auth**: None (public API, requires User-Agent header)
-- **Rate limits**: Reasonable use; no hard limit documented
-- **⚠️ Migration note**: Legacy WaterServices API decommissions early 2027. New API at `https://api.waterdata.usgs.gov/` uses OGC API Features standard. Plan migration for late 2026.
+### USGS Water Data APIs (primary — gauge readings)
+- **Readings**: `https://api.waterdata.usgs.gov/ogcapi/v1/collections/continuous/items` (OGC API Features). One multi-site request returns a week of stage and flow for all 17 gauges; a second returns a day of water temperature and precipitation. Readings arrive at 5- or 15-minute intervals with UTC timestamps. `_ogc_to_time_series()` regroups the features into the legacy per-site shape so one set of parsers serves both sources.
+- **Flow normals**: `https://api.waterdata.usgs.gov/statistics/v0/observationNormals` — percentiles for today's calendar day, all gauges in one request. Marked beta by USGS. It does not return the period-of-record years, only a sample count.
+- **Auth**: none required. An api.data.gov key raises the quota; set it as the `USGS_API_KEY` repo secret and it is sent as `X-Api-Key`.
+- **Legacy fallback**: if either modern request fails, `prefetch_usgs()` falls back to `waterservices.usgs.gov` (`/nwis/iv/`, `/nwis/stat/`), and any gauge missing from the batch falls back to its own legacy request. USGS is switching those endpoints off in early 2027; once they are gone the fallback code (`_prefetch_usgs_legacy_*`, the RDB parser, the per-gauge branches) can be deleted.
+- **Gotchas**: series USGS marks `DISCONTINUED` are dropped (the modern API returns a flow series for NF Yellow that the legacy service never did). A site can carry two series for one parameter after a sensor swap; the one with the newest reading wins.
 
 ### NWS NWPS API (flood thresholds and category cross-check)
 - **Endpoint**: `https://api.water.noaa.gov/nwps/v1/gauges/{nws_lid}`
@@ -145,6 +144,8 @@ wpr-river-conditions/
 - `npm run dev` — Start dev server (localhost:5173)
 - `npm run build` — Production build to `dist/`
 - `python3 scripts/fetch_data.py` — Fetch fresh data from all sources
+- `python3 -m unittest discover -s tests` — Scraper tests (stdlib only; fixtures in `tests/fixtures` are trimmed real API responses)
+- `npm test` — Frontend utility tests (Node's built-in runner)
 
 ## GitHub Setup — Special Files Checklist
 
@@ -281,4 +282,5 @@ Publishes a crawlable **"Central Wisconsin River Levels & Fishing Report"** arti
 - [x] Historical comparison ("Today vs. average for this date") — done (flow-based, see Engagement Features)
 - [ ] Automated flood-alert *sending* (signup capture is done; see Engagement Features)
 - [ ] Refresh `LOCAL_EVENTS` in fetch_data.py for 2H-2026 (list emptied after June's Free Fishing Weekend)
-- [ ] Migrate to new USGS OGC API (`api.waterdata.usgs.gov`) before 2027 decommission
+- [x] Migrate to the modernized USGS Water Data APIs (done 2026-11; legacy services kept as a fallback until USGS retires them)
+- [ ] Delete the legacy USGS fallback code once `waterservices.usgs.gov` is switched off

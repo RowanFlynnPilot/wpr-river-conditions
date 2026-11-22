@@ -55,10 +55,9 @@ function VsNormal({ normalFlow }) {
   if (!normalFlow || normalFlow.pct_of_median == null) return null;
   const conf = NORMAL_FLOW_CONFIG[normalFlow.class] || NORMAL_FLOW_CONFIG.normal;
   const hasRange = normalFlow.typical_low_cfs != null && normalFlow.typical_high_cfs != null;
-  const tip = normalFlow.years
-    ? `${normalFlow.years} median for today: ${normalFlow.median_cfs.toLocaleString('en-US')} cfs`
-      + (normalFlow.count ? ` (${normalFlow.count} years of record)` : '')
-    : undefined;
+  const tip = `${normalFlow.years ? `${normalFlow.years} median` : 'Median'} for today: `
+    + `${normalFlow.median_cfs.toLocaleString('en-US')} cfs`
+    + (normalFlow.count ? ` (${normalFlow.count} years of record)` : '');
   return (
     <div className={`gauge-card__vs-normal vs-normal--${conf.css}`} title={tip}>
       <span className="vs-normal__dot" aria-hidden="true" />
