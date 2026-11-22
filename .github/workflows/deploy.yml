@@ -98,6 +98,20 @@ jobs:
         with:
           path: dist
 
+      # deploy-pages sometimes runs a second after the upload and is told
+      # "No artifacts named github-pages were found" even though the upload
+      # succeeded (twice on 2026-11-22; a re-run fixed both). Nobody is there
+      # to re-run a scheduled job, so wait and try once more. The job still
+      # fails if the second attempt does.
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Wait before retrying deploy
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - name: Deploy to GitHub Pages (retry)
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
