@@ -1,0 +1,256 @@
+{
+ "version": "1.31",
+ "timeZone": "0.0",
+ "timeSeries": [
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Calculate_Feet_Below_Max",
+    "locationId": "RAI",
+    "parameterId": "HW",
+    "qualifierId": [
+     "Feet Below Max HP"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-21",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Rainbow Reservoir",
+    "lat": "45.8338152",
+    "lon": "-89.5454397",
+    "x": "-89.5454397",
+    "y": "45.8338152",
+    "z": "0.0",
+    "units": "FT"
+   },
+   "events": [
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "5.75",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "5.61",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Calculate_Feet_Below_Max",
+    "locationId": "WOW",
+    "parameterId": "HW",
+    "qualifierId": [
+     "Feet Below Max HP"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-21",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Willow Reservoir",
+    "lat": "45.7124257",
+    "lon": "-89.8446549",
+    "x": "-89.8446549",
+    "y": "45.7124257",
+    "z": "0.0",
+    "units": "FT"
+   },
+   "events": [
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "7.45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "7.45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Calculate_Feet_Below_Max",
+    "locationId": "RIC",
+    "parameterId": "HW",
+    "qualifierId": [
+     "Feet Below Max HP"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-21",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Rice Reservior",
+    "lat": "45.5388914",
+    "lon": "-89.7465531",
+    "x": "-89.7465531",
+    "y": "45.5388914",
+    "z": "0.0",
+    "units": "FT"
+   },
+   "events": [
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "5.78",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "5.78",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Calculate_Feet_Below_Max",
+    "locationId": "SPD",
+    "parameterId": "HW",
+    "qualifierId": [
+     "Feet Below Max HP"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-21",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Spirit Reservoir",
+    "lat": "45.4377439",
+    "lon": "-89.7423072",
+    "x": "-89.7423072",
+    "y": "45.4377439",
+    "z": "0.0",
+    "units": "FT"
+   },
+   "events": [
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "4.24",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "4.24",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Calculate_Feet_Below_Max",
+    "locationId": "EP3",
+    "parameterId": "HW",
+    "qualifierId": [
+     "Feet Below Max HP"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-21",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Big Eau Pleine Reservoir",
+    "lat": "44.7308864",
+    "lon": "-89.7596115",
+    "x": "-89.7596115",
+    "y": "44.7308864",
+    "z": "0.0",
+    "units": "FT"
+   },
+   "events": [
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "5.43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "5.47",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  }
+ ]
+}

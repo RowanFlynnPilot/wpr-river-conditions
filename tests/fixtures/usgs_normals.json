@@ -1,0 +1,118 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -88.8442729,
+     44.8980311
+    ]
+   },
+   "properties": {
+    "monitoring_location_id": "USGS-04077630",
+    "monitoring_location_name": "RED RIVER AT MORGAN ROAD NEAR MORGAN, WI",
+    "site_type": "Stream",
+    "site_type_code": "ST",
+    "country_code": "US",
+    "state_code": "55",
+    "county_code": "115",
+    "data": [
+     {
+      "parameter_code": "00060",
+      "unit_of_measure": "ft^3/s",
+      "parent_time_series_id": "f3638a7130804b9ea9881ba169119406",
+      "parent_statistic_id": "00003",
+      "parent_statistic_name": "Mean",
+      "values": [
+       {
+        "time_of_year": "11-22",
+        "time_of_year_type": "day_of_year",
+        "values": [
+         "76.74",
+         "84.32",
+         "102.0",
+         "115.0",
+         "140.0",
+         "182.4",
+         "295.5"
+        ],
+        "percentiles": [
+         "5",
+         "10",
+         "25",
+         "50",
+         "75",
+         "90",
+         "95"
+        ],
+        "sample_count": 33,
+        "approval_status": "approved",
+        "computation_id": "981d5983-83a7-441e-a1ac-f982ecf07ce1",
+        "computation": "percentile"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -90.07957543,
+     44.82190984
+    ]
+   },
+   "properties": {
+    "monitoring_location_id": "USGS-05399500",
+    "monitoring_location_name": "BIG EAU PLEINE RIVER AT STRATFORD, WI",
+    "site_type": "Stream",
+    "site_type_code": "ST",
+    "country_code": "US",
+    "state_code": "55",
+    "county_code": "073",
+    "data": [
+     {
+      "parameter_code": "00060",
+      "unit_of_measure": "ft^3/s",
+      "parent_time_series_id": "2e61ca7bcc054027a140ea77cd02c15d",
+      "parent_statistic_id": "00003",
+      "parent_statistic_name": "Mean",
+      "values": [
+       {
+        "time_of_year": "11-22",
+        "time_of_year_type": "day_of_year",
+        "values": [
+         "8.065",
+         "10.1",
+         "23.0",
+         "40.55",
+         "85.0",
+         "271.0",
+         "444.9"
+        ],
+        "percentiles": [
+         "5",
+         "10",
+         "25",
+         "50",
+         "75",
+         "90",
+         "95"
+        ],
+        "sample_count": 100,
+        "approval_status": "approved",
+        "computation_id": "322dffe6-9798-4e87-bf66-f66b53e76561",
+        "computation": "percentile"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "next": null
+}

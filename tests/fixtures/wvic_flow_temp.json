@@ -1,0 +1,666 @@
+{
+ "version": "1.31",
+ "timeZone": "0.0",
+ "timeSeries": [
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Preprocess_WPS",
+    "locationId": "HAT",
+    "parameterId": "Q.obs",
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Hat Rapids",
+    "lat": "45.57149869",
+    "lon": "-89.48066369",
+    "x": "-89.48066369",
+    "y": "45.57149869",
+    "z": "0.0",
+    "units": "CFS"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "294",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "298",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "467",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "608",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "812",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "904",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "DamTender_Transform",
+    "locationId": "RPC",
+    "parameterId": "T.obs",
+    "qualifierId": [
+     "DamTender",
+     "Official"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Rhinelander",
+    "lat": "45.64163843",
+    "lon": "-89.42065167",
+    "x": "-89.42065167",
+    "y": "45.64163843",
+    "z": "0.0",
+    "units": "oF"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "41",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "48",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "57",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "57",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "57",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "57",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Preprocess_WPS",
+    "locationId": "TKD",
+    "parameterId": "Q.obs",
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Tomahawk",
+    "lat": "45.44141238",
+    "lon": "-89.73020746",
+    "x": "-89.73020746",
+    "y": "45.44141238",
+    "z": "0.0",
+    "units": "CFS"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "608",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "675",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "710",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "798",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "1101",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "1669",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Calculate_GDM_Flow",
+    "locationId": "GDM",
+    "parameterId": "Q.obs",
+    "qualifierId": [
+     "Calculated",
+     "Daily"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Grandmother",
+    "lat": "45.36661823",
+    "lon": "-89.72944538",
+    "x": "-89.72944538",
+    "y": "45.36661823",
+    "z": "0.0",
+    "units": "CFS"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "634",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "701",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "736",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "824",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "1141",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "1709",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "DamTender_Transform",
+    "locationId": "GDM",
+    "parameterId": "T.obs",
+    "qualifierId": [
+     "DamTender",
+     "Official"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Grandmother",
+    "lat": "45.36661823",
+    "lon": "-89.72944538",
+    "x": "-89.72944538",
+    "y": "45.36661823",
+    "z": "0.0",
+    "units": "oF"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "55",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "55",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "55",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "55",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "55",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "55",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Preprocess_USGS",
+    "locationId": "ROT",
+    "parameterId": "Q.obs",
+    "qualifierId": [
+     "Gage Flow",
+     "Official",
+     "Average Daily"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Wisconsin River at Rothschild",
+    "lat": "44.886944",
+    "lon": "-89.635556",
+    "x": "-89.635556",
+    "y": "44.886944",
+    "z": "0.0",
+    "units": "CFS"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "1096",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "1387",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "1519",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "1546",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "1497",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "2273",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "DamTender_Transform",
+    "locationId": "ROT",
+    "parameterId": "T.obs",
+    "qualifierId": [
+     "DamTender",
+     "Official"
+    ],
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Wisconsin River at Rothschild",
+    "lat": "44.886944",
+    "lon": "-89.635556",
+    "x": "-89.635556",
+    "y": "44.886944",
+    "z": "0.0",
+    "units": "oF"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "43",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Preprocess_CWPCO",
+    "locationId": "WR1",
+    "parameterId": "Q.obs",
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Wisconsin Rapids",
+    "lat": "44.39746825",
+    "lon": "-89.82003948",
+    "x": "-89.82003948",
+    "y": "44.39746825",
+    "z": "0.0",
+    "units": "CFS"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "1521",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "1519",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "1506",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "1782",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "1979",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "2038",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  },
+  {
+   "header": {
+    "type": "instantaneous",
+    "moduleInstanceId": "Import_CWPCO_temp",
+    "locationId": "WR1",
+    "parameterId": "T.obs",
+    "timeStep": {
+     "times": "07:00"
+    },
+    "startDate": {
+     "date": "2026-11-17",
+     "time": "13:00:00"
+    },
+    "endDate": {
+     "date": "2026-11-23",
+     "time": "13:00:00"
+    },
+    "missVal": "-999.999",
+    "stationName": "Wisconsin Rapids",
+    "lat": "44.39746825",
+    "lon": "-89.82003948",
+    "x": "-89.82003948",
+    "y": "44.39746825",
+    "z": "0.0",
+    "units": "oF"
+   },
+   "events": [
+    {
+     "date": "2026-11-17",
+     "time": "13:00:00",
+     "value": "45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-18",
+     "time": "13:00:00",
+     "value": "45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-19",
+     "time": "13:00:00",
+     "value": "45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-20",
+     "time": "13:00:00",
+     "value": "45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-21",
+     "time": "13:00:00",
+     "value": "45",
+     "flag": "0"
+    },
+    {
+     "date": "2026-11-22",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    },
+    {
+     "date": "2026-11-23",
+     "time": "13:00:00",
+     "value": "-999.999",
+     "flag": "8"
+    }
+   ]
+  }
+ ]
+}

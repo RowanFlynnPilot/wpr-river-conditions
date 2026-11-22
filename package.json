@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "postbuild": "node scripts/inject-seo.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test tests/js/trend.test.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

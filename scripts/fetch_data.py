@@ -11,12 +11,14 @@ Schedule: Every 30 minutes via GitHub Actions
 import hashlib
 import json
 import logging
+import os
 import re
 import sys
 import time
 from datetime import date, datetime, timedelta, timezone
 from http.client import HTTPException  # IncompleteRead, BadStatusLine, …
 from pathlib import Path
+from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 
@@ -821,11 +823,12 @@ def _fetch_body(url: str, timeout: int, headers: dict) -> str | None:
             attempt += 1
 
 
-def fetch_json(url: str, timeout: int = 30) -> dict | list | None:
+def fetch_json(url: str, timeout: int = 30, headers: dict | None = None) -> dict | list | None:
     """Fetch JSON from a URL with a User-Agent header (required by USGS/NWS)."""
     body = _fetch_body(url, timeout, {
         "User-Agent": "WPR-RiverConditions/1.0 (wausaupilotandreview.com)",
         "Accept": "application/json",
+        **(headers or {}),
     })
     if body is None:
         return None
@@ -851,13 +854,110 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
 # USGS answers in 20-45s per call under load, so 51 sequential calls made a
 # run take ~8 minutes; batched it is three calls. Filled by prefetch_usgs();
 # a site missing from the cache falls back to its own per-gauge request.
-_usgs_batch: dict = {"iv": {}, "stat": {}}
+_usgs_batch: dict = {"iv": {}, "stat": {}, "normals": {}, "source": None}
 USGS_STAT_MAX_SITES = 10  # the statistics service rejects longer site lists
 
 
-def prefetch_usgs(gauge_ids: list[str]) -> None:
-    """Fetch a week of instantaneous values and the daily flow statistics
-    for every gauge up front. Failures just leave the cache empty."""
+# USGS is retiring the legacy WaterServices endpoints (waterservices.usgs.gov)
+# in early 2027. The modernized Water Data APIs are the primary source; the
+# legacy calls remain only as a fallback until they are switched off.
+USGS_OGC_URL = "https://api.waterdata.usgs.gov/ogcapi/v1/collections"
+USGS_NORMALS_URL = "https://api.waterdata.usgs.gov/statistics/v0/observationNormals"
+USGS_PAGE_LIMIT = 50000
+USGS_MAX_PAGES = 6
+
+
+def _usgs_api_headers() -> dict:
+    """An api.data.gov key raises the request quota; anonymous use works but
+    shares a small per-IP allowance, which matters on shared CI runners."""
+    key = os.environ.get("USGS_API_KEY", "").strip()
+    return {"X-Api-Key": key} if key else {}
+
+
+def _fetch_ogc_items(collection: str, params: dict) -> list[dict] | None:
+    """All features for an OGC API query, following `next` links. Returns
+    None if any page fails, so a partial result is never taken as complete."""
+    query = urlencode({"f": "json", "skipGeometry": "true", "limit": USGS_PAGE_LIMIT, **params}, safe=",")
+    url = f"{USGS_OGC_URL}/{collection}/items?{query}"
+    features: list[dict] = []
+    for _ in range(USGS_MAX_PAGES):
+        data = fetch_json(url, timeout=90, headers=_usgs_api_headers())
+        if not isinstance(data, dict) or "features" not in data:
+            return None
+        features.extend(data["features"])
+        url = next((l.get("href") for l in data.get("links") or [] if l.get("rel") == "next"), None)
+        if not url:
+            return features
+    log.warning(f"USGS {collection}: more than {USGS_MAX_PAGES} pages — treating as failed")
+    return None
+
+
+def _ogc_to_time_series(features: list[dict]) -> dict[str, list[dict]]:
+    """Regroup OGC `continuous` features into the per-site time-series shape
+    the legacy IV service returned, so one set of parsers serves both.
+
+    A site can carry more than one series for a parameter (a replaced
+    sensor); the series with the newest reading wins. Series USGS marks
+    DISCONTINUED are dropped — the legacy service never returned them.
+    """
+    series: dict[tuple, list] = {}
+    for feat in features:
+        props = feat.get("properties") or {}
+        site = str(props.get("monitoring_location_id") or "").removeprefix("USGS-")
+        param, when = props.get("parameter_code"), props.get("time")
+        if not site or not param or not when:
+            continue
+        qualifiers = props.get("qualifier") or []
+        if isinstance(qualifiers, str):
+            qualifiers = [q.strip() for q in qualifiers.split(",")]
+        if any(str(q).upper() == "DISCONTINUED" for q in qualifiers):
+            continue
+        value = props.get("value")
+        series.setdefault((site, param, props.get("time_series_id")), []).append(
+            {"value": "" if value is None else str(value), "dateTime": when, "qualifiers": qualifiers})
+
+    newest: dict[tuple, tuple] = {}
+    for (site, param, _), values in series.items():
+        values.sort(key=lambda v: v["dateTime"])
+        best = newest.get((site, param))
+        if best is None or values[-1]["dateTime"] > best[-1]["dateTime"]:
+            newest[(site, param)] = values
+
+    by_site: dict[str, list[dict]] = {}
+    for (site, param), values in newest.items():
+        by_site.setdefault(site, []).append({
+            "sourceInfo": {"siteCode": [{"value": site}]},
+            "variable": {"variableCode": [{"value": param}]},
+            "values": [{"value": values}],
+        })
+    return by_site
+
+
+def _prefetch_usgs_ogc(gauge_ids: list[str]) -> bool:
+    """A week of stage and flow plus a day of temperature and precipitation
+    for every gauge, from the modernized API. False if it can't be had."""
+    ids = ",".join(f"USGS-{g}" for g in gauge_ids)
+    props = "monitoring_location_id,parameter_code,time,value,qualifier,time_series_id"
+    week = _fetch_ogc_items("continuous", {
+        "monitoring_location_id": ids, "time": "P7D", "properties": props,
+        "parameter_code": f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW}"})
+    if not week:
+        return False
+    # Temperature and precipitation only feed "now" and the 24h total, so a
+    # day is enough. Losing them is not worth abandoning the stage/flow data.
+    day = _fetch_ogc_items("continuous", {
+        "monitoring_location_id": ids, "time": "P1D", "properties": props,
+        "parameter_code": f"{PARAM_WATER_TEMP},{PARAM_PRECIP}"}) or []
+    by_site = _ogc_to_time_series(week + day)
+    if not by_site:
+        return False
+    _usgs_batch["iv"].update(by_site)
+    for gid in gauge_ids:
+        _usgs_batch["iv"].setdefault(gid, [])
+    return True
+
+
+def _prefetch_usgs_legacy_iv(gauge_ids: list[str]) -> None:
     params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW},{PARAM_WATER_TEMP},{PARAM_PRECIP}"
     data = fetch_json(
         "https://waterservices.usgs.gov/nwis/iv/"
@@ -865,21 +965,73 @@ def prefetch_usgs(gauge_ids: list[str]) -> None:
         "&period=P7D&siteStatus=all",
         timeout=90,
     )
-    if data is not None:
-        try:
-            for ts in data["value"]["timeSeries"]:
-                site = ts["sourceInfo"]["siteCode"][0]["value"]
-                _usgs_batch["iv"].setdefault(site, []).append(ts)
-            # A site with no series at all is a real answer (discontinued
-            # gauge), not a miss — record it so it doesn't trigger a
-            # per-gauge request.
-            for gid in gauge_ids:
-                _usgs_batch["iv"].setdefault(gid, [])
-        except (KeyError, IndexError, TypeError) as e:
-            log.warning(f"Could not split batched USGS IV response: {e}")
-            _usgs_batch["iv"].clear()
-    log.info(f"  Batched IV: {sum(1 for v in _usgs_batch['iv'].values() if v)}/{len(gauge_ids)} sites with data")
+    if data is None:
+        return
+    try:
+        for ts in data["value"]["timeSeries"]:
+            site = ts["sourceInfo"]["siteCode"][0]["value"]
+            _usgs_batch["iv"].setdefault(site, []).append(ts)
+        # A site with no series at all is a real answer (discontinued
+        # gauge), not a miss — record it so it doesn't trigger a
+        # per-gauge request.
+        for gid in gauge_ids:
+            _usgs_batch["iv"].setdefault(gid, [])
+    except (KeyError, IndexError, TypeError) as e:
+        log.warning(f"Could not split batched USGS IV response: {e}")
+        _usgs_batch["iv"].clear()
 
+
+def _prefetch_usgs_normals(gauge_ids: list[str]) -> bool:
+    """Flow percentiles for today's calendar day from the Statistics API.
+    Fills _usgs_batch["normals"]; False if the service can't be read."""
+    day = now_central().strftime("%m-%d")
+    query = urlencode(
+        [("monitoring_location_id", f"USGS-{g}") for g in gauge_ids]
+        + [("parameter_code", PARAM_STREAMFLOW), ("computation_type", "percentile"),
+           ("start_date", day), ("end_date", day), ("page_size", 1000)])
+    url = f"{USGS_NORMALS_URL}?{query}"
+    found: dict[str, dict] = {}
+    for _ in range(USGS_MAX_PAGES):
+        data = fetch_json(url, timeout=90, headers=_usgs_api_headers())
+        if not isinstance(data, dict) or "features" not in data:
+            return False
+        for feat in data["features"]:
+            props = feat.get("properties") or {}
+            site = str(props.get("monitoring_location_id") or "").removeprefix("USGS-")
+            normal = _parse_normals_feature(props, day)
+            if site and normal:
+                found[site] = normal
+        url = data.get("next")
+        if not url:
+            break
+    _usgs_batch["normals"].update(found)
+    for gid in gauge_ids:
+        _usgs_batch["normals"].setdefault(gid, {})
+    return True
+
+
+def _parse_normals_feature(props: dict, day: str) -> dict | None:
+    """{p10, p25, p50, p75, p90, count} from one Statistics API feature."""
+    for block in props.get("data") or []:
+        if block.get("parameter_code") != PARAM_STREAMFLOW:
+            continue
+        for entry in block.get("values") or []:
+            if entry.get("computation") != "percentile" or entry.get("time_of_year") != day:
+                continue
+            try:
+                table = {str(p): float(v) for p, v in
+                         zip(entry.get("percentiles") or [], entry.get("values") or [])}
+            except (TypeError, ValueError):
+                continue
+            if "50" not in table:
+                continue
+            return {"p10": table.get("10"), "p25": table.get("25"), "p50": table["50"],
+                    "p75": table.get("75"), "p90": table.get("90"),
+                    "count": entry.get("sample_count")}
+    return None
+
+
+def _prefetch_usgs_legacy_stat(gauge_ids: list[str]) -> None:
     for i in range(0, len(gauge_ids), USGS_STAT_MAX_SITES):
         chunk = gauge_ids[i:i + USGS_STAT_MAX_SITES]
         text = fetch_text(
@@ -893,7 +1045,29 @@ def prefetch_usgs(gauge_ids: list[str]) -> None:
         _usgs_batch["stat"].update(_split_stat_rdb(text))
         for gid in chunk:
             _usgs_batch["stat"].setdefault(gid, "")
-    log.info(f"  Batched stats: {sum(1 for v in _usgs_batch['stat'].values() if v)}/{len(gauge_ids)} sites with data")
+
+
+def prefetch_usgs(gauge_ids: list[str]) -> None:
+    """Fetch a week of readings and today's flow normals for every gauge up
+    front: the modernized USGS APIs first, the legacy services if those
+    fail. Failures just leave the cache empty, and each gauge then falls
+    back to its own legacy request."""
+    if _prefetch_usgs_ogc(gauge_ids):
+        _usgs_batch["source"] = "ogc"
+    else:
+        log.warning("Modernized USGS API unavailable — falling back to legacy WaterServices")
+        _prefetch_usgs_legacy_iv(gauge_ids)
+        _usgs_batch["source"] = "legacy"
+    log.info(f"  Batched readings ({_usgs_batch['source']}): "
+             f"{sum(1 for v in _usgs_batch['iv'].values() if v)}/{len(gauge_ids)} sites with data")
+
+    if _prefetch_usgs_normals(gauge_ids):
+        with_data = sum(1 for v in _usgs_batch["normals"].values() if v)
+    else:
+        log.warning("USGS Statistics API unavailable — falling back to legacy statistics service")
+        _prefetch_usgs_legacy_stat(gauge_ids)
+        with_data = sum(1 for v in _usgs_batch["stat"].values() if v)
+    log.info(f"  Batched flow normals: {with_data}/{len(gauge_ids)} sites with data")
 
 
 def _split_stat_rdb(text: str) -> dict[str, str]:
@@ -1103,17 +1277,51 @@ def _flow_class(flow: float, p10, p25, p75, p90) -> str:
     return "normal"
 
 
+def _build_normal_flow(current_flow, p10, p25, p50, p75, p90, years=None, count=None) -> dict | None:
+    """The card's "vs normal" record from today's percentiles."""
+    if not p50:
+        return None
+
+    def tidy(v):
+        # Small trout streams run at single-digit cfs; keep a decimal there.
+        if v is None:
+            return None
+        return round(v) if v >= 10 else round(v, 1)
+
+    return {
+        "median_cfs": round(p50),
+        "class": _flow_class(current_flow, p10, p25, p75, p90),
+        "pct_of_median": round(current_flow / p50 * 100),
+        # The middle half of this date's historical flows — the range the
+        # "near normal" class is defined by, so cards can show it directly.
+        "typical_low_cfs": tidy(p25),
+        "typical_high_cfs": tidy(p75),
+        "years": years,
+        "count": int(count) if count else None,
+    }
+
+
 def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
     """
-    Compare current streamflow to the long-term normal for today's calendar day,
-    using the USGS daily statistics service (period-of-record percentiles per
-    month/day). Comparison is flow-based (00060) because gage-height stats are
-    unreliable across datum revisions.
+    Compare current streamflow to the long-term normal for today's calendar
+    day (period-of-record percentiles). Comparison is flow-based (00060)
+    because gage-height stats are unreliable across datum revisions.
 
-    Returns {median_cfs, class, pct_of_median, years, count} or None.
+    Reads the batched Statistics API result when there is one, otherwise
+    the legacy daily statistics service.
+
+    Returns {median_cfs, class, pct_of_median, typical_low_cfs,
+    typical_high_cfs, years, count} or None.
     """
     if current_flow is None:
         return None
+
+    if gauge_id in _usgs_batch["normals"]:
+        n = _usgs_batch["normals"][gauge_id]
+        if not n:
+            return None
+        return _build_normal_flow(current_flow, n.get("p10"), n.get("p25"), n.get("p50"),
+                                  n.get("p75"), n.get("p90"), count=n.get("count"))
 
     if gauge_id in _usgs_batch["stat"]:
         text = _usgs_batch["stat"][gauge_id]
@@ -1161,32 +1369,13 @@ def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
         except (KeyError, ValueError, IndexError):
             return None
 
-    p10, p25, p50, p75, p90 = (col("p10_va"), col("p25_va"),
-                               col("p50_va"), col("p75_va"), col("p90_va"))
-    if p50 is None:
-        return None
-
     begin_yr = cols[idx["begin_yr"]] if "begin_yr" in idx else None
     end_yr = cols[idx["end_yr"]] if "end_yr" in idx else None
-    count = col("count_nu")
-
-    def tidy(v):
-        # Small trout streams run at single-digit cfs; keep a decimal there.
-        if v is None:
-            return None
-        return round(v) if v >= 10 else round(v, 1)
-
-    return {
-        "median_cfs": round(p50),
-        "class": _flow_class(current_flow, p10, p25, p75, p90),
-        "pct_of_median": round(current_flow / p50 * 100) if p50 else None,
-        # The middle half of this date's historical flows — the range the
-        # "near normal" class is defined by, so cards can show it directly.
-        "typical_low_cfs": tidy(p25),
-        "typical_high_cfs": tidy(p75),
-        "years": f"{begin_yr}–{end_yr}" if begin_yr and end_yr else None,
-        "count": int(count) if count else None,
-    }
+    return _build_normal_flow(
+        current_flow, col("p10_va"), col("p25_va"), col("p50_va"), col("p75_va"), col("p90_va"),
+        years=f"{begin_yr}–{end_yr}" if begin_yr and end_yr else None,
+        count=col("count_nu"),
+    )
 
 
 # ---------------------------------------------------------------------------

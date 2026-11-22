@@ -1,0 +1,40 @@
+name: Tests
+
+# Runs on every push and pull request. Deliberately separate from the deploy
+# workflow: a failing test should block a merge, not stop the half-hourly
+# data refresh.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Scraper tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Frontend tests
+        run: npm test
+
+      - name: Build
+        run: |
+          npm ci
+          npx vite build
