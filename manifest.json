@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-22T18:13Z",
+  "updated": "2026-11-22T22:00Z",
   "readings": [
     "2026-11"
   ],
@@ -7,6 +7,9 @@
     "2026-11"
   ],
   "reservoirs": [
+    "2026"
+  ],
+  "snowpack": [
     "2026"
   ],
   "bucket_hours": 2,
@@ -32,6 +35,12 @@
       "date",
       "slug",
       "feet_below_max"
+    ],
+    "snowpack": [
+      "date",
+      "basin",
+      "swe_in",
+      "depth_in"
     ]
   }
 }
