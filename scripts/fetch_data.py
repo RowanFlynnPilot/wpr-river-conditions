@@ -1469,48 +1469,64 @@ def fetch_nwm_forecast(reach_id: str | None, current_flow) -> dict | None:
 # WVIC: Reservoir levels
 # ---------------------------------------------------------------------------
 
-WVIC_DATA_URL = "https://wvic.com/Content/Data--Reports.cfm"
+# WVIC rebuilt wvic.com in fall 2026: the old .cfm page and TridentXML tables
+# are gone, and the site's charts now read a Delft-FEWS PI web service
+# directly. Same data, as JSON — no HTML scraping.
+WVIC_DATA_URL = "https://wvic.com/data-and-reports"
+WVIC_FEWS_URL = "https://fews.wvic.com:8443/FewsWebServices/rest/fewspiservice/v1/timeseries"
 
-# Map WVIC chart names to our reservoir slugs
-WVIC_NAME_MAP = {
-    "big eau pleine": "eau-pleine",
-    "rainbow": "rainbow",
-    "rice": "rice",
-    "spirit": "spirit",
-    "willow": "willow",
+# FEWS location id → our reservoir slug
+WVIC_LOCATIONS = {
+    "EP3": "eau-pleine",
+    "RAI": "rainbow",
+    "RIC": "rice",
+    "SPD": "spirit",
+    "WOW": "willow",
 }
+
+
+def _fews_latest(series: dict) -> tuple[float, str] | None:
+    """Latest real (value, date) in a FEWS series. The service pads each
+    series with a missing-value placeholder for the coming day."""
+    miss = str((series.get("header") or {}).get("missVal", "-999.999"))
+    for event in reversed(series.get("events") or []):
+        raw = event.get("value")
+        if raw in (None, "", miss) or str(event.get("flag")) == "8":
+            continue
+        try:
+            return float(raw), event.get("date", "")
+        except ValueError:
+            continue
+    return None
 
 
 def fetch_wvic_reservoirs() -> list[dict]:
     """
-    Fetch WVIC reservoir levels from the Data & Reports page.
-    The page embeds current "feet below maximum" values in a Google Charts
-    arrayToDataTable() call, which we extract with regex. No browser needed.
-    Falls back gracefully if scraping fails.
+    WVIC reservoir levels as "feet below maximum" for the five big storage
+    reservoirs, from WVIC's FEWS service. Falls back gracefully on failure.
     """
     now = datetime.now(timezone.utc).isoformat()
 
-    # Fetch the page and parse the Google Chart data
     parsed_data = {}
-    html = fetch_text(WVIC_DATA_URL)
-    if html:
-        # Look for the arrayToDataTable block with reservoir data rows
-        # Pattern matches: ['Reservoir Name', -6.28]
-        matches = re.findall(r"\['([^']+)',\s*([-\d.]+)\]", html)
-        for name, value in matches:
-            slug = WVIC_NAME_MAP.get(name.strip().lower())
-            if slug:
-                try:
-                    parsed_data[slug] = float(value)
-                except ValueError:
-                    pass
-
+    query = "&".join(f"locationIds={loc}" for loc in WVIC_LOCATIONS)
+    data = fetch_json(
+        f"{WVIC_FEWS_URL}?{query}&parameterIds=HW"
+        "&moduleInstanceIds=Calculate_Feet_Below_Max&documentFormat=PI_JSON"
+    )
+    if data:
+        for series in data.get("timeSeries") or []:
+            slug = WVIC_LOCATIONS.get((series.get("header") or {}).get("locationId"))
+            latest = _fews_latest(series)
+            # Drawdown can't be negative or deeper than any reservoir's range.
+            if slug and latest and 0 <= latest[0] <= 40:
+                # Stored negative ("below max"), matching the pre-2026 payload.
+                parsed_data[slug] = -round(latest[0], 2)
         if parsed_data:
             log.info(f"  Parsed WVIC data for {len(parsed_data)} reservoirs")
         else:
-            log.warning("Could not parse WVIC reservoir data from page")
+            log.warning("WVIC FEWS response had no usable reservoir levels")
     else:
-        log.warning("Failed to fetch WVIC Data & Reports page")
+        log.warning("Failed to fetch WVIC reservoir levels")
 
     # Build results for all configured reservoirs
     results = []
@@ -1536,62 +1552,42 @@ def fetch_wvic_reservoirs() -> list[dict]:
 # WVIC: Daily water temperatures (Flow-Temperature Summary)
 # ---------------------------------------------------------------------------
 
-WVIC_TEMP_URL = "https://wvic.com/tridentxml/FlowTempSummary/FlowTempSummary.html"
-
-# Data-row cell layout (11 cells, first empty):
-# [_, day, Rhinelander flow, temp, Tomahawk flow, Grandmother flow, temp,
-#  Rothschild flow, temp, Wisconsin Rapids flow, temp]
-WVIC_TEMP_COLUMNS = {8: "05398000", 10: "05400760"}  # temp cell → USGS gauge
-
-_MONTHS = {m: i for i, m in enumerate(
-    ["January", "February", "March", "April", "May", "June", "July",
-     "August", "September", "October", "November", "December"], start=1)}
+# FEWS location id → USGS gauge that sits at the same point on the river
+WVIC_TEMP_LOCATIONS = {"ROT": "05398000", "WR1": "05400760"}
 
 
 def fetch_wvic_water_temp() -> dict:
     """
-    Daily water temperatures from WVIC's Flow-Temperature Summary page —
-    the only water-temp source in the basin (USGS operates no active temp
-    gauges here). The page is a static month-to-date HTML table; the last
-    populated row is the most recent daily reading.
+    Daily water temperatures from WVIC's Flow-Temperature Summary — the only
+    water-temp source on the Wisconsin River main stem here (USGS operates no
+    active temp gauges on it).
 
     Returns {usgs_gauge_id: {"temp_f": float, "date": "YYYY-MM-DD"}}.
     Provisional data — attribute WVIC wherever it surfaces.
     """
-    html = fetch_text(WVIC_TEMP_URL)
-    if not html:
+    end = datetime.now(timezone.utc)
+    start = end - timedelta(days=5)
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+    data = fetch_json(
+        f"{WVIC_FEWS_URL}?filterId=Flow_Temp_Summary_Public_Website_Plot"
+        f"&startTime={start.strftime(fmt)}&endTime={end.strftime(fmt)}"
+        "&useDisplayUnits=true&documentFormat=PI_JSON"
+    )
+    if not data:
         return {}
-
-    # The header text is split across nested tags in the raw source —
-    # strip markup before searching for e.g. "July - 2026".
-    text = re.sub(r"<[^>]+>|&nbsp;?", " ", html)
-    m = re.search(r"(January|February|March|April|May|June|July|August|"
-                  r"September|October|November|December)\s*-\s*(\d{4})", text)
-    if not m:
-        log.warning("WVIC temp page: month header not found")
-        return {}
-    month, year = _MONTHS[m.group(1)], int(m.group(2))
 
     latest: dict = {}
-    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S | re.I):
-        cells = [re.sub(r"<[^>]+>|&nbsp;?", " ", c).strip()
-                 for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.S | re.I)]
-        if len(cells) < 11:
+    for series in data.get("timeSeries") or []:
+        header = series.get("header") or {}
+        gid = WVIC_TEMP_LOCATIONS.get(header.get("locationId"))
+        if not gid or header.get("parameterId") != "T.obs":
             continue
-        try:
-            day = int(cells[1])
-        except ValueError:
+        if "f" not in str(header.get("units", "")).lower():
+            log.warning(f"WVIC temp for {header.get('locationId')} in unexpected units: {header.get('units')}")
             continue
-        for idx, gid in WVIC_TEMP_COLUMNS.items():
-            try:
-                temp = float(cells[idx].replace(",", ""))
-            except ValueError:
-                continue
-            if 32.0 <= temp <= 95.0:  # physical sanity for °F river water
-                latest[gid] = {
-                    "temp_f": temp,
-                    "date": f"{year}-{month:02d}-{day:02d}",
-                }
+        reading = _fews_latest(series)
+        if reading and 32.0 <= reading[0] <= 95.0:  # physical sanity for °F river water
+            latest[gid] = {"temp_f": reading[0], "date": reading[1]}
     return latest
 
 
