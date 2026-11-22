@@ -37,10 +37,11 @@ Same pattern as other WPR widgets (gas prices, weather radar, adopt widget):
 - **Auth**: None (requires User-Agent)
 - Filtered to outdoor-relevant categories (flood, severe, winter, fire, wind, heat)
 
-### WVIC Reservoir Data (implemented — no browser needed)
-- **Scraped page**: `https://wvic.com/Content/Data--Reports.cfm` — current "feet below maximum" values are embedded in a Google Charts `arrayToDataTable()` blob, extracted with a regex in `fetch_wvic_reservoirs()`
-- **Reservoirs**: Rainbow, Willow, Spirit, Eau Pleine, Rice (Lake Wausau configured but not reported by WVIC)
-- **Richer data available** (verified 2026-07): the `.cfm` pages wrap static HTML iframes under `wvic.com/TridentXML/` — hourly head level + gate flow per reservoir, and `tridentxml/FlowTempSummary/FlowTempSummary.html` has daily **water temperature at Rothschild** (the only temp source in the basin; USGS has none). Candidates for Phase 2.
+### WVIC Reservoir Data (FEWS JSON API)
+- **Endpoint**: `https://fews.wvic.com:8443/FewsWebServices/rest/fewspiservice/v1/timeseries` — a Delft-FEWS PI web service that wvic.com's own charts read. No auth. WVIC rebuilt their site in fall 2026; the old `Data--Reports.cfm` page and `TridentXML` tables now 404.
+- **Reservoir levels** (`fetch_wvic_reservoirs()`): `locationIds=RAI,WOW,RIC,SPD,EP3` + `parameterIds=HW` + `moduleInstanceIds=Calculate_Feet_Below_Max`. Values arrive positive; stored negative to match the older payload. Each series ends with a `-999.999` / flag `8` placeholder for the coming day — `_fews_latest()` skips it.
+- **Water temperature** (`fetch_wvic_water_temp()`): `filterId=Flow_Temp_Summary_Public_Website_Plot`, parameter `T.obs`, locations `ROT` (Rothschild) and `WR1` (Wisconsin Rapids). USGS has no temp gauge on the main stem.
+- **Also available, unused so far**: hourly headwater level, outflow and gate settings per reservoir, a year of daily levels, target-flow bounds at Merrill (`MER`) and Wisconsin Rapids (`WRG`), and flow/temperature at Rhinelander, Tomahawk and Grandmother. The page source of `wvic.com/data-and-reports` and `wvic.com/reservoir/<name>` shows the exact queries.
 
 ## Monitored Gauges
 

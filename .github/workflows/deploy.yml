@@ -1,9 +1,11 @@
 name: Fetch Data & Deploy
 
 on:
+  # Primary trigger: the Cloudflare Worker in infra/dispatch-worker fires
+  # workflow_dispatch every 30 minutes. GitHub's own scheduler delivered
+  # ~6 of 38 configured runs a day (measured Aug-Oct 2026), so the cron below
+  # is only a fallback for when the worker is down.
   schedule:
-    # Offset from :00/:30 — GitHub's scheduler drops on-the-hour crons first
-    # under load, which was causing multi-hour gaps between runs.
     - cron: '7,37 10-23 * * *'
     - cron: '7,37 0-4 * * *'
   workflow_dispatch:
@@ -14,6 +16,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write   # keepalive step re-enables this workflow
 
 # cancel-in-progress false so a deploy in flight always completes — a cancel
 # can land after the WP post updates but before Pages deploys, leaving the
@@ -25,8 +28,17 @@ concurrency:
 jobs:
   fetch-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
+      # GitHub disables scheduled workflows after 60 days without a commit —
+      # that froze the live site for 25 days in Oct 2026. Calling the enable
+      # endpoint resets that clock, so every run keeps the workflow alive.
+      - name: Keep workflow enabled
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/deploy.yml/enable"
+
       - name: Checkout
         uses: actions/checkout@v4
 

@@ -37,8 +37,36 @@ function worstStatus(gauges) {
   return 'normal';
 }
 
-export default function HeroStatus({ gauges }) {
+// Past this age the readings can't support a status claim either way: an
+// "All Clear" over day-old data would stay green straight through a flood.
+const UNKNOWN_AFTER_MS = 6 * 60 * 60 * 1000;
+
+function formatAge(ms) {
+  const hours = Math.round(ms / 3600000);
+  if (hours < 48) return `${hours} hours`;
+  return `${Math.round(hours / 24)} days`;
+}
+
+export default function HeroStatus({ gauges, generatedAt }) {
   if (!gauges || gauges.length === 0) return null;
+
+  const ageMs = generatedAt ? Date.now() - new Date(generatedAt).getTime() : 0;
+  if (ageMs > UNKNOWN_AFTER_MS) {
+    return (
+      <div className="hero-status hero-status--unknown" role="status">
+        <div className="hero-status__label">Current Status · Central Wisconsin</div>
+        <h1 className="hero-status__headline">Status unavailable</h1>
+        <div className="hero-status__detail">
+          Our river data is {formatAge(ageMs)} old, so we can’t confirm current conditions.
+          Check the{' '}
+          <a href="https://water.noaa.gov/wfo/grb" target="_blank" rel="noopener noreferrer">
+            National Weather Service
+          </a>{' '}
+          for flood warnings.
+        </div>
+      </div>
+    );
+  }
 
   const worst = worstStatus(gauges);
   const conf = STATUS_CONFIG[worst];

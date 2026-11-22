@@ -1,0 +1,53 @@
+name: Data freshness check
+
+# Fails (and so emails the repo owner) when the published data is stale.
+# The deploy workflow can be green while nothing is actually running — it was
+# disabled for 25 days in Oct 2026 with no failure to notice.
+
+on:
+  schedule:
+    - cron: '23 3,9,15,21 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Keep both workflows enabled
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PUT "repos/${{ github.repository }}/actions/workflows/freshness.yml/enable"
+          gh api -X PUT "repos/${{ github.repository }}/actions/workflows/deploy.yml/enable"
+
+      - name: Check published data age
+        run: |
+          python3 - <<'EOF'
+          import json, sys, urllib.request
+          from datetime import datetime, timezone
+
+          URL = "https://rowanflynnpilot.github.io/wpr-river-conditions/data/river-data.json"
+          MAX_AGE_H = 6
+
+          req = urllib.request.Request(URL, headers={"User-Agent": "wpr-freshness-check"})
+          data = json.load(urllib.request.urlopen(req, timeout=30))
+          generated = datetime.fromisoformat(data["generated_at"])
+          age_h = (datetime.now(timezone.utc) - generated).total_seconds() / 3600
+          print(f"Published data is {age_h:.1f}h old (generated {generated.isoformat()})")
+          if age_h > MAX_AGE_H:
+              print(f"::error::River data is {age_h:.1f}h old (limit {MAX_AGE_H}h) — "
+                    "the fetch/deploy pipeline has stalled.")
+              sys.exit(1)
+          EOF
+
+      # If the pipeline has stalled, try to restart it rather than only report.
+      - name: Kick the deploy workflow
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --repo "${{ github.repository }}" --ref main

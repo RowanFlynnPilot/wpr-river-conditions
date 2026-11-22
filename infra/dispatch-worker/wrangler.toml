@@ -1,0 +1,8 @@
+name = "wpr-river-dispatch"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+workers_dev = true
+
+[triggers]
+# Every 30 minutes, offset from the hour. Times are UTC.
+crons = ["7,37 * * * *"]
