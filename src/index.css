@@ -1583,6 +1583,12 @@ body {
   border: 1px solid var(--wpr-rule);
 }
 
+.gauge-card__rec-badge--cold {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
 .gauge-card__rec-badge--clear {
   background: #f0f9ff;
   color: #0369a1;
@@ -2299,6 +2305,22 @@ body {
   color: var(--wpr-ink-muted);
   font-size: 0.8rem;
   font-style: italic;
+}
+
+.lure-suggestion__note {
+  color: var(--status-action-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.gauge-card__ice {
+  margin-top: var(--space-xs);
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: #1e40af;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
 }
 
 /* ==========================================================================

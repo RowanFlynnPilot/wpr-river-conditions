@@ -14,7 +14,7 @@ import logging
 import re
 import sys
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from http.client import HTTPException  # IncompleteRead, BadStatusLine, …
 from pathlib import Path
 from urllib.request import urlopen, Request
@@ -958,7 +958,19 @@ def _parse_usgs_current(time_series: list, gauge_id: str, precip_since: datetime
             # NB: compare against None, not truthiness — a reading of exactly 0
             # (dry-bed flow, low-water stage) is valid data, not "missing".
             latest = values[-1]
-            val = float(latest["value"]) if latest["value"] != "" else None
+            # USGS marks ice-affected readings with an "Ice" qualifier: ice
+            # backs water up, so stage reads high and flow is unreliable.
+            if (var_code in (PARAM_GAGE_HEIGHT, PARAM_STREAMFLOW)
+                    and any(str(q).lower() == "ice" for q in latest.get("qualifiers") or [])):
+                result["ice_affected"] = True
+            try:
+                val = float(latest["value"]) if latest["value"] != "" else None
+            except ValueError:
+                # Non-numeric placeholder ("Ice", "***") — treat as missing
+                # without abandoning this gauge's other parameters.
+                if str(latest["value"]).strip().lower() == "ice":
+                    result["ice_affected"] = True
+                val = None
             if val is not None and val < 0:
                 val = None
 
@@ -1158,10 +1170,20 @@ def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
     end_yr = cols[idx["end_yr"]] if "end_yr" in idx else None
     count = col("count_nu")
 
+    def tidy(v):
+        # Small trout streams run at single-digit cfs; keep a decimal there.
+        if v is None:
+            return None
+        return round(v) if v >= 10 else round(v, 1)
+
     return {
         "median_cfs": round(p50),
         "class": _flow_class(current_flow, p10, p25, p75, p90),
         "pct_of_median": round(current_flow / p50 * 100) if p50 else None,
+        # The middle half of this date's historical flows — the range the
+        # "near normal" class is defined by, so cards can show it directly.
+        "typical_low_cfs": tidy(p25),
+        "typical_high_cfs": tidy(p75),
         "years": f"{begin_yr}–{end_yr}" if begin_yr and end_yr else None,
         "count": int(count) if count else None,
     }
@@ -2399,6 +2421,7 @@ LURE_DATABASE = {
         {"lure": "Shad Rap crankbait (size 5)", "months": [5, 6, 7, 8, 9], "temp_range": [55, 75], "why": "Cover water and find active fish on drop-offs"},
         {"lure": "Jig + nightcrawler harness", "months": [6, 7, 8], "temp_range": [65, 80], "why": "Slow troll over sandbars in summer warmth"},
         {"lure": "Glow jig (night fishing)", "months": [6, 7, 8, 9], "temp_range": [60, 80], "why": "After-dark peak below dam tailwaters"},
+        {"lure": "Jigging spoon + minnow head", "months": [12, 1, 2], "temp_range": [32, 40], "why": "Through the ice on flowages and backwaters — never on river current"},
     ],
     "Smallmouth Bass": [
         {"lure": "Tube jig (green pumpkin)", "months": [5, 6, 7, 8, 9, 10], "temp_range": [55, 80], "why": "Rocky-bank standby — drag it slowly"},
@@ -2413,12 +2436,13 @@ LURE_DATABASE = {
     ],
     "Brook Trout": [
         {"lure": "#0 Mepps spinner (gold)", "months": [4, 5, 6, 9, 10], "temp_range": [45, 65], "why": "Short casts in small streams — brookies hammer it"},
-        {"lure": "Live worm + split-shot", "months": [4, 5, 6, 7, 8, 9], "temp_range": [45, 70], "why": "Classic drift through undercut banks"},
+        {"lure": "Live worm + split-shot", "months": [4, 5, 6, 7, 8, 9], "temp_range": [45, 70], "why": "Classic drift through undercut banks", "live_bait": True},
         {"lure": "Dry fly (Adams, Elk Hair Caddis)", "months": [5, 6, 7, 8], "temp_range": [55, 70], "why": "Match summer hatches on the water surface"},
     ],
     "Brown Trout": [
         {"lure": "Woolly Bugger streamer (black)", "months": [4, 5, 9, 10, 11], "temp_range": [40, 60], "why": "Browns hunt big — strip through deep pools"},
-        {"lure": "#5 Rapala (black/gold)", "months": [4, 5, 6, 9, 10], "temp_range": [45, 65], "why": "After-dark prowler in summer pools"},
+        {"lure": "#5 Rapala (black/gold)", "months": [4, 5, 6, 9, 10], "temp_range": [45, 65], "why": "Work it past undercut banks and logjams at dusk"},
+        {"lure": "Small nymph under an indicator", "months": [1, 2, 3], "temp_range": [32, 45], "why": "Winter trout hold in slow, deep water — drift it slowly"},
         {"lure": "Dry fly (PMD, Caddis)", "months": [5, 6, 7, 8], "temp_range": [55, 68], "why": "Evening hatches on cool summer water"},
     ],
     "Rainbow Trout": [
@@ -2430,6 +2454,7 @@ LURE_DATABASE = {
         {"lure": "Daredevle spoon (red/white)", "months": [4, 5, 9, 10, 11], "temp_range": [40, 60], "why": "Spring and fall pike crush a flashy spoon"},
         {"lure": "Spinnerbait (white, 3/8 oz)", "months": [5, 6, 7, 8, 9], "temp_range": [55, 75], "why": "Cover weed edges — pike ambush from cover"},
         {"lure": "Swimbait (4–6 inch)", "months": [6, 7, 8], "temp_range": [60, 75], "why": "Summer pike chase bigger meals in cooler depths"},
+        {"lure": "Tip-up with a large shiner", "months": [12, 1, 2], "temp_range": [32, 40], "why": "Over weed flats on flowage ice — check ice thickness first"},
     ],
     "Panfish": [
         {"lure": "Tungsten jig + waxworm", "months": [1, 2, 3, 4, 11, 12], "temp_range": [32, 55], "why": "Cold-water bluegill and crappie — ice or open water"},
@@ -2461,14 +2486,57 @@ SEASONAL_WATER_TEMP_F = {
 }
 
 
-def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, month: int) -> list[dict]:
+# Wisconsin inland season rules, simplified to what decides whether a
+# species should be suggested at all. Dates follow the DNR's standing
+# pattern (weekday-anchored, so they shift a little each year); local
+# exceptions exist, so the cards never state that a season is open — they
+# only stop recommending a species while its general season is closed.
+TROUT_SPECIES = {"Brook Trout", "Brown Trout", "Rainbow Trout"}
+GAMEFISH_SPECIES = {"Walleye", "Northern Pike", "Smallmouth Bass", "Largemouth Bass"}
+EARLY_TROUT_NOTE = "Early season: catch-and-release, artificial lures only"
+
+
+def _nth_weekday(year: int, month: int, weekday: int, n: int) -> date:
+    """n-th given weekday (Mon=0) of a month; n=-1 for the last one."""
+    if n > 0:
+        first = date(year, month, 1)
+        return first + timedelta(days=(weekday - first.weekday()) % 7 + 7 * (n - 1))
+    last = date(year + (month == 12), month % 12 + 1, 1) - timedelta(days=1)
+    return last - timedelta(days=(last.weekday() - weekday) % 7)
+
+
+def species_season(species: str, today: date) -> str:
+    """'open', 'closed', or 'early_trout' for a species on a given day."""
+    y = today.year
+    may_opener = _nth_weekday(y, 5, 5, 1)          # first Saturday in May
+    if species in TROUT_SPECIES:
+        if may_opener <= today <= date(y, 10, 15):
+            return "open"
+        if _nth_weekday(y, 1, 5, 1) <= today < may_opener:  # first Sat in Jan
+            return "early_trout"
+        return "closed"
+    if species in GAMEFISH_SPECIES:
+        # Closed from the day after the first Sunday in March to the opener.
+        return "closed" if _nth_weekday(y, 3, 6, 1) < today < may_opener else "open"
+    if species == "Musky":
+        # Northern zone: Saturday before Memorial Day through Dec. 31.
+        return "open" if today >= _nth_weekday(y, 5, 5, -1) else "closed"
+    return "open"
+
+
+def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, today: date) -> list[dict]:
     """
     Pick up to 3 lure recommendations for this gauge given current
-    water temp (or seasonal fallback) and month. Returns one suggestion
+    water temp (or seasonal fallback) and the date. Returns one suggestion
     per species, ordered by best fit. Among equally good options the pick
     rotates on a per-gauge seed so neighboring cards with the same species
     mix don't all show the same three lures.
+
+    A species is skipped while its season is closed, and a lure is only
+    offered in the months it is written for — water temperature refines the
+    choice but can't pull a summer lure into November.
     """
+    month = today.month
     fishing = gauge_record.get("fishing") or {}
     species_list = fishing.get("species") or []
     if not species_list:
@@ -2485,23 +2553,30 @@ def compute_lure_suggestions(gauge_record: dict, current_temp_f: float | None, m
 
     picks = []
     for species in species_list:
+        season = species_season(species, today)
+        if season == "closed":
+            continue
         scored = []
         for entry in LURE_DATABASE.get(species, []):
-            in_season = month in entry["months"]
+            if month not in entry["months"]:
+                continue
+            if season == "early_trout" and entry.get("live_bait"):
+                continue
             t_low, t_high = entry["temp_range"]
             temp_ok = t_low <= current_temp_f <= t_high
-            score = (2 if in_season else 0) + (2 if temp_ok else 0)
-            if score > 0:
-                scored.append((score, entry))
+            scored.append((2 + (2 if temp_ok else 0), entry))
         if not scored:
             continue
         best = max(s for s, _ in scored)
         ties = [e for s, e in scored if s == best]
         pick = ties[seed % len(ties)]
-        picks.append({"species": species, "lure": pick["lure"], "why": pick["why"], "score": best})
+        suggestion = {"species": species, "lure": pick["lure"], "why": pick["why"], "score": best}
+        if season == "early_trout":
+            suggestion["note"] = EARLY_TROUT_NOTE
+        picks.append(suggestion)
 
     picks.sort(key=lambda x: -x["score"])
-    return [{"species": p["species"], "lure": p["lure"], "why": p["why"]} for p in picks[:3]]
+    return [{k: v for k, v in p.items() if k != "score"} for p in picks[:3]]
 
 
 # Community engagement links (static)
@@ -2513,25 +2588,42 @@ COMMUNITY_LINKS = {
 }
 
 
-def compute_recreation_status(gauge_id: str, streamflow_cfs: float | None) -> dict | None:
-    """Compute recreation conditions based on current flow."""
+COLD_WATER_F = 50          # below this, immersion risks cold shock
+COLD_WATER_MONTHS = (11, 12, 1, 2, 3, 4)  # assumed cold when no temp reading
+
+
+def compute_recreation_status(gauge_id: str, streamflow_cfs: float | None,
+                              water_temp_f: float | None = None,
+                              month: int | None = None) -> dict | None:
+    """Compute recreation conditions based on current flow, with a
+    cold-water override: in cold water nobody is tubing, and a "low flow"
+    or "ideal" paddling rating would read as an invitation."""
     thresholds = RECREATION_THRESHOLDS.get(gauge_id)
     if not thresholds or streamflow_cfs is None:
         return None
 
+    if water_temp_f is not None:
+        cold = water_temp_f < COLD_WATER_F
+    else:
+        cold = month in COLD_WATER_MONTHS
+
     result = {}
     for activity, levels in thresholds.items():
+        if cold and activity == "tubing":
+            continue
         if streamflow_cfs >= levels["dangerous"]:
             result[activity] = "dangerous"
         elif levels["caution"][0] <= streamflow_cfs < levels["caution"][1]:
             result[activity] = "caution"
+        elif cold:
+            result[activity] = "cold"
         elif levels["ideal"][0] <= streamflow_cfs <= levels["ideal"][1]:
             result[activity] = "ideal"
         elif streamflow_cfs < levels["ideal"][0]:
             result[activity] = "low"
         else:
             result[activity] = "caution"
-    return result
+    return result or None
 
 
 def estimate_water_clarity(current_cfs: float | None, history: list[dict]) -> dict | None:
@@ -3180,7 +3272,9 @@ def main():
             "normal_flow": normal_flow,
             "upstream_rain": upstream_rain.get(gauge["id"]),
             "fishing": FISHING_REFERENCE.get(gauge["id"]),
-            "recreation": compute_recreation_status(gauge["id"], current.get("streamflow_cfs")),
+            "recreation": compute_recreation_status(
+                gauge["id"], current.get("streamflow_cfs"),
+                current.get("water_temp_f"), now_central().month),
             "water_clarity": estimate_water_clarity(current.get("streamflow_cfs"), history),
             "usgs_url": f"https://waterdata.usgs.gov/monitoring-location/USGS-{gauge['id']}/",
             "nws_url": f"https://water.noaa.gov/gauges/{gauge['nws_lid'].lower()}" if gauge.get("nws_lid") else None,
@@ -3188,7 +3282,7 @@ def main():
         gauge_record["current_lures"] = compute_lure_suggestions(
             gauge_record,
             current.get("water_temp_f"),
-            now_central().month,
+            now_central().date(),
         )
         gauges_data.append(gauge_record)
 
