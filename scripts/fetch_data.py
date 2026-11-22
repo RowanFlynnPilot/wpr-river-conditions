@@ -847,31 +847,83 @@ def fetch_text(url: str, timeout: int = 30) -> str | None:
 # USGS: Current instantaneous values
 # ---------------------------------------------------------------------------
 
-def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
-    """
-    Fetch the most recent instantaneous values for a gauge.
-    Uses the legacy WaterServices IV endpoint (still active, migrating to OGC API).
+# One multi-site request per service instead of three requests per gauge.
+# USGS answers in 20-45s per call under load, so 51 sequential calls made a
+# run take ~8 minutes; batched it is three calls. Filled by prefetch_usgs();
+# a site missing from the cache falls back to its own per-gauge request.
+_usgs_batch: dict = {"iv": {}, "stat": {}}
+USGS_STAT_MAX_SITES = 10  # the statistics service rejects longer site lists
 
-    Some gauges publish on a lag (Wolf at Shawano's computed flow can trail
-    by days) — when the 24h window comes back empty, retry over a week and
-    take the latest available reading; its timestamp shows the true age.
 
-    Returns: {gage_height_ft, streamflow_cfs, water_temp_f, timestamp}
-    """
-    site = gauge_id
+def prefetch_usgs(gauge_ids: list[str]) -> None:
+    """Fetch a week of instantaneous values and the daily flow statistics
+    for every gauge up front. Failures just leave the cache empty."""
     params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW},{PARAM_WATER_TEMP},{PARAM_PRECIP}"
-    # period=P1D so precip can be summed over the past 24h
-    url = (
-        f"https://waterservices.usgs.gov/nwis/iv/"
-        f"?format=json&sites={site}&parameterCd={params}&period={period}&siteStatus=all"
+    data = fetch_json(
+        "https://waterservices.usgs.gov/nwis/iv/"
+        f"?format=json&sites={','.join(gauge_ids)}&parameterCd={params}"
+        "&period=P7D&siteStatus=all",
+        timeout=90,
     )
-    data = fetch_json(url)
-    if not data:
-        return {}
+    if data is not None:
+        try:
+            for ts in data["value"]["timeSeries"]:
+                site = ts["sourceInfo"]["siteCode"][0]["value"]
+                _usgs_batch["iv"].setdefault(site, []).append(ts)
+            # A site with no series at all is a real answer (discontinued
+            # gauge), not a miss — record it so it doesn't trigger a
+            # per-gauge request.
+            for gid in gauge_ids:
+                _usgs_batch["iv"].setdefault(gid, [])
+        except (KeyError, IndexError, TypeError) as e:
+            log.warning(f"Could not split batched USGS IV response: {e}")
+            _usgs_batch["iv"].clear()
+    log.info(f"  Batched IV: {sum(1 for v in _usgs_batch['iv'].values() if v)}/{len(gauge_ids)} sites with data")
 
+    for i in range(0, len(gauge_ids), USGS_STAT_MAX_SITES):
+        chunk = gauge_ids[i:i + USGS_STAT_MAX_SITES]
+        text = fetch_text(
+            "https://waterservices.usgs.gov/nwis/stat/"
+            f"?sites={','.join(chunk)}&statReportType=daily&statTypeCd=all"
+            f"&parameterCd={PARAM_STREAMFLOW}&format=rdb",
+            timeout=90,
+        )
+        if text is None:
+            continue
+        _usgs_batch["stat"].update(_split_stat_rdb(text))
+        for gid in chunk:
+            _usgs_batch["stat"].setdefault(gid, "")
+    log.info(f"  Batched stats: {sum(1 for v in _usgs_batch['stat'].values() if v)}/{len(gauge_ids)} sites with data")
+
+
+def _split_stat_rdb(text: str) -> dict[str, str]:
+    """Split a multi-site RDB statistics response into one RDB text per
+    site, each carrying the shared header row."""
+    header = None
+    site_col = None
+    rows: dict[str, list[str]] = {}
+    for line in text.splitlines():
+        if line.startswith("#") or not line.strip():
+            continue
+        cols = line.split("\t")
+        if cols[0] == "agency_cd":
+            header = line
+            site_col = cols.index("site_no") if "site_no" in cols else None
+            continue
+        if site_col is None or re.match(r"^\d+[sn]$", cols[0]) or len(cols) <= site_col:
+            continue
+        rows.setdefault(cols[site_col], []).append(line)
+    return {site: "\n".join([header] + lines) for site, lines in rows.items()}
+
+
+def _parse_usgs_current(time_series: list, gauge_id: str, precip_since: datetime | None = None) -> dict:
+    """Latest reading per parameter from IV time series.
+
+    precip_since: when the series spans more than a day, only precipitation
+    at or after this moment is summed, so the total stays a 24h figure.
+    """
     result = {"timestamp": None}
     try:
-        time_series = data["value"]["timeSeries"]
         for ts in time_series:
             var_code = ts["variable"]["variableCode"][0]["value"]
             values = ts["values"][0]["value"]
@@ -886,6 +938,10 @@ def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
                     raw = v.get("value", "")
                     if raw == "":
                         continue
+                    if precip_since is not None:
+                        when = _parse_iso(v.get("dateTime") or "")
+                        if when is None or when < precip_since:
+                            continue
                     try:
                         x = float(raw)
                     except ValueError:
@@ -920,6 +976,42 @@ def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
     except (KeyError, IndexError, TypeError, ValueError) as e:
         # ValueError: USGS emits non-numeric values ("Ice", "***") in winter.
         log.warning(f"Error parsing USGS data for {gauge_id}: {e}")
+    return result
+
+
+def fetch_usgs_current(gauge_id: str, period: str = "P1D") -> dict:
+    """
+    Fetch the most recent instantaneous values for a gauge.
+    Uses the legacy WaterServices IV endpoint (still active, migrating to OGC API).
+
+    Some gauges publish on a lag (Wolf at Shawano's computed flow can trail
+    by days) — the latest reading in the past week is used, and its
+    timestamp shows the true age.
+
+    Returns: {gage_height_ft, streamflow_cfs, water_temp_f, timestamp}
+    """
+    if gauge_id in _usgs_batch["iv"]:
+        # The batch already spans a week, so a lagged reporter needs no retry.
+        since = datetime.now(timezone.utc) - timedelta(hours=24)
+        return _parse_usgs_current(_usgs_batch["iv"][gauge_id], gauge_id, precip_since=since)
+
+    site = gauge_id
+    params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW},{PARAM_WATER_TEMP},{PARAM_PRECIP}"
+    # period=P1D so precip can be summed over the past 24h
+    url = (
+        f"https://waterservices.usgs.gov/nwis/iv/"
+        f"?format=json&sites={site}&parameterCd={params}&period={period}&siteStatus=all"
+    )
+    data = fetch_json(url)
+    if not data:
+        return {}
+
+    try:
+        time_series = data["value"]["timeSeries"]
+    except (KeyError, TypeError) as e:
+        log.warning(f"Error parsing USGS data for {gauge_id}: {e}")
+        time_series = []
+    result = _parse_usgs_current(time_series, gauge_id)
 
     # Lagged reporter: nothing in the last 24h — widen to a week. (Only
     # height/flow trigger this; the precip sum never rides the fallback
@@ -939,13 +1031,16 @@ def fetch_usgs_history(gauge_id: str, days: int = 7) -> list[dict]:
     without excessive JSON size.
     Returns: [{timestamp, gage_height_ft, streamflow_cfs}, ...]
     """
-    params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW}"
-    url = (
-        f"https://waterservices.usgs.gov/nwis/iv/"
-        f"?format=json&sites={gauge_id}&parameterCd={params}"
-        f"&period=P{days}D&siteStatus=all"
-    )
-    data = fetch_json(url)
+    if gauge_id in _usgs_batch["iv"] and days == 7:
+        data = {"value": {"timeSeries": _usgs_batch["iv"][gauge_id]}}
+    else:
+        params = f"{PARAM_GAGE_HEIGHT},{PARAM_STREAMFLOW}"
+        url = (
+            f"https://waterservices.usgs.gov/nwis/iv/"
+            f"?format=json&sites={gauge_id}&parameterCd={params}"
+            f"&period=P{days}D&siteStatus=all"
+        )
+        data = fetch_json(url)
     if not data:
         return []
 
@@ -1008,12 +1103,15 @@ def fetch_usgs_normal_flow(gauge_id: str, current_flow) -> dict | None:
     if current_flow is None:
         return None
 
-    url = (
-        f"https://waterservices.usgs.gov/nwis/stat/"
-        f"?sites={gauge_id}&statReportType=daily&statTypeCd=all"
-        f"&parameterCd={PARAM_STREAMFLOW}&format=rdb"
-    )
-    text = fetch_text(url)
+    if gauge_id in _usgs_batch["stat"]:
+        text = _usgs_batch["stat"][gauge_id]
+    else:
+        url = (
+            f"https://waterservices.usgs.gov/nwis/stat/"
+            f"?sites={gauge_id}&statReportType=daily&statTypeCd=all"
+            f"&parameterCd={PARAM_STREAMFLOW}&format=rdb"
+        )
+        text = fetch_text(url)
     if not text:
         return None
 
@@ -2970,6 +3068,9 @@ def main():
     if wvic_temps:
         log.info("  " + ", ".join(
             f"{gid}: {v['temp_f']:.0f}F ({v['date']})" for gid, v in wvic_temps.items()))
+
+    log.info("Fetching USGS data for all gauges (batched)...")
+    prefetch_usgs([g["id"] for g in GAUGES])
 
     # Fetch gauge data
     gauges_data = []
